@@ -49,7 +49,7 @@ func loadBooks(bookDatabase string) BookMap {
 	defer json_file.Close()
 	byteValue, _ := io.ReadAll(json_file)
 
-	var bookData BookMap
+	bookData := make(BookMap)
 	err := json.Unmarshal(byteValue, &bookData)
 	if err != nil {
 		fmt.Println(err)

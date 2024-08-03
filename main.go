@@ -15,5 +15,6 @@ func main() {
 
 	fmt.Println("Loading books from " + *bookFilePtr)
 	parsedBookData := models.AllBooksFromJson(bookFile)
+	fmt.Println("Loaded ", len(parsedBookData), " books.")
 
 }

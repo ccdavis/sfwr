@@ -110,10 +110,14 @@ func FromRawBook(book load.RawBook) Book {
 }
 
 func AllBooksFromJson(bookFile string) BooksByAuthor {
-	var parsedBooks BooksByAuthor
+	ret := make(BooksByAuthor)
 	loadedBooks := load.MarshalledBookDataFromJsonFile(bookFile)
-	for author, books := range loadedBooks {
-		parsedBooks.[author] = books
+	for author, rawBooks := range loadedBooks {
+		parsedBooks := make([]Book, 0)
+		for _, rawBook := range rawBooks {
+			parsedBooks = append(parsedBooks, FromRawBook(rawBook))
+		}
+		ret[author] = parsedBooks
 	}
-	return parsedBooks
+	return ret
 }
