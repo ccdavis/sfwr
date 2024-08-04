@@ -74,7 +74,8 @@ func FromRawBook(book load.RawBook) Book {
 	year_published, err := book.PubDate.Int64()
 	if err != nil {
 		fmt.Println("Can't convert publication date ", err)
-		os.Exit(1)
+		book.Print()
+		year_published = 0
 	}
 	dateAdded := time.Now()
 	surname := extractSurname(book.Author)
