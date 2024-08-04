@@ -24,6 +24,7 @@ type RawBook struct {
 }
 
 func (b RawBook) Print() {
+	fmt.Println("----------------------------------------------")
 	fmt.Print("Title: " + b.Title[0])
 	if len(b.Title) > 1 {
 		fmt.Println(": " + b.Title[1])
@@ -34,7 +35,6 @@ func (b RawBook) Print() {
 	fmt.Println("First published: " + fmt.Sprint(b.PubDate))
 	fmt.Println("Rating: " + b.Rating)
 	fmt.Println()
-
 }
 
 // The keys are author names, the values are their books
@@ -42,19 +42,14 @@ type BookMap map[string][]RawBook
 
 func loadBooks(bookDatabase string) BookMap {
 	json_file, file_err := os.Open(bookDatabase)
-	if file_err != nil {
-		fmt.Println(file_err)
-		os.Exit(1)
-	}
+	check("Error opening book database file.", file_err)
+
 	defer json_file.Close()
 	byteValue, _ := io.ReadAll(json_file)
 
 	bookData := make(BookMap)
 	err := json.Unmarshal(byteValue, &bookData)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	check("Error unmarshalling book data.", err)
 	return bookData
 }
 
@@ -74,4 +69,12 @@ func MarshalledBookDataFromJsonFile(bookFile string) BookMap {
 	bookData := loadBooks(bookFile)
 	// TODO Do some checking on the data
 	return bookData
+}
+
+func check(msg string, err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "\n", msg)
+		panic(err)
+	}
+
 }
