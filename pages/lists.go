@@ -1,6 +1,8 @@
 package pages
 
 import (
+	"bytes"
+	"html/template"
 	"sort"
 
 	"github.com/ccdavis/sfwr/models"
@@ -36,11 +38,33 @@ func BooksWithRating(books []models.Book, rating models.Rating) (ret []models.Bo
 	return
 }
 
-func renderList(books []models.Book) string {
-	bookPage := ""
-	for _, b := range books {
-		bookPage += b.Author
-
+func RenderList(books []models.Book) string {
+	var doc bytes.Buffer
+	tmpl := "<div> <table> <th> <td> Title</td><td> Author</td> </th>"
+	tmpl += "{{range .}}"
+	tmpl += "<tr> <td> {{.Title}}</td><td> {{.Author}}</td></tr>"
+	tmpl += "{{end}}"
+	tmpl += "</table>"
+	tmpl += "</div>"
+	t, err := template.New("book-list").Parse(tmpl)
+	if err != nil {
+		panic(err)
 	}
-	return bookPage
+	err = t.Execute(&doc, books)
+	if err != nil {
+		panic(err)
+	}
+	return doc.String()
+
+}
+
+func RenderPage(pageTemplateFile string, innerContent string) string {
+	var doc bytes.Buffer
+	t, _ := template.ParseFiles(pageTemplateFile)
+
+	err := t.Execute(&doc, innerContent)
+	if err != nil {
+		panic(err)
+	}
+	return doc.String()
 }
