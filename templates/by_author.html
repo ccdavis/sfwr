@@ -3,9 +3,26 @@
  {{if eq (len .) 0}}
  Nothing to see here
  {{end}}
+ <div class="book-list">
  {{range .}}
- <div>
-{{.Title}} {{.Author}}
+ <div class="book-item">
+  
+ <div class="book-title">
+ 	{{.MainTitle}} 
+</div>
+  {{if eq (len .Title) 2}}
+	<div class="book-subtitle">
+		{{.SubTitle}}
+	</div>
+{{end}}
+	
+<div class="book-author">
+{{.Author}}
+</div>
+
  </div>
+ 
  {{end}}
+ </div>
+ 
  {{end}}

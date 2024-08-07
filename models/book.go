@@ -54,6 +54,8 @@ type Book struct {
 	Author           string
 	AuthorSurname    string
 	Title            []string
+	MainTitle        string
+	SubTitle         string
 	Review           string
 	Rating           Rating
 	AmazonLink       string
@@ -100,6 +102,11 @@ func FromRawBook(book load.RawBook) Book {
 	rating, err := stringToRating(book.Rating)
 	exitOnError("Error extracting author's surname.", err)
 
+	var subTitle = ""
+	if len(book.Title) > 1 {
+		subTitle = book.Title[1]
+	}
+
 	var olCoverId int64
 	olCoverId, err = book.OlCoverId.Int64()
 	if err != nil {
@@ -111,12 +118,14 @@ func FromRawBook(book load.RawBook) Book {
 		olCoverId = Missing
 	}
 
-	return Book{
+	newBook := Book{
 		PubDate:          year_published,
 		DateAdded:        dateAdded,
 		Author:           book.Author,
 		AuthorSurname:    surname,
 		Title:            book.Title,
+		MainTitle:        book.Title[0],
+		SubTitle:         subTitle,
 		Review:           book.Review,
 		Rating:           rating,
 		AmazonLink:       book.AmazonLink,
@@ -128,6 +137,7 @@ func FromRawBook(book load.RawBook) Book {
 		OlAuthorId:       book.OlAuthorId,
 		OlCoverEditionId: book.OlCoverEditionId,
 	}
+	return newBook
 }
 
 func AllBooksFromJson(bookFile string) BooksByAuthor {

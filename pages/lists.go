@@ -38,7 +38,7 @@ func BooksWithRating(books []models.Book, rating models.Rating) (ret []models.Bo
 	return
 }
 
-func RenderPage(pageTemplateFile string, books []models.Book) string {
+func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
 	t, _ := template.ParseFiles("templates/base.html", pageTemplateFile)
 
