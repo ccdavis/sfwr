@@ -66,6 +66,14 @@ type Book struct {
 	OlCoverEditionId string
 }
 
+func (b Book) FormatTitle() string {
+	title := b.Title[0]
+	if len(b.Title) > 1 {
+		title += ": " + b.Title[1]
+	}
+	return title
+}
+
 // This might need to get more sophisticated
 func extractSurname(fullName string) string {
 	names := strings.Split(fullName, " ")

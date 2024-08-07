@@ -38,31 +38,11 @@ func BooksWithRating(books []models.Book, rating models.Rating) (ret []models.Bo
 	return
 }
 
-func RenderList(books []models.Book) string {
+func RenderPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
-	tmpl := "<div> <table> <th> <td> Title</td><td> Author</td> </th>"
-	tmpl += "{{range .}}"
-	tmpl += "<tr> <td> {{.Title}}</td><td> {{.Author}}</td></tr>"
-	tmpl += "{{end}}"
-	tmpl += "</table>"
-	tmpl += "</div>"
-	t, err := template.New("book-list").Parse(tmpl)
-	if err != nil {
-		panic(err)
-	}
-	err = t.Execute(&doc, books)
-	if err != nil {
-		panic(err)
-	}
-	return doc.String()
+	t, _ := template.ParseFiles("templates/base.html", pageTemplateFile)
 
-}
-
-func RenderPage(pageTemplateFile string, innerContent string) string {
-	var doc bytes.Buffer
-	t, _ := template.ParseFiles(pageTemplateFile)
-
-	err := t.Execute(&doc, innerContent)
+	err := t.Execute(&doc, books)
 	if err != nil {
 		panic(err)
 	}

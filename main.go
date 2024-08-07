@@ -29,7 +29,7 @@ func main() {
 		allBooks = append(allBooks, books...)
 	}
 
-	byAuthor := pages.RenderPage("templates/index.html", pages.RenderList(pages.BooksByAuthor(allBooks)))
+	byAuthor := pages.RenderPage("templates/by_author.html", pages.BooksByAuthor(allBooks))
 	err := os.WriteFile("books_by_author.html", []byte(byAuthor), 0644)
 	check(err)
 }
