@@ -1,5 +1,26 @@
  {{define "title"}}Groupped by Author{{end}} 
  {{define "body"}}
+ 
+ <div class="heading">
+ 
+ <div class="heading-item">
+ Authors Index
+ </div>
+ 
+ <div class="heading-item">
+Rating
+ </div>
+ 
+ <div class="heading-item">
+ Year Published
+ </div>
+ 
+ <div class="heading-item">
+ Title</div>
+ 
+ 
+ 
+ </div>
  {{if eq (len .) 0}}
  Nothing to see here
  {{end}}
@@ -9,12 +30,13 @@
   
  <div class="book-title">
  	{{.MainTitle}} 
-</div>
+
   {{if eq (len .Title) 2}}
 	<div class="book-subtitle">
 		{{.SubTitle}}
 	</div>
 {{end}}
+</div>
 	
 <div class="book-author">
 {{.Author}}
