@@ -1,50 +1,60 @@
  {{define "title"}}Groupped by Author{{end}} 
  {{define "body"}}
  
- <div class="heading">
+ <div class="top-menu">
  
- <div class="heading-item">
+ <div class="menu-item">
  Authors Index
  </div>
  
- <div class="heading-item">
+ <div class="menu-item">
 Rating
  </div>
  
- <div class="heading-item">
+ <div class="menu-item">
  Year Published
  </div>
  
- <div class="heading-item">
- Title</div>
- 
- 
+ <div class="menu-item">
+ Title
+ </div>
  
  </div>
+ 
  {{if eq (len .) 0}}
  Nothing to see here
  {{end}}
+ <div class="content-container">
+
  <div class="book-list">
  {{range .}}
  <div class="book-item">
-  
- <div class="book-title">
- 	{{.MainTitle}} 
-
-  {{if eq (len .Title) 2}}
-	<div class="book-subtitle">
-		{{.SubTitle}}
-	</div>
-{{end}}
-</div>
-	
-<div class="book-author">
-{{.Author}}
-</div>
-
+ 
+ <div class="small-cover-image">
+	(cover here)
  </div>
  
+ <div> 
+	<div class="citation book-title">
+ 	<h3>{{.MainTitle}} </h3>
+	</div>
+	{{if eq (len .Title) 2}}
+		<div class="citation book-subtitle">
+			<h4>{{.SubTitle}}</h4>
+		</div>
+	
+	{{end}}
+ 
+
+	<div class="citation book-author">
+	 <h4> {{.Author}} </h4>
+	</div>
+</div>
+	
+ </div> 
  {{end}}
+ </div>
+ 
  </div>
  
  {{end}}
