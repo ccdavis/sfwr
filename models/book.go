@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
 	"os"
 	"strings"
 	"time"
@@ -14,6 +15,10 @@ import (
 const Missing int64 = -999998
 
 type BooksByAuthor map[string][]Book
+
+const SmallCover = "S"
+const MediumCover = "M"
+const LargeCover = "L"
 
 type Rating struct {
 	slug string
@@ -76,6 +81,51 @@ func (b Book) FormatTitle() string {
 	return title
 }
 
+func (b Book) MakeLinkedSmallCoverImageTag() template.HTML {
+	return b.makeLinkedImageTag(SmallCover)
+}
+
+func (b Book) MakeLinkedMediumCoverImageTag() template.HTML {
+	return b.makeLinkedImageTag(MediumCover)
+}
+
+func (b Book) makeLinkedImageTag(size string) template.HTML {
+	imageTag := b.makeImageTagForCover(size)
+	olUrl := b.makeOpenLibraryUrl()
+	linkTag := fmt.Sprintf("<a href=\"%s\"> %s </a>", olUrl, imageTag)
+	return template.HTML(linkTag)
+}
+
+func (b Book) makeCoverImageUrl(size string) string {
+	if Missing != b.OlCoverId {
+		url := fmt.Sprintf("http://covers.openlibrary.org/b/id/%d-%s.jpg", b.OlCoverId, size)
+		return url
+	} else {
+		return ""
+	}
+}
+
+func makeCoverImageUrlForIsbn(isbn string, size string) string {
+	url := fmt.Sprintf("http://covers.openlibrary.org/b/isbn/%s-%s.jpg", isbn, size)
+	return url
+}
+
+func (b Book) makeImageTagForCover(size string) template.HTML {
+	link := b.makeCoverImageUrl(size)
+	label := "Cover"
+	tag := fmt.Sprintf("<img src=\"%s\" alt=\"%s\" />", link, label)
+	return template.HTML(tag)
+}
+
+func (b Book) makeOpenLibraryUrl() string {
+	if b.OlCoverEditionId != "" {
+		return fmt.Sprintf("http://openlibrary.org/olid/%s", b.OlCoverEditionId)
+	} else {
+		//TODO  get an isbn
+		return ""
+	}
+}
+
 // This might need to get more sophisticated
 func extractSurname(fullName string) string {
 	names := strings.Split(fullName, " ")
@@ -136,6 +186,11 @@ func FromRawBook(book load.RawBook) Book {
 		OlCoverId:        olCoverId,
 		OlAuthorId:       book.OlAuthorId,
 		OlCoverEditionId: book.OlCoverEditionId,
+	}
+	if newBook.OlCoverEditionId != "" {
+		fmt.Println("CCC", " ", newBook.MainTitle, "  cover edition:", newBook.OlCoverEditionId)
+	} else {
+		fmt.Println("MMM ", " MIssing cover edition id: ", newBook.MainTitle)
 	}
 	return newBook
 }

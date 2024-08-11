@@ -13,14 +13,14 @@ type RawBook struct {
 	Title            []string
 	Review           string
 	Rating           string
-	AmazonLink       string
-	CoverImage       string
-	OpenLibrary      string
+	AmazonLink       string `json:"amazon_link"`
+	CoverImage       string `json:"cover_image"`
+	OpenLibrary      string `json:"open_library"`
 	Isfdb            string
 	Isbn             []string
 	OlCoverId        json.Number `json:"ol_cover_id"`
-	OlAuthorId       []string
-	OlCoverEditionId string
+	OlAuthorId       []string    `json:"ol_author_id"`
+	OlCoverEditionId string      `json:"ol_cover_edition_id"`
 }
 
 func (b RawBook) Print() {
