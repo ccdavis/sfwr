@@ -37,7 +37,7 @@ var (
 	NotGood     = Rating{"Not-Good"}
 )
 
-func stringToRating(s string) (Rating, error) {
+func StringToRating(s string) (Rating, error) {
 	switch s {
 	case VeryGood.slug:
 		return VeryGood, nil
@@ -74,9 +74,9 @@ type Book struct {
 }
 
 func (b Book) FormatTitle() string {
-	title := b.Title[0]
+	title := b.MainTitle
 	if len(b.Title) > 1 {
-		title += ": " + b.Title[1]
+		title += ": " + b.SubTitle
 	}
 	return title
 }
@@ -96,7 +96,7 @@ func (b Book) makeLinkedImageTag(size string) template.HTML {
 	return template.HTML(linkTag)
 }
 
-func (b Book) makeCoverImageUrl(size string) string {
+func (b Book) MakeCoverImageUrl(size string) string {
 	if Missing != b.OlCoverId {
 		url := fmt.Sprintf("http://covers.openlibrary.org/b/id/%d-%s.jpg", b.OlCoverId, size)
 		return url
@@ -105,13 +105,13 @@ func (b Book) makeCoverImageUrl(size string) string {
 	}
 }
 
-func makeCoverImageUrlForIsbn(isbn string, size string) string {
+func MakeCoverImageUrlForIsbn(isbn string, size string) string {
 	url := fmt.Sprintf("http://covers.openlibrary.org/b/isbn/%s-%s.jpg", isbn, size)
 	return url
 }
 
 func (b Book) makeImageTagForCover(size string) template.HTML {
-	link := b.makeCoverImageUrl(size)
+	link := b.MakeCoverImageUrl(size)
 	label := "Cover"
 	tag := fmt.Sprintf("<img src=\"%s\" alt=\"%s\" />", link, label)
 	return template.HTML(tag)
@@ -149,7 +149,7 @@ func FromRawBook(book load.RawBook) Book {
 	}
 	dateAdded := time.Now()
 	surname := extractSurname(book.Author)
-	rating, err := stringToRating(book.Rating)
+	rating, err := StringToRating(book.Rating)
 	exitOnError("Error extracting author's surname.", err)
 
 	var subTitle = ""
@@ -187,11 +187,7 @@ func FromRawBook(book load.RawBook) Book {
 		OlAuthorId:       book.OlAuthorId,
 		OlCoverEditionId: book.OlCoverEditionId,
 	}
-	if newBook.OlCoverEditionId != "" {
-		fmt.Println("CCC", " ", newBook.MainTitle, "  cover edition:", newBook.OlCoverEditionId)
-	} else {
-		fmt.Println("MMM ", " MIssing cover edition id: ", newBook.MainTitle)
-	}
+
 	return newBook
 }
 
