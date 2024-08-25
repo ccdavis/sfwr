@@ -17,7 +17,8 @@ func check(e error) {
 
 func main() {
 	bookFilePtr := flag.String("load-books", "book_database.json", "A JSON file of book data")
-
+	var saveImagesFlag bool
+	flag.BoolVar(&saveImagesFlag, "getimages", false, "Save small, medium, and large cover images for all books with OLIDs.")
 	flag.Parse()
 	bookFile := *bookFilePtr
 
@@ -29,7 +30,13 @@ func main() {
 		allBooks = append(allBooks, books...)
 	}
 
-	byAuthor := pages.RenderBookListPage("templates/by_author.html", pages.BooksByAuthor(allBooks))
-	err := os.WriteFile("books_by_author.html", []byte(byAuthor), 0644)
-	check(err)
+	if saveImagesFlag {
+		fmt.Println("Saving cover images...")
+		models.CaptureCoverImages(allBooks, "./cover_images")
+	} else {
+		fmt.Println("Generate static pages...")
+		byAuthor := pages.RenderBookListPage("templates/by_author.html", pages.BooksByAuthor(allBooks))
+		err := os.WriteFile("books_by_author.html", []byte(byAuthor), 0644)
+		check(err)
+	}
 }
