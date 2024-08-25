@@ -32,7 +32,7 @@ func main() {
 
 	if saveImagesFlag {
 		fmt.Println("Saving cover images...")
-		models.CaptureCoverImages(allBooks, "./cover_images")
+		models.CaptureCoverImages(allBooks, models.ImageDir)
 	} else {
 		fmt.Println("Generate static pages...")
 		byAuthor := pages.RenderBookListPage("templates/by_author.html", pages.BooksByAuthor(allBooks))

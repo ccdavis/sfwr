@@ -7,7 +7,6 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -32,10 +31,9 @@ func saveCoverImage(filename string, imageurl string) error {
 }
 
 func captureCoverImage(b Book, outputDir string, size string) {
-	filename := fmt.Sprint(b.OlCoverId, "_", size)
-	fullpath := filepath.Join(outputDir, filename)
+	imageFile := b.MakeCoverImageFilename(outputDir, size)
 	url := b.MakeCoverImageUrl(size)
-	err := saveCoverImage(fullpath, url)
+	err := saveCoverImage(imageFile, url)
 	if err != nil {
 		log.Print("ERROR retrieving or saving image with id ", b.OlAuthorId)
 		log.Print("for book: ", b.FormatTitle())

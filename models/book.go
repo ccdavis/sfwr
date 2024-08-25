@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path"
 	"strings"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 )
 
 const Missing int64 = -999998
+const ImageDir string = "cover_images"
 
 type BooksByAuthor map[string][]Book
 
@@ -68,9 +70,9 @@ type Book struct {
 	OpenLibraryUrl   string
 	IsfdbUrl         string
 	Isbn             []string
-	OlCoverId        int64
+	OlCoverId        int64 // Used as the base ID for the image (add suffix -M, -S, -L for sizing.)
 	OlAuthorId       []string
-	OlCoverEditionId string
+	OlCoverEditionId string // Used to pull up an entry based on a cover
 }
 
 func (b Book) FormatTitle() string {
@@ -105,13 +107,18 @@ func (b Book) MakeCoverImageUrl(size string) string {
 	}
 }
 
+func (b Book) MakeCoverImageFilename(imageDir string, size string) string {
+	filename := fmt.Sprintf("%d-%s.jpg", b.OlCoverId, size)
+	return path.Join(imageDir, filename)
+}
+
 func MakeCoverImageUrlForIsbn(isbn string, size string) string {
 	url := fmt.Sprintf("http://covers.openlibrary.org/b/isbn/%s-%s.jpg", isbn, size)
 	return url
 }
 
 func (b Book) makeImageTagForCover(size string) template.HTML {
-	link := b.MakeCoverImageUrl(size)
+	link := b.MakeCoverImageFilename(ImageDir, size)
 	label := "Cover"
 	tag := fmt.Sprintf("<img src=\"%s\" alt=\"%s\" />", link, label)
 	return template.HTML(tag)
