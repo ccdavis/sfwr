@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+const Verbose bool = false
+
 type RawBook struct {
 	PubDate          json.Number `json:"pub_date"`
 	Author           string
@@ -42,7 +44,7 @@ type BookMap map[string][]RawBook
 
 func loadBooks(bookDatabase string) BookMap {
 	json_file, file_err := os.Open(bookDatabase)
-	check("Error opening book database file.", file_err)
+	check("Error opening JSON book database file.", file_err)
 
 	defer json_file.Close()
 	byteValue, _ := io.ReadAll(json_file)
@@ -55,17 +57,18 @@ func loadBooks(bookDatabase string) BookMap {
 
 func DumpMarshalledBookData(bookData BookMap) {
 	for author, books := range bookData {
-		fmt.Println()
-		fmt.Println("-------  " + author + " -------")
-		for _, book := range books {
-			book.Print()
+		if Verbose {
+			fmt.Println()
+			fmt.Println("-------  " + author + " -------")
+
+			for _, book := range books {
+				book.Print()
+			}
 		}
 	}
 }
 
 func MarshalledBookDataFromJsonFile(bookFile string) BookMap {
-	message := "Loading books JSON..."
-	fmt.Println(message)
 	bookData := loadBooks(bookFile)
 	// TODO Do some checking on the data
 	return bookData
@@ -76,5 +79,4 @@ func check(msg string, err error) {
 		fmt.Fprintln(os.Stderr, "\n", msg)
 		panic(err)
 	}
-
 }

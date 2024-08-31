@@ -35,7 +35,7 @@ func captureCoverImage(b Book, outputDir string, size string) {
 	url := b.MakeCoverImageUrl(size)
 	err := saveCoverImage(imageFile, url)
 	if err != nil {
-		log.Print("ERROR retrieving or saving image with id ", b.OlAuthorId)
+		log.Print("ERROR retrieving or saving image with id ", b.OlCoverId)
 		log.Print("for book: ", b.FormatTitle())
 		log.Print("The error was ", err)
 	}

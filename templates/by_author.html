@@ -38,14 +38,13 @@ Rating
 	<div class="citation book-title">
  	<h3>{{.MainTitle}} </h3>
 	</div>
-	{{if eq (len .Title) 2}}
+	{{if gt (len .SubTitle) 0}}
 		<div class="citation book-subtitle">
 			<h4>{{.SubTitle}}</h4>
 		</div>
 	
 	{{end}}
  
-
 	<div class="citation book-author">
 	 <h4> {{.Author}} </h4> 
 	</div>

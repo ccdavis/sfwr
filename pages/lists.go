@@ -2,7 +2,10 @@ package pages
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
+	"log"
+	"os"
 	"sort"
 
 	"github.com/ccdavis/sfwr/models"
@@ -42,9 +45,11 @@ func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
 	t, _ := template.ParseFiles("templates/base.html", pageTemplateFile)
 
+	fmt.Println("Attempt to parse template: ", pageTemplateFile)
 	err := t.Execute(&doc, books)
 	if err != nil {
-		panic(err)
+		log.Fatal("Error parsing book list template: %w", err)
+		os.Exit(1)
 	}
 	return doc.String()
 }
