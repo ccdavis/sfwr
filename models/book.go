@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/flytam/filenamify"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
@@ -18,7 +19,7 @@ import (
 )
 
 const Missing int64 = -999998
-const ImageDir string = "cover_images"
+const ImageDir string = "images/cover_images"
 const Verbose bool = false
 
 type BooksByAuthor map[string][]Book
@@ -73,42 +74,59 @@ func StringToRating(s string) (Rating, error) {
 	return Unknown, errors.New("unknown rating: " + s)
 }
 
-type BookAuthor struct {
+type OpenLibraryBookAuthor struct {
 	gorm.Model
 	BookId     uint
 	OlAuthorId string
 }
 
-type BookIsbn struct {
+type OpenLibraryBookIsbn struct {
 	gorm.Model
 	BookId uint
 	Isbn   string
 }
 
+type Author struct {
+	gorm.Model
+	FullName string
+	Surname  string
+	Books    []Book `gorm:"many2many:book_authors;"`
+}
+
 type Book struct {
 	gorm.Model
-	ID               uint
-	PubDate          int64
-	DateAdded        time.Time
-	Author           string
-	AuthorSurname    string
-	MainTitle        string
-	SubTitle         string
-	Review           string
-	Rating           Rating
-	AmazonLink       string
-	CoverImageUrl    string
-	OpenLibraryUrl   string
-	IsfdbUrl         string
-	BookIsbns        []BookIsbn
-	OlCoverId        int64 // Used as the base ID for the image (add suffix -M, -S, -L for sizing.)
-	BookAuthors      []BookAuthor
-	OlCoverEditionId string // Used to pull up an entry based on a cover
+	ID                     uint
+	PubDate                int64
+	DateAdded              time.Time
+	AuthorFullName         string
+	AuthorSurname          string
+	MainTitle              string
+	SubTitle               string
+	Review                 string
+	Rating                 Rating
+	AmazonLink             string
+	CoverImageUrl          string
+	OpenLibraryUrl         string
+	IsfdbUrl               string
+	OpenLibraryBookIsbns   []OpenLibraryBookIsbn
+	OlCoverId              int64 // Used as the base ID for the image (add suffix -M, -S, -L for sizing.)
+	OpenLibraryBookAuthors []OpenLibraryBookAuthor
+	OlCoverEditionId       string   // Used to pull up an entry based on a cover
+	Authors                []Author `gorm:"many2many:book_authors;"`
 }
 
 func (b Book) Create(db *gorm.DB) (uint, error) {
 	result := db.Create(&b)
 	return b.ID, result.Error
+}
+
+func (b Book) SiteFileName() string {
+	name, err := filenamify.Filenamify(fmt.Sprint(b.ID, "_", b.AuthorFullName, b.MainTitle), filenamify.Options{})
+	if err != nil {
+		exitOnError(fmt.Sprint("Can't convert book ", b.MainTitle, " using filenamify."), err)
+	}
+	return name
+
 }
 
 func (b Book) FormatTitle() string {
@@ -148,7 +166,7 @@ func (b Book) MakeCoverImageFilename(imageDir string, size string) string {
 	return path.Join(imageDir, filename)
 }
 
-func MakeCoverImageUrlForIsbn(isbn string, size string) string {
+func makeCoverImageUrlForIsbn(isbn string, size string) string {
 	url := fmt.Sprintf("http://covers.openlibrary.org/b/isbn/%s-%s.jpg", isbn, size)
 	return url
 }
@@ -181,7 +199,18 @@ func extractSurname(fullName string) string {
 	}
 }
 
-func FromRawBook(book load.RawBook) Book {
+func fromRawAuthor(authorFullName string) Author {
+	surname := extractSurname(authorFullName)
+	return Author{
+		FullName: authorFullName,
+		Surname:  surname,
+	}
+}
+
+func fromRawBook(book load.RawBook, author Author) Book {
+	var authorObjects []Author
+	authorObjects = append(authorObjects, author)
+
 	year_published, err := book.PubDate.Int64()
 	if err != nil {
 		if Verbose {
@@ -218,59 +247,62 @@ func FromRawBook(book load.RawBook) Book {
 		olCoverId = Missing
 	}
 
-	var isbns []BookIsbn
+	var olIsbns []OpenLibraryBookIsbn
 	for _, i := range book.Isbn {
-		newIsbn := BookIsbn{Isbn: i}
-		isbns = append(isbns, newIsbn)
+		newIsbn := OpenLibraryBookIsbn{Isbn: i}
+		olIsbns = append(olIsbns, newIsbn)
 	}
 
-	var authors []BookAuthor
+	var olAuthors []OpenLibraryBookAuthor
 	for _, a := range book.OlAuthorId {
-		newAuthor := BookAuthor{OlAuthorId: a}
-		authors = append(authors, newAuthor)
+		newAuthor := OpenLibraryBookAuthor{OlAuthorId: a}
+		olAuthors = append(olAuthors, newAuthor)
 	}
 
 	newBook := Book{
-		PubDate:          year_published,
-		DateAdded:        dateAdded,
-		Author:           book.Author,
-		AuthorSurname:    surname,
-		MainTitle:        book.Title[0],
-		SubTitle:         subTitle,
-		Review:           book.Review,
-		Rating:           rating,
-		AmazonLink:       book.AmazonLink,
-		CoverImageUrl:    book.CoverImage,
-		OpenLibraryUrl:   book.OpenLibrary,
-		IsfdbUrl:         book.Isfdb,
-		BookIsbns:        isbns,
-		OlCoverId:        olCoverId,
-		BookAuthors:      authors,
-		OlCoverEditionId: book.OlCoverEditionId,
+		PubDate:                year_published,
+		DateAdded:              dateAdded,
+		AuthorFullName:         book.Author,
+		AuthorSurname:          surname,
+		MainTitle:              book.Title[0],
+		SubTitle:               subTitle,
+		Review:                 book.Review,
+		Rating:                 rating,
+		AmazonLink:             book.AmazonLink,
+		CoverImageUrl:          book.CoverImage,
+		OpenLibraryUrl:         book.OpenLibrary,
+		IsfdbUrl:               book.Isfdb,
+		OpenLibraryBookIsbns:   olIsbns,
+		OlCoverId:              olCoverId,
+		OpenLibraryBookAuthors: olAuthors,
+		OlCoverEditionId:       book.OlCoverEditionId,
+		Authors:                authorObjects,
 	}
 
 	return newBook
-}
-
-func CreateBooksDatabase(databaseName string) *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(databaseName), &gorm.Config{})
-	exitOnError("can't connect to Sqlite database.", err)
-	e := db.AutoMigrate(&Book{}, &BookAuthor{}, &BookIsbn{})
-	exitOnError("error running migrations: ", e)
-	return db
 }
 
 func AllBooksFromJson(bookFile string) BooksByAuthor {
 	ret := make(BooksByAuthor)
 	loadedBooks := load.MarshalledBookDataFromJsonFile(bookFile)
 	for author, rawBooks := range loadedBooks {
+		authorObject := fromRawAuthor(author)
+		fmt.Println("Loading books for author ", author)
 		parsedBooks := make([]Book, 0)
 		for _, rawBook := range rawBooks {
-			parsedBooks = append(parsedBooks, FromRawBook(rawBook))
+			parsedBooks = append(parsedBooks, fromRawBook(rawBook, authorObject))
 		}
 		ret[author] = parsedBooks
 	}
 	return ret
+}
+
+func CreateBooksDatabase(databaseName string) *gorm.DB {
+	db, err := gorm.Open(sqlite.Open(databaseName), &gorm.Config{})
+	exitOnError("can't connect to Sqlite database.", err)
+	e := db.AutoMigrate(&Book{}, &Author{}, &OpenLibraryBookAuthor{}, &OpenLibraryBookIsbn{})
+	exitOnError("error running migrations: ", e)
+	return db
 }
 
 func exitOnError(msg string, err error) {

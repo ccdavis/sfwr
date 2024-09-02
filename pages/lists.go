@@ -41,6 +41,20 @@ func BooksWithRating(books []models.Book, rating models.Rating) (ret []models.Bo
 	return
 }
 
+func RenderAuthorIndexPage(authors []models.Author) string {
+	return ""
+
+}
+
+func RenderAuthorPage(author string, books []models.Book) string {
+	return ""
+
+}
+
+func RenderBookPage(book models.Book) string {
+	return ""
+}
+
 func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
 	t, _ := template.ParseFiles("templates/base.html", pageTemplateFile)
