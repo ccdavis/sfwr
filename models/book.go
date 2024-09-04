@@ -86,16 +86,8 @@ type OpenLibraryBookIsbn struct {
 	Isbn   string
 }
 
-type Author struct {
-	gorm.Model
-	FullName string
-	Surname  string
-	Books    []Book `gorm:"many2many:book_authors;"`
-}
-
 type Book struct {
 	gorm.Model
-	ID                     uint
 	PubDate                int64
 	DateAdded              time.Time
 	AuthorFullName         string
@@ -113,6 +105,13 @@ type Book struct {
 	OpenLibraryBookAuthors []OpenLibraryBookAuthor
 	OlCoverEditionId       string   // Used to pull up an entry based on a cover
 	Authors                []Author `gorm:"many2many:book_authors;"`
+}
+
+type Author struct {
+	gorm.Model
+	FullName string
+	Surname  string
+	Books    []Book `gorm:"many2many:book_authors;"`
 }
 
 func (b Book) Create(db *gorm.DB) (uint, error) {
@@ -201,15 +200,15 @@ func extractSurname(fullName string) string {
 
 func fromRawAuthor(authorFullName string) Author {
 	surname := extractSurname(authorFullName)
-	return Author{
+	newAuthor := Author{
 		FullName: authorFullName,
 		Surname:  surname,
 	}
+	return newAuthor
 }
 
-func fromRawBook(book load.RawBook, author Author) Book {
+func fromRawBook(book load.RawBook) Book {
 	var authorObjects []Author
-	authorObjects = append(authorObjects, author)
 
 	year_published, err := book.PubDate.Int64()
 	if err != nil {
@@ -286,15 +285,44 @@ func AllBooksFromJson(bookFile string) BooksByAuthor {
 	ret := make(BooksByAuthor)
 	loadedBooks := load.MarshalledBookDataFromJsonFile(bookFile)
 	for author, rawBooks := range loadedBooks {
-		authorObject := fromRawAuthor(author)
 		fmt.Println("Loading books for author ", author)
+
 		parsedBooks := make([]Book, 0)
 		for _, rawBook := range rawBooks {
-			parsedBooks = append(parsedBooks, fromRawBook(rawBook, authorObject))
+			parsedBooks = append(parsedBooks, fromRawBook(rawBook))
 		}
 		ret[author] = parsedBooks
 	}
 	return ret
+}
+
+func TransferJsonBooksToDatabase(jsonFileName string, db *gorm.DB) error {
+	parsedBookData := AllBooksFromJson(jsonFileName)
+	for a, books := range parsedBookData {
+		if Verbose {
+			fmt.Println("Save books by ", a)
+		}
+		// Right now all books have a single author but that should not be
+		// the way we model it.
+		author := fromRawAuthor(a)
+		result := db.Create(&author)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		var authorObjects []Author
+		authorObjects = append(authorObjects, author)
+
+		for _, b := range books {
+			b.Authors = authorObjects
+			result := db.Create(&b)
+			if result.Error != nil {
+				return result.Error
+			}
+
+		}
+	}
+	return nil
 }
 
 func CreateBooksDatabase(databaseName string) *gorm.DB {

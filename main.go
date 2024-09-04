@@ -66,17 +66,7 @@ func main() {
 	if *databaseNamePtr != "" {
 		var db *gorm.DB = models.CreateBooksDatabase(*databaseNamePtr)
 		fmt.Println("Created new database.")
-		allBooks, _ := readBooksJson(bookFile)
-		for _, b := range allBooks {
-			id, err := b.Create(db)
-			if err != nil {
-				log.Fatal("Error saving book %w", err)
-			} else {
-				if Verbose {
-					fmt.Println("Created book ", id)
-				}
-			}
-		}
+		check(models.TransferJsonBooksToDatabase(bookFile, db))
 		fmt.Println("Saved all books to database.")
 	}
 
