@@ -187,7 +187,7 @@ func (b Book) makeOpenLibraryUrl() string {
 }
 
 // This might need to get more sophisticated
-func extractSurname(fullName string) string {
+func ExtractSurname(fullName string) string {
 	names := strings.Split(fullName, " ")
 	if len(names) < 2 {
 		fmt.Fprintln(os.Stderr, "WARNING: Can't determine author's surname for full name: ", fullName)
@@ -199,7 +199,7 @@ func extractSurname(fullName string) string {
 }
 
 func fromRawAuthor(authorFullName string) Author {
-	surname := extractSurname(authorFullName)
+	surname := ExtractSurname(authorFullName)
 	newAuthor := Author{
 		FullName: authorFullName,
 		Surname:  surname,
@@ -224,7 +224,7 @@ func fromRawBook(book load.RawBook) Book {
 		year_published = Missing
 	}
 	dateAdded := time.Now()
-	surname := extractSurname(book.Author)
+	surname := ExtractSurname(book.Author)
 	rating, err := StringToRating(book.Rating)
 	exitOnError("Error extracting author's surname.", err)
 
