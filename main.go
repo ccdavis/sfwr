@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/ccdavis/sfwr/models"
@@ -57,18 +58,13 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 
 func takeLabeledNumberInput(label string, def int64) (int64, error) {
 	var choice int64
-	var err error
-	finished := false
-	for err != nil || !finished {
-		fmt.Print(label, " : ")
-		_, err = fmt.Scanf("%d", &choice)
-		if err != nil {
-			fmt.Println("Choice must be a valid number: ", err)
-			continue
-		} else {
-			finished = true
-		}
+	userInput, err := takeLabeledInput(label, "")
+	if len(userInput) == 0 {
+		choice = def
+	} else {
+		choice, err = strconv.ParseInt(userInput, 10, 64)
 	}
+
 	return choice, err
 }
 
@@ -89,8 +85,27 @@ func takeLabeledInput(label string, def string) (string, error) {
 func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
 	var newBook models.Book
 	var err error
-	fmt.Println("\nAdd New Book --------------------")
+	fmt.Println("\nAdd New Book by ", author.FullName, "--------------------")
 	fmt.Println()
+	/*
+		db.Model(&author).Association("Books")
+		dbError := db.Model(&author).Association("Books").Error
+		if dbError != nil {
+			return dbError
+		}
+	*/
+	//var authorBooks []models.Book
+	//db.Model(&author).Association("Books").Find(&authorBooks)
+	if len(author.Books) == 0 {
+		fmt.Println("Currently this database contains no books by this author.")
+	} else {
+		fmt.Println("Books by ", author.FullName, " currently in the database:")
+		for index, b := range author.Books {
+			fmt.Println(index, ".  ", b.PubDate, ": ", b.FormatTitle())
+		}
+		fmt.Println()
+	}
+
 	finished := false
 	for !finished {
 		newBook.MainTitle, err = takeLabeledInput("Enter main title", newBook.MainTitle)
@@ -146,7 +161,6 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
 			newBook.Rating = rating
 		}
 
-		newBook.Authors = append(newBook.Authors, author)
 		newBook.AuthorFullName = author.FullName
 		newBook.AuthorSurname = author.Surname
 		newBook.DateAdded = time.Now()
@@ -181,14 +195,24 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
 		if err != nil {
 			return err
 		}
-		if "n" == response {
+		if response == "n" {
 			fmt.Println("Ok, not adding book. Try entering a new one.")
 			continue
 		}
 		finished = true
 	}
+
 	result := db.Create(&newBook)
-	return result.Error
+	if result.Error != nil {
+		return result.Error
+	}
+	db.Model(&newBook).Association("Authors").Append(&author)
+	dbError := db.Model(&author).Association("Books").Error
+	if dbError != nil {
+		fmt.Println("Error adding author to book!", dbError)
+	}
+
+	return dbError
 }
 
 func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
@@ -228,8 +252,9 @@ func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
 				} else {
 					err = nil
 				}
-				result = db.Find(&authorToUse, chosenId)
-				return authorToUse, result.Error
+				err := db.Preload("Books").Find(&authorToUse, chosenId).Error
+				//result = db.Find(&authorToUse, chosenId)
+				return authorToUse, err
 			} else {
 				// Create new author record
 				authorToUse = models.Author{
