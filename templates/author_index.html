@@ -1,0 +1,55 @@
+{{define "title"}}All Authors{{end}} 
+{{define "body"}}
+
+<div class="top-menu">
+
+<div class="menu-item">
+Authors Index
+</div>
+
+<div class="menu-item">
+Rating
+</div>
+
+<div class="menu-item">
+Year Published
+</div>
+
+<div class="menu-item">
+Title
+</div>
+
+</div>
+
+{{if eq (len .) 0}}
+Nothing to see here
+{{end}}
+<div class="content-container">
+
+<div class="author-index">
+    
+{{range . }}
+<br/>
+	
+    <h1> {{ slice (index . 0).Surname 0 1 }} </h1>
+        
+
+	{{range . }}
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/{{.ID}}.html"> {{.FullName}}</a>   ({{ len .Books}})
+       </div>
+   </li>
+   {{end}}
+   
+
+   </ol>
+   
+   {{end}}
+
+</div>
+   
+</div> 
+{{end}}

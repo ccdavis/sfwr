@@ -47,13 +47,13 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 	byAuthor := pages.RenderBookListPage("templates/by_author.html", pages.BooksByAuthor(books))
 	check(os.WriteFile(path.Join(outputDir, "books_by_author.html"), []byte(byAuthor), 0644))
 
-	authorIndex := pages.RenderAuthorIndexPage(authors)
+	authorIndex := pages.RenderAuthorIndexPage("templates/author_index.html", authors)
 	check(os.WriteFile(path.Join(outputDir, "author_index.html"), []byte(authorIndex), 0644))
 
-	for _, b := range books {
-		bookPage := pages.RenderBookPage(b)
-		check(os.WriteFile(path.Join(outputDir, "books", b.SiteFileName()), []byte(bookPage), 0644))
-	}
+	//for _, b := range books {
+	//bookPage := pages.RenderBookPage("templates/book.html", b)
+	//check(os.WriteFile(path.Join(outputDir, "books", b.SiteFileName()), []byte(bookPage), 0644))
+	//}
 }
 
 func takeLabeledNumberInput(label string, def int64) (int64, error) {
@@ -253,7 +253,6 @@ func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
 					err = nil
 				}
 				err := db.Preload("Books").Find(&authorToUse, chosenId).Error
-				//result = db.Find(&authorToUse, chosenId)
 				return authorToUse, err
 			} else {
 				// Create new author record
@@ -305,7 +304,7 @@ func mainMenuTui(db *gorm.DB) {
 
 func loadAllBooks(db *gorm.DB) []models.Book {
 	var allBooks []models.Book
-	result := db.Find(&allBooks)
+	result := db.Preload("Authors").Find(&allBooks)
 	if result.Error != nil {
 		log.Fatal("can't retrieve books from sfwr db: ", result.Error)
 	} else {
@@ -350,7 +349,7 @@ func main() {
 	if generateSiteFlag {
 		allBooks := loadAllBooks(db)
 		var authors []models.Author
-		result := db.Find(&authors)
+		result := db.Preload("Books").Find(&authors)
 		if result.Error != nil {
 			log.Fatal("can't retrieve authors from sfwr db: ", result.Error)
 		} else {
