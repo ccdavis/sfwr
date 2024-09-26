@@ -100,10 +100,13 @@ func RenderAuthorPage(authorTemplateFile string, author models.Author) string {
 
 func RenderBookPage(bookTemplateFile string, book models.Book) string {
 	var doc bytes.Buffer
-	t, _ := template.ParseFiles("templates/base.html", bookTemplateFile)
+	t, parseErr := template.ParseFiles("templates/base.html", bookTemplateFile)
+	if parseErr != nil {
+		log.Fatal("Error parsing book page template: %w", parseErr)
+	}
 	err := t.Execute(&doc, book)
 	if err != nil {
-		log.Fatal("Error parsing book page template: %w", err)
+		log.Fatal("Error  rendering book page template: %w", err)
 		os.Exit(1)
 	}
 	return doc.String()
@@ -111,7 +114,10 @@ func RenderBookPage(bookTemplateFile string, book models.Book) string {
 
 func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
-	t, _ := template.ParseFiles("templates/base.html", pageTemplateFile)
+	t, parseErr := template.ParseFiles("templates/base.html", pageTemplateFile)
+	if parseErr != nil {
+		log.Fatal("Error parsing book list page template: %w", parseErr)
+	}
 
 	fmt.Println("Attempt to parse template: ", pageTemplateFile)
 	err := t.Execute(&doc, books)

@@ -50,10 +50,16 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 	authorIndex := pages.RenderAuthorIndexPage("templates/author_index.html", authors)
 	check(os.WriteFile(path.Join(outputDir, "author_index.html"), []byte(authorIndex), 0644))
 
-	//for _, b := range books {
-	//bookPage := pages.RenderBookPage("templates/book.html", b)
-	//check(os.WriteFile(path.Join(outputDir, "books", b.SiteFileName()), []byte(bookPage), 0644))
-	//}
+	for _, b := range books {
+		fmt.Println("Make page for ", b.AuthorFullName, ": ", b.FormatTitle())
+
+		bookPage := pages.RenderBookPage("templates/book.html", b)
+		err = os.MkdirAll(path.Join(outputDir, "books"), 0775)
+		if err != nil {
+			log.Fatal("Can't create output directory for generated site: ", outputDir)
+		}
+		check(os.WriteFile(path.Join(outputDir, "books", b.SiteFileName()), []byte(bookPage), 0644))
+	}
 }
 
 func takeLabeledNumberInput(label string, def int64) (int64, error) {

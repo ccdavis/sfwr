@@ -124,8 +124,7 @@ func (b Book) SiteFileName() string {
 	if err != nil {
 		exitOnError(fmt.Sprint("Can't convert book ", b.MainTitle, " using filenamify."), err)
 	}
-	return name
-
+	return strings.Replace(name, " ", "-", -1)
 }
 
 func (b Book) FormatTitle() string {
@@ -172,7 +171,7 @@ func makeCoverImageUrlForIsbn(isbn string, size string) string {
 
 func (b Book) makeImageTagForCover(size string) template.HTML {
 	link := b.MakeCoverImageFilename(ImageDir, size)
-	label := "Cover"
+	label := "Open Library"
 	tag := fmt.Sprintf("<img src=\"%s\" alt=\"%s\" />", link, label)
 	return template.HTML(tag)
 }
