@@ -47,6 +47,9 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 	byAuthor := pages.RenderBookListPage("templates/by_author.html", pages.BooksByAuthor(books))
 	check(os.WriteFile(path.Join(outputDir, "books_by_author.html"), []byte(byAuthor), 0644))
 
+	bookGrid := pages.RenderBookListPage("templates/book_boxes.html", pages.BooksByAuthor(books))
+	check(os.WriteFile(path.Join(outputDir, "book_boxes.html"), []byte(bookGrid), 0644))
+
 	authorIndex := pages.RenderAuthorIndexPage("templates/author_index.html", authors)
 	check(os.WriteFile(path.Join(outputDir, "author_index.html"), []byte(authorIndex), 0644))
 

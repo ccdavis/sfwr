@@ -112,6 +112,7 @@ func RenderBookPage(bookTemplateFile string, book models.Book) string {
 	return doc.String()
 }
 
+
 func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
 	t, parseErr := template.ParseFiles("templates/base.html", pageTemplateFile)
