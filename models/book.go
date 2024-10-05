@@ -124,7 +124,11 @@ func (b Book) SiteFileName() string {
 	if err != nil {
 		exitOnError(fmt.Sprint("Can't convert book ", b.MainTitle, " using filenamify."), err)
 	}
-	return strings.Replace(name, " ", "-", -1)
+	return fmt.Sprint(strings.Replace(name, " ", "-", -1), ".html")
+}
+
+func (b Book) BookPageLink() template.HTML {
+	return template.HTML(fmt.Sprint("<a href=\"books/", b.SiteFileName(), "\"> More </a>"))
 }
 
 func (b Book) FormatTitle() string {
@@ -147,6 +151,7 @@ func (b Book) makeLinkedImageTag(size string) template.HTML {
 	imageTag := b.makeImageTagForCover(size)
 	olUrl := b.makeOpenLibraryUrl()
 	linkTag := fmt.Sprintf("<a href=\"%s\"> %s </a>", olUrl, imageTag)
+	fmt.Println("rendering link tag: ", linkTag)
 	return template.HTML(linkTag)
 }
 
