@@ -49,8 +49,12 @@ func (r Rating) String() string {
 	return r.slug
 }
 
+func (r Rating) Display() string {
+	return strings.ReplaceAll(r.slug, "-", " ")
+}
+
 var (
-	Unknown     = Rating{""}
+	Unknown     = Rating{"Not Rated"}
 	VeryGood    = Rating{"Very-Good"}
 	Excellent   = Rating{"Excellent"}
 	Kindle      = Rating{"Kindle"}
@@ -95,7 +99,7 @@ type Book struct {
 	MainTitle              string
 	SubTitle               string
 	Review                 string
-	Rating                 Rating
+	Rating                 string
 	AmazonLink             string
 	CoverImageUrl          string
 	OpenLibraryUrl         string
@@ -117,6 +121,15 @@ type Author struct {
 func (b Book) Create(db *gorm.DB) (uint, error) {
 	result := db.Create(&b)
 	return b.ID, result.Error
+}
+
+func (b Book) DisplayRating() string {
+	r, err := StringToRating(b.Rating)
+	if err != nil {
+		return "Unknown rating"
+	} else {
+		return r.Display()
+	}
 }
 
 func (b Book) SiteFileName() string {
@@ -270,7 +283,7 @@ func fromRawBook(book load.RawBook) Book {
 		MainTitle:              book.Title[0],
 		SubTitle:               subTitle,
 		Review:                 book.Review,
-		Rating:                 rating,
+		Rating:                 rating.slug,
 		AmazonLink:             book.AmazonLink,
 		CoverImageUrl:          book.CoverImage,
 		OpenLibraryUrl:         book.OpenLibrary,

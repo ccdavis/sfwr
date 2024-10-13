@@ -55,6 +55,7 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 
 	for _, b := range books {
 		fmt.Println("Make page for ", b.AuthorFullName, ": ", b.FormatTitle())
+		fmt.Println("Rating ", b.Rating)
 
 		bookPage := pages.RenderBookPage("templates/book.html", b)
 		err = os.MkdirAll(path.Join(outputDir, "books"), 0775)
@@ -167,7 +168,7 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
 				fmt.Println("Please enter a rating between 1 and 5.")
 				continue
 			}
-			newBook.Rating = rating
+			newBook.Rating = rating.String()
 		}
 
 		newBook.AuthorFullName = author.FullName

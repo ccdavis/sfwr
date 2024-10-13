@@ -2,7 +2,6 @@ package pages
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -45,7 +44,7 @@ func BooksByAuthor(books []models.Book) []models.Book {
 
 func BooksWithRating(books []models.Book, rating models.Rating) (ret []models.Book) {
 	for _, b := range books {
-		if b.Rating == rating {
+		if b.Rating == rating.String() {
 			ret = append(ret, b)
 		}
 	}
@@ -112,7 +111,6 @@ func RenderBookPage(bookTemplateFile string, book models.Book) string {
 	return doc.String()
 }
 
-
 func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
 	t, parseErr := template.ParseFiles("templates/base.html", pageTemplateFile)
@@ -120,7 +118,6 @@ func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 		log.Fatal("Error parsing book list page template: %w", parseErr)
 	}
 
-	fmt.Println("Attempt to parse template: ", pageTemplateFile)
 	err := t.Execute(&doc, books)
 	if err != nil {
 		log.Fatal("Error parsing book list template: %w", err)
