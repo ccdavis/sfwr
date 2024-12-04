@@ -1,0 +1,60 @@
+ {{define "title"}}Books {{end}} 
+ {{define "body"}}
+ 
+ <div class="top-menu">
+ 
+ <div class="menu-item">
+ Authors Index
+ </div>
+ 
+ <div class="menu-item">
+Rating
+ </div>
+ 
+ <div class="menu-item">
+ Year Published
+ </div>
+ 
+ <div class="menu-item">
+Recently Read
+ </div>
+ 
+ </div>
+ 
+ {{if eq (len .) 0}}
+ Nothing to see here
+ {{end}}
+ <div class="content-container">
+<div class="book-grid">
+ 
+ {{range .}}
+ <div class="book-box">
+ 
+ <div class="medium-cover-image">
+ {{.MakeLinkedMediumCoverImageTag}}
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>{{.MainTitle}} </h3>
+	</div>
+	{{if gt (len .SubTitle) 0}}
+		<div class="citation book-subtitle">
+			<h5>{{.SubTitle}}</h5>
+		</div>
+	
+	{{end}}
+ 
+	<div class="citation book-author">
+	 <h4> {{.AuthorFullName}} </h4> 
+	</div>
+	
+	<div>{{.BookPageLink }} </div>
+</div>
+	
+ </div> 
+ {{end}}
+ </div>
+</div> 
+
+ 
+ {{end}}
