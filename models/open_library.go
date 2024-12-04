@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"gol"
 	"io"
 	"log"
 	"math/rand/v2"
@@ -10,6 +11,13 @@ import (
 	"time"
 )
 
+func SearchBook() {
+	    // Construct the SearchUrl
+		url := gol.SearchUrl().All("the selfish gene").Author("Richard Dawkins").Construct()
+		// search
+		search, err := gol.
+
+}
 func saveCoverImage(filename string, imageurl string) error {
 	response, e := http.Get(imageurl)
 	if e != nil {
