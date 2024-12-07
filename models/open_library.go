@@ -2,20 +2,28 @@ package models
 
 import (
 	"fmt"
-	"gol"
 	"io"
 	"log"
 	"math/rand/v2"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/Open-pi/gol"
 )
 
-func SearchBook() {
-	    // Construct the SearchUrl
-		url := gol.SearchUrl().All("the selfish gene").Author("Richard Dawkins").Construct()
-		// search
-		search, err := gol.
+func SearchBook(title string, author string) {
+	// Construct the SearchUrl
+	url := gol.SearchUrl().All(title).Author(author).Construct()
+
+	// search
+	search, err := gol.Search((url))
+	if err != nil {
+		fmt.Println("Found ", search)
+
+	} else {
+		fmt.Println("Could not find: ", err)
+	}
 
 }
 func saveCoverImage(filename string, imageurl string) error {

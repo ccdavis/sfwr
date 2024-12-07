@@ -91,6 +91,23 @@ func takeLabeledInput(label string, def string) (string, error) {
 		return scanner.Text(), scanner.Err()
 	}
 }
+func searchBookTui() {
+	var title string
+	var err error
+	title, err = takeLabeledInput("Search title", title)
+	if err != nil {
+		fmt.Println("Error reading title.")
+		return
+	}
+	var author string
+	author, err = takeLabeledInput("Search author: ", author)
+	if err != nil {
+		fmt.Println("Error eading author.")
+		return
+	}
+	models.SearchBook(title, author)
+
+}
 
 func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
 	var newBook models.Book
@@ -285,7 +302,8 @@ func mainMenuTui(db *gorm.DB) {
 	var choice uint64
 	for choice != 2 && err == nil {
 		fmt.Println("(1) Add book ")
-		fmt.Println("(2) Quit")
+		fmt.Println("(2) Search Open Library")
+		fmt.Println("(3) Quit")
 		_, err = fmt.Scanf("%d", &choice)
 		if err != nil {
 			fmt.Println("Choice must be a valid number: ", err)
@@ -305,6 +323,8 @@ func mainMenuTui(db *gorm.DB) {
 				fmt.Println("Success: Book added.")
 			}
 		} else if choice == 2 {
+			searchBookTui()
+		} else if choice == 3 {
 			fmt.Println("Quitting")
 		} else {
 			fmt.Println("Invalid choice: ", choice)
