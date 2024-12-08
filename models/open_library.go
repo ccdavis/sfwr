@@ -15,11 +15,23 @@ import (
 func SearchBook(title string, author string) {
 	// Construct the SearchUrl
 	url := gol.SearchUrl().All(title).Author(author).Construct()
+	fmt.Println("The search URL is: ", url)
 
 	// search
-	search, err := gol.Search((url))
-	if err != nil {
-		fmt.Println("Found ", search)
+	search, err := gol.Search(url)
+	if err == nil {
+		//fmt.Println("Found ", search.ChildrenMap())
+		for key, child := range search.ChildrenMap() {
+			fmt.Println("Key: ", key, " value: ", child)
+			if key == "docs" {
+				for _, b := range child.Children() {
+					fmt.Println("Book: ", b)
+
+				}
+
+			}
+
+		}
 
 	} else {
 		fmt.Println("Could not find: ", err)
