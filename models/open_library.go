@@ -7,36 +7,60 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/Open-pi/gol"
 )
 
-func SearchBook(title string, author string) {
+type BookSearchResult struct {
+	Number             int
+	FirstYearPublished int
+	Title              string
+	Author             string
+	AmazonId           string
+	CoverEditionKey    string
+	EditionIds         []string // all editions
+	AuthorIds          []string // Can be more than one author
+}
+
+func (s BookSearchResult) Print() {
+	fmt.Println(s.FirstYearPublished, "\t", s.Author, "\t", s.Title)
+}
+
+func SearchBook(title string, author string) []BookSearchResult {
+	var results []BookSearchResult
 	// Construct the SearchUrl
 	url := gol.SearchUrl().All(title).Author(author).Construct()
-	fmt.Println("The search URL is: ", url)
 
 	// search
 	search, err := gol.Search(url)
 	if err == nil {
 		//fmt.Println("Found ", search.ChildrenMap())
 		for key, child := range search.ChildrenMap() {
-			fmt.Println("Key: ", key, " value: ", child)
 			if key == "docs" {
-				for _, b := range child.Children() {
-					fmt.Println("Book: ", b)
+				for bookNumber, b := range child.Children() {
+					var work BookSearchResult
+					work.Number = bookNumber
+					for fieldName, fieldValue := range b.ChildrenMap() {
+						switch fieldName {
+						case "first_publish_year":
+							work.FirstYearPublished, err = strconv.Atoi(fieldValue.String())
+							if err != nil {
+								work.FirstYearPublished = 0
+							}
 
+						}
+
+					}
+					results = append(results, work)
 				}
-
 			}
-
 		}
-
 	} else {
 		fmt.Println("Could not find: ", err)
 	}
-
+	return results
 }
 func saveCoverImage(filename string, imageurl string) error {
 	response, e := http.Get(imageurl)
