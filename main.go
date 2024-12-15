@@ -105,8 +105,33 @@ func searchBookTui() {
 		fmt.Println("Error eading author.")
 		return
 	}
-	models.SearchBook(title, author)
+	searchResults := models.SearchBook(title, author)
+	for num, book := range searchResults {
+		fmt.Println(num, ": ", book.Print())
+	}
+}
 
+func selectOpenLibraryEditionTui(searchResults []models.BookSearchResult) models.BookSearchResult {
+	fmt.Println("Select which edition to use for the update:")
+	for num, book := range searchResults {
+		fmt.Println(num, ": ", book.Print())
+	}
+	// TODO: add choice logic
+	return searchResults[0]
+}
+
+func updateBookTui() {
+	//TODO  Select from database
+	var book models.Book
+
+	searchResults := models.SearchBook(book.MainTitle, book.AuthorFullName)
+	if len(searchResults) > 0 {
+		selectedEdition := selectOpenLibraryEditionTui(searchResults)
+		// TODO
+		fmt.Println("Use ", selectedEdition.Print())
+	} else {
+		fmt.Println("No book edition could be found using the current title and author of this book.")
+	}
 }
 
 func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
@@ -303,7 +328,8 @@ func mainMenuTui(db *gorm.DB) {
 	for choice != 2 && err == nil {
 		fmt.Println("(1) Add book ")
 		fmt.Println("(2) Search Open Library")
-		fmt.Println("(3) Quit")
+		fmt.Println("(3) Update existing book with Open Library data")
+		fmt.Println("(4) Quit")
 		_, err = fmt.Scanf("%d", &choice)
 		if err != nil {
 			fmt.Println("Choice must be a valid number: ", err)
@@ -325,6 +351,8 @@ func mainMenuTui(db *gorm.DB) {
 		} else if choice == 2 {
 			searchBookTui()
 		} else if choice == 3 {
+			updateBookTui()
+		} else if choice == 4 {
 			fmt.Println("Quitting")
 		} else {
 			fmt.Println("Invalid choice: ", choice)

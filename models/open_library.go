@@ -17,15 +17,23 @@ type BookSearchResult struct {
 	Number             int
 	FirstYearPublished int
 	Title              string
-	Author             string
-	AmazonId           string
+	Authors            []string
 	CoverEditionKey    string
-	EditionIds         []string // all editions
+	CoverImageId       string
 	AuthorIds          []string // Can be more than one author
+	isfdb_id           string
 }
 
-func (s BookSearchResult) Print() {
-	fmt.Println(s.FirstYearPublished, "\t", s.Author, "\t", s.Title)
+func (s BookSearchResult) Print() string {
+	return fmt.Sprintln(s.FirstYearPublished, "\t", s.Authors[0], "\t", s.Title, "\t", s.AuthorIds)
+}
+
+func (s BookSearchResult) GetBookCoverUrl(size string) string {
+	return gol.GetBookCoverURL("OLID", s.CoverEditionKey, size)
+}
+
+func GetBookByOlId(olid string) (gol.Book, error) {
+	return gol.GetEdition(olid)
 }
 
 func SearchBook(title string, author string) []BookSearchResult {
@@ -36,7 +44,7 @@ func SearchBook(title string, author string) []BookSearchResult {
 	// search
 	search, err := gol.Search(url)
 	if err == nil {
-		//fmt.Println("Found ", search.ChildrenMap())
+
 		for key, child := range search.ChildrenMap() {
 			if key == "docs" {
 				for bookNumber, b := range child.Children() {
@@ -49,10 +57,28 @@ func SearchBook(title string, author string) []BookSearchResult {
 							if err != nil {
 								work.FirstYearPublished = 0
 							}
-
+						case "title":
+							work.Title = fieldValue.String()
+						case "author_name":
+							var authors []string
+							for _, author := range fieldValue.Children() {
+								authors = append(authors, author.String())
+							}
+							work.Authors = authors
+						case "author_key":
+							var authorIds []string
+							for _, child := range fieldValue.Children() {
+								authorIds = append(authorIds, child.String())
+							}
+							work.AuthorIds = authorIds
+						case "cover_edition_key":
+							work.CoverEditionKey = fieldValue.String()
+						case "cover_i":
+							work.CoverImageId = fieldValue.String()
+						case "id_isfdb":
+							work.isfdb_id = fieldValue.String()
 						}
-
-					}
+					} // each field
 					results = append(results, work)
 				}
 			}
@@ -62,6 +88,7 @@ func SearchBook(title string, author string) []BookSearchResult {
 	}
 	return results
 }
+
 func saveCoverImage(filename string, imageurl string) error {
 	response, e := http.Get(imageurl)
 	if e != nil {
