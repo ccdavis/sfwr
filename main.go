@@ -91,6 +91,7 @@ func takeLabeledInput(label string, def string) (string, error) {
 		return scanner.Text(), scanner.Err()
 	}
 }
+
 func searchBookTui() {
 	var title string
 	var err error
@@ -106,8 +107,8 @@ func searchBookTui() {
 		return
 	}
 	searchResults := models.SearchBook(title, author)
-	for num, book := range searchResults {
-		fmt.Println(num, ": ", book.Print())
+	for _, ed := range searchResults {
+		fmt.Println(ed.Print())
 	}
 }
 
@@ -116,18 +117,52 @@ func selectOpenLibraryEditionTui(searchResults []models.BookSearchResult) models
 	for num, book := range searchResults {
 		fmt.Println(num, ": ", book.Print())
 	}
-	// TODO: add choice logic
-	return searchResults[0]
+	notChosen := true
+	var choice int
+	for notChosen {
+		editionNumber, err := takeLabeledNumberInput("Select edition", 0)
+		if err == nil && int(editionNumber) < len(searchResults) {
+			choice = int(editionNumber)
+			notChosen = false
+		} else {
+			fmt.Println("Invalid choice.")
+		}
+	}
+	return searchResults[choice]
 }
 
-func updateBookTui() {
-	//TODO  Select from database
+func findBookTui(db *gorm.DB) (models.Book, error) {
 	var book models.Book
+	author, err := findAuthorTui(db)
+	if err != nil {
+		fmt.Println("No author in database.")
+		return book, err
+	}
+
+	var choice int64 = 9999999
+	for err != nil || int(choice) >= len(author.Books) {
+		fmt.Println("Select book to update with Open Library data:")
+		for num, b := range author.Books {
+			fmt.Println(num, ": ", b.MainTitle)
+		}
+		fmt.Println()
+		choice, err = takeLabeledNumberInput("Choose book", 0)
+	}
+	return author.Books[choice], err
+}
+
+func updateBookTui(db *gorm.DB) {
+	//TODO  Select from database
+	book, err := findBookTui(db)
+	if err != nil {
+		fmt.Println("No book found, not updating.")
+		return
+	}
 
 	searchResults := models.SearchBook(book.MainTitle, book.AuthorFullName)
 	if len(searchResults) > 0 {
 		selectedEdition := selectOpenLibraryEditionTui(searchResults)
-		// TODO
+		// TODO update book object and save
 		fmt.Println("Use ", selectedEdition.Print())
 	} else {
 		fmt.Println("No book edition could be found using the current title and author of this book.")
@@ -267,9 +302,7 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
 	return dbError
 }
 
-func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
-	fmt.Println("\nFirst, add the author. Then add the book.")
-	fmt.Println()
+func findAuthorTui(db *gorm.DB) (models.Author, error) {
 	var err error
 	var authorToUse models.Author
 
@@ -285,6 +318,7 @@ func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
 			var newAuthors []models.Author
 			result := db.Where("full_name like ?", authorName).Find(&newAuthors)
 			if result.Error != nil {
+				authorToUse.FullName = authorName
 				return authorToUse, result.Error
 			}
 			if len(newAuthors) > 0 {
@@ -307,18 +341,29 @@ func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
 				err := db.Preload("Books").Find(&authorToUse, chosenId).Error
 				return authorToUse, err
 			} else {
-				// Create new author record
-				authorToUse = models.Author{
-					FullName: authorName,
-					Surname:  models.ExtractSurname(authorName),
-				}
-				result = db.Create(&authorToUse)
-				return authorToUse, result.Error
+				fmt.Println("No authors with that name.")
 			}
 
 		}
 	}
 	return authorToUse, err
+}
+
+func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
+	fmt.Println("\nFirst, add the author. Then add the book.")
+	fmt.Println()
+	authorToUse, err := findAuthorTui(db)
+	if err != nil {
+		// Create new author record
+		newAuthor := models.Author{
+			FullName: authorToUse.FullName,
+			Surname:  models.ExtractSurname(authorToUse.FullName),
+		}
+		result := db.Create(&newAuthor)
+		return newAuthor, result.Error
+	} else {
+		return authorToUse, err
+	}
 }
 
 // Really basic 80s style text entry
@@ -351,7 +396,7 @@ func mainMenuTui(db *gorm.DB) {
 		} else if choice == 2 {
 			searchBookTui()
 		} else if choice == 3 {
-			updateBookTui()
+			updateBookTui(db)
 		} else if choice == 4 {
 			fmt.Println("Quitting")
 		} else {
