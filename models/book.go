@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -116,6 +117,26 @@ type Author struct {
 	FullName string
 	Surname  string
 	Books    []Book `gorm:"many2many:book_authors;"`
+}
+
+func (b Book) UpdateFromOpenLibrary(db *gorm.DB, olSearchResult BookSearchResult) (Book, error) {
+	if olSearchResult.FirstYearPublished != 0 {
+		b.PubDate = int64(olSearchResult.FirstYearPublished)
+	}
+
+	if len(olSearchResult.CoverEditionKey) > 0 {
+		b.OlCoverEditionId = olSearchResult.CoverEditionKey
+	} else {
+		fmt.Println("Search result had no cover edition ID, not updating.")
+	}
+	olCoverId, err := strconv.Atoi(olSearchResult.CoverImageId)
+	if err != nil {
+		fmt.Println("Can't convert OL Cover ID '", olSearchResult.CoverImageId, "'.")
+	} else {
+		b.OlCoverId = int64(olCoverId)
+	}
+	result := db.Save(&b)
+	return b, result.Error
 }
 
 func (b Book) Create(db *gorm.DB) (uint, error) {

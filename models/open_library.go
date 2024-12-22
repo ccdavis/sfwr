@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Open-pi/gol"
@@ -25,7 +26,7 @@ type BookSearchResult struct {
 }
 
 func (s BookSearchResult) Print() string {
-	return fmt.Sprintln(s.FirstYearPublished, "\t", s.Authors[0], "\t", s.Title, "\t", s.AuthorIds)
+	return fmt.Sprintln(s.FirstYearPublished, "\t", s.Authors[0], ": ", s.Title, "\tCover Image ID: ", s.CoverImageId, "\tCover Edition ID: ", s.CoverEditionKey)
 }
 
 func (s BookSearchResult) GetBookCoverUrl(size string) string {
@@ -56,6 +57,7 @@ func SearchBook(title string, author string) []BookSearchResult {
 							work.FirstYearPublished, err = strconv.Atoi(fieldValue.String())
 							if err != nil {
 								work.FirstYearPublished = 0
+								fmt.Println("While retrieving search result for '", title, "', failed to convert first published date: ", err)
 							}
 						case "title":
 							work.Title = fieldValue.String()
@@ -72,11 +74,11 @@ func SearchBook(title string, author string) []BookSearchResult {
 							}
 							work.AuthorIds = authorIds
 						case "cover_edition_key":
-							work.CoverEditionKey = fieldValue.String()
+							work.CoverEditionKey = strings.TrimSpace(fieldValue.String())
 						case "cover_i":
-							work.CoverImageId = fieldValue.String()
+							work.CoverImageId = strings.TrimSpace(fieldValue.String())
 						case "id_isfdb":
-							work.isfdb_id = fieldValue.String()
+							work.isfdb_id = strings.TrimSpace(fieldValue.String())
 						}
 					} // each field
 					results = append(results, work)

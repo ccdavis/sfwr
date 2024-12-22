@@ -164,8 +164,15 @@ func updateBookTui(db *gorm.DB) {
 		selectedEdition := selectOpenLibraryEditionTui(searchResults)
 		// TODO update book object and save
 		fmt.Println("Use ", selectedEdition.Print())
+		b, err := book.UpdateFromOpenLibrary(db, selectedEdition)
+		if err != nil {
+			fmt.Println("Error saving updated book record: ", err)
+		} else {
+			fmt.Println("Book updated to ", b)
+			fmt.Println()
+		}
 	} else {
-		fmt.Println("No book edition could be found using the current title and author of this book.")
+		fmt.Println("No book edition could be found using the given title and author of this book.")
 	}
 }
 
@@ -370,7 +377,7 @@ func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
 func mainMenuTui(db *gorm.DB) {
 	var err error
 	var choice uint64
-	for choice != 2 && err == nil {
+	for choice != 4 && err == nil {
 		fmt.Println("(1) Add book ")
 		fmt.Println("(2) Search Open Library")
 		fmt.Println("(3) Update existing book with Open Library data")
