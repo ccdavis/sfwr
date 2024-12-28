@@ -128,6 +128,18 @@ func CaptureAllSizeCovers(b Book, imageDir string) {
 	captureCoverImage(b, imageDir, LargeCover)
 }
 
+// Filter books by those missing cover images first.
+func CaptureMissingCoverImages(books []Book, imageDir string) error {
+	var booksMissingCovers []Book
+	for _, b := range books {
+		if b.OlCoverId == 0 || b.OlCoverId == Missing {
+			booksMissingCovers = append(booksMissingCovers, b)
+			fmt.Println(b.FormatTitle(), " by ", b.AuthorFullName, " has no cover image ID.")
+		}
+	}
+	return CaptureCoverImages(booksMissingCovers, imageDir)
+}
+
 func CaptureCoverImages(books []Book, imageDir string) error {
 	err := os.MkdirAll(imageDir, 0775)
 	if err != nil {
@@ -139,6 +151,10 @@ func CaptureCoverImages(books []Book, imageDir string) error {
 			randTime := time.Duration(r)
 			time.Sleep(randTime * time.Second)
 			CaptureAllSizeCovers(b, imageDir)
+		} else {
+			msg := fmt.Sprint("Can't retrieve cover image for '", b.FormatTitle(), "', cover ID is missing.")
+			fmt.Println(msg)
+			log.Print(msg)
 		}
 	}
 	return nil

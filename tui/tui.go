@@ -102,7 +102,10 @@ func updateBookTui(db *gorm.DB, siteCoverImagesDir string) {
 		fmt.Println("No book found, not updating.")
 		return
 	}
+	updateBookFromOpenLibrary(db, book, siteCoverImagesDir)
+}
 
+func updateBookFromOpenLibrary(db *gorm.DB, book models.Book, siteCoverImagesDir string) {
 	searchResults := models.SearchBook(book.MainTitle, book.AuthorFullName)
 	if len(searchResults) > 0 {
 		selectedEdition := selectOpenLibraryEditionTui(searchResults)
@@ -117,11 +120,11 @@ func updateBookTui(db *gorm.DB, siteCoverImagesDir string) {
 			fmt.Println()
 		}
 	} else {
-		fmt.Println("No book edition could be found using the given title and author of this book.")
+		fmt.Println("No book edition could be found in Open Library using the given title and author of this book.")
 	}
 }
 
-func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
+func addBookWithAuthorTui(db *gorm.DB, author models.Author, siteCoverImagesDir string) error {
 	var newBook models.Book
 	var err error
 	fmt.Println("\nAdd New Book by ", author.FullName, "--------------------")
@@ -249,9 +252,10 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author) error {
 	dbError := db.Model(&author).Association("Books").Error
 	if dbError != nil {
 		fmt.Println("Error adding author to book!", dbError)
+		return dbError
 	}
-
-	return dbError
+	updateBookFromOpenLibrary(db, newBook, siteCoverImagesDir)
+	return nil
 }
 
 func findAuthorTui(db *gorm.DB) (models.Author, error) {
@@ -338,7 +342,7 @@ func MainMenuTui(db *gorm.DB, siteCoverImagesDir string) {
 				fmt.Println("Error getting author: ", authorError, ", try again.")
 				continue
 			}
-			bookError := addBookWithAuthorTui(db, author)
+			bookError := addBookWithAuthorTui(db, author, siteCoverImagesDir)
 			if bookError != nil {
 				fmt.Println("Error adding book: ", bookError, ", try again.")
 				continue

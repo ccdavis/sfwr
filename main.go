@@ -106,7 +106,7 @@ func main() {
 	if saveImagesFlag {
 		allBooks := loadAllBooks(db)
 		fmt.Println("Saving cover images...")
-		models.CaptureCoverImages(allBooks, siteCoverImagesDir)
+		models.CaptureMissingCoverImages(allBooks, siteCoverImagesDir)
 	}
 
 	if generateSiteFlag {
