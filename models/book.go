@@ -125,15 +125,16 @@ func (b Book) UpdateFromOpenLibrary(db *gorm.DB, olSearchResult BookSearchResult
 	}
 
 	if len(olSearchResult.CoverEditionKey) > 0 {
+		fmt.Println("Cover edition id: ", olSearchResult.CoverEditionKey)
 		b.OlCoverEditionId = olSearchResult.CoverEditionKey
 	} else {
 		fmt.Println("Search result had no cover edition ID, not updating.")
 	}
-	olCoverId, err := strconv.Atoi(olSearchResult.CoverImageId)
+	olCoverImageId, err := strconv.Atoi(olSearchResult.CoverImageId)
 	if err != nil {
 		fmt.Println("Can't convert OL Cover ID '", olSearchResult.CoverImageId, "'.")
 	} else {
-		b.OlCoverId = int64(olCoverId)
+		b.OlCoverId = int64(olCoverImageId)
 	}
 	result := db.Save(&b)
 	return b, result.Error
@@ -185,7 +186,7 @@ func (b Book) makeLinkedImageTag(size string) template.HTML {
 	imageTag := b.makeImageTagForCover(size)
 	olUrl := b.makeOpenLibraryUrl()
 	linkTag := fmt.Sprintf("<a href=\"%s\"> %s </a>", olUrl, imageTag)
-	fmt.Println("rendering link tag: ", linkTag)
+	fmt.Println(b.MainTitle, ": rendering link tag: ", linkTag)
 	return template.HTML(linkTag)
 }
 

@@ -74,7 +74,7 @@ func SearchBook(title string, author string) []BookSearchResult {
 							}
 							work.AuthorIds = authorIds
 						case "cover_edition_key":
-							work.CoverEditionKey = strings.TrimSpace(fieldValue.String())
+							work.CoverEditionKey = strings.ReplaceAll(strings.TrimSpace(fieldValue.String()), "\"", "")
 						case "cover_i":
 							work.CoverImageId = strings.TrimSpace(fieldValue.String())
 						case "id_isfdb":
@@ -122,6 +122,12 @@ func captureCoverImage(b Book, outputDir string, size string) {
 	}
 }
 
+func CaptureAllSizeCovers(b Book, imageDir string) {
+	captureCoverImage(b, imageDir, SmallCover)
+	captureCoverImage(b, imageDir, MediumCover)
+	captureCoverImage(b, imageDir, LargeCover)
+}
+
 func CaptureCoverImages(books []Book, imageDir string) error {
 	err := os.MkdirAll(imageDir, 0775)
 	if err != nil {
@@ -132,9 +138,7 @@ func CaptureCoverImages(books []Book, imageDir string) error {
 			r := rand.IntN(3)
 			randTime := time.Duration(r)
 			time.Sleep(randTime * time.Second)
-			captureCoverImage(b, imageDir, SmallCover)
-			captureCoverImage(b, imageDir, MediumCover)
-			captureCoverImage(b, imageDir, LargeCover)
+			CaptureAllSizeCovers(b, imageDir)
 		}
 	}
 	return nil
