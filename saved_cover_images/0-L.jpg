@@ -10,7 +10,7 @@
   0.0000   0.0000   petabox start   var/cache/petabox/petabox/www/datanode/view_archive.php:1:require
                                              |common/ia:66:require_once
                                              |setup.php:377:log
-  0.0223   0.0223        bug dump   var/cache/petabox/petabox/www/datanode/view_archive.php:7:execute
+  0.0218   0.0218        bug dump   var/cache/petabox/petabox/www/datanode/view_archive.php:7:execute
                                              |common/ArchiveExtractor.inc:135:serve_file
                                              |ArchiveExtractor.inc:436:fatal
                                              |setup.php:89:footer
@@ -28,7 +28,7 @@ if (typeof archive_analytics !== 'undefined') {
       vs[i] = {};
     }
     vs[i]['cache_bust']=Math.random();
-    vs[i]['server_ms']=22;
+    vs[i]['server_ms']=21;
     vs[i]['server_name']="ia801609.us.archive.org";
       }
 
@@ -37,9 +37,9 @@ if (typeof archive_analytics !== 'undefined') {
   }
 }
 </script>
-          <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=control&cache_bust=1933754153" alt="" />
+          <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=control&cache_bust=883035082" alt="" />
           <noscript>
-        <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=disabled&cache_bust=1694646558" />
+        <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=disabled&cache_bust=1981066607" />
       </noscript>
           <script  nonce="disarm-drapery-rival-bonsai" >
         document.addEventListener('DOMContentLoaded', function() {

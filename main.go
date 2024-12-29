@@ -65,12 +65,11 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 }
 
 func loadAllBooks(db *gorm.DB) []models.Book {
-	var allBooks []models.Book
-	result := db.Preload("Authors").Find(&allBooks)
-	if result.Error != nil {
-		log.Fatal("can't retrieve books from sfwr db: ", result.Error)
+	allBooks, err := models.LoadAllBooks(db)
+	if err != nil {
+		log.Fatal("can't retrieve books from sfwr db: ", err)
 	} else {
-		fmt.Println("Loaded ", result.RowsAffected, " book records.")
+		fmt.Println("Loaded ", len(allBooks), " from database.")
 	}
 	return allBooks
 }
@@ -106,7 +105,7 @@ func main() {
 	if saveImagesFlag {
 		allBooks := loadAllBooks(db)
 		fmt.Println("Saving cover images...")
-		models.CaptureMissingCoverImages(allBooks, siteCoverImagesDir)
+		models.CaptureCoverImages(allBooks, siteCoverImagesDir)
 	}
 
 	if generateSiteFlag {

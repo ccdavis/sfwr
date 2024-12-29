@@ -119,6 +119,12 @@ type Author struct {
 	Books    []Book `gorm:"many2many:book_authors;"`
 }
 
+func LoadAllBooks(db *gorm.DB) ([]Book, error) {
+	var allBooks []Book
+	result := db.Preload("Authors").Find(&allBooks)
+	return allBooks, result.Error
+}
+
 func (b Book) UpdateFromOpenLibrary(db *gorm.DB, olSearchResult BookSearchResult) (Book, error) {
 	if olSearchResult.FirstYearPublished != 0 {
 		b.PubDate = int64(olSearchResult.FirstYearPublished)
@@ -143,6 +149,14 @@ func (b Book) UpdateFromOpenLibrary(db *gorm.DB, olSearchResult BookSearchResult
 func (b Book) Create(db *gorm.DB) (uint, error) {
 	result := db.Create(&b)
 	return b.ID, result.Error
+}
+
+func (b Book) HasOpenLibraryId() bool {
+	return len(b.OlCoverEditionId) > 0 && len(strings.TrimSpace(b.OlCoverEditionId)) > 0
+}
+
+func (b Book) HasCoverImageId() bool {
+	return b.OlCoverId != Missing && b.OlCoverId != 0
 }
 
 func (b Book) DisplayRating() string {

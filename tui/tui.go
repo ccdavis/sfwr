@@ -124,6 +124,17 @@ func updateBookFromOpenLibrary(db *gorm.DB, book models.Book, siteCoverImagesDir
 	}
 }
 
+func UpdateMissingCoversAndBookData(db *gorm.DB, books []models.Book, imageDir string) {
+	var booksMissingCovers []models.Book
+	for _, b := range books {
+		if !b.HasOpenLibraryId() || !b.HasCoverImageId() {
+			booksMissingCovers = append(booksMissingCovers, b)
+			fmt.Println(b.FormatTitle(), " by ", b.AuthorFullName, " has no cover image ID.")
+			updateBookFromOpenLibrary(db, b, imageDir)
+		}
+	}
+}
+
 func addBookWithAuthorTui(db *gorm.DB, author models.Author, siteCoverImagesDir string) error {
 	var newBook models.Book
 	var err error
@@ -330,7 +341,8 @@ func MainMenuTui(db *gorm.DB, siteCoverImagesDir string) {
 		fmt.Println("(1) Add book ")
 		fmt.Println("(2) Search Open Library")
 		fmt.Println("(3) Update existing book with Open Library data")
-		fmt.Println("(4) Quit")
+		fmt.Println("(4) Update all books missing covers or details from Open Library ")
+		fmt.Println("(5) Quit")
 		_, err = fmt.Scanf("%d", &choice)
 		if err != nil {
 			fmt.Println("Choice must be a valid number: ", err)
@@ -354,6 +366,13 @@ func MainMenuTui(db *gorm.DB, siteCoverImagesDir string) {
 		} else if choice == 3 {
 			updateBookTui(db, siteCoverImagesDir)
 		} else if choice == 4 {
+			allBooks, err := models.LoadAllBooks(db)
+			if err != nil {
+				fmt.Println("can't retrieve books from sfwr db: ", err)
+			} else {
+				UpdateMissingCoversAndBookData(db, allBooks, siteCoverImagesDir)
+			}
+		} else if choice == 5 {
 			fmt.Println("Quitting")
 		} else {
 			fmt.Println("Invalid choice: ", choice)

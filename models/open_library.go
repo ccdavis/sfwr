@@ -128,25 +128,13 @@ func CaptureAllSizeCovers(b Book, imageDir string) {
 	captureCoverImage(b, imageDir, LargeCover)
 }
 
-// Filter books by those missing cover images first.
-func CaptureMissingCoverImages(books []Book, imageDir string) error {
-	var booksMissingCovers []Book
-	for _, b := range books {
-		if b.OlCoverId == 0 || b.OlCoverId == Missing {
-			booksMissingCovers = append(booksMissingCovers, b)
-			fmt.Println(b.FormatTitle(), " by ", b.AuthorFullName, " has no cover image ID.")
-		}
-	}
-	return CaptureCoverImages(booksMissingCovers, imageDir)
-}
-
 func CaptureCoverImages(books []Book, imageDir string) error {
 	err := os.MkdirAll(imageDir, 0775)
 	if err != nil {
 		return fmt.Errorf("can't create directory for saved cover images: %w", err)
 	}
 	for _, b := range books {
-		if Missing != b.OlCoverId {
+		if !b.HasCoverImageId() {
 			r := rand.IntN(3)
 			randTime := time.Duration(r)
 			time.Sleep(randTime * time.Second)
