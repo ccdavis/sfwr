@@ -110,7 +110,7 @@ func updateBookFromOpenLibrary(db *gorm.DB, book models.Book, siteCoverImagesDir
 	var searchResults []models.BookSearchResult
 	for _, authorName := range book.AlternateAuthorFullNames() {
 		fmt.Println("Search using author: ", authorName)
-		searchResults := models.SearchBook(book.FormatTitle(), authorName)
+		searchResults = models.SearchBook(book.FormatTitle(), authorName)
 		if len(searchResults) > 0 {
 			break
 		}
