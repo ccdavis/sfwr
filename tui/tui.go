@@ -106,7 +106,15 @@ func updateBookTui(db *gorm.DB, siteCoverImagesDir string) {
 }
 
 func updateBookFromOpenLibrary(db *gorm.DB, book models.Book, siteCoverImagesDir string) {
-	searchResults := models.SearchBook(book.MainTitle, book.AuthorFullName)
+	// Account for inconsistent spelling when authors use their first and middle initials.
+	var searchResults []models.BookSearchResult
+	for _, authorName := range book.AlternateAuthorFullNames() {
+		fmt.Println("Search using author: ", authorName)
+		searchResults := models.SearchBook(book.FormatTitle(), authorName)
+		if len(searchResults) > 0 {
+			break
+		}
+	}
 	if len(searchResults) > 0 {
 		selectedEdition := selectOpenLibraryEditionTui(searchResults)
 

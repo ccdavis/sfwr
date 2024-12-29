@@ -188,6 +188,49 @@ func (b Book) FormatTitle() string {
 	return title
 }
 
+// Some databases like Open Library aren't consistent with their author initials, for instance
+// CJ Cherryh vs C.J. Cherryh or C. J. Cherryh. We need an easy way to try all three. With all the
+// sorts of names people have this is far from perfect but seems to handle 80% of problem cases in English..
+func initialisedName(firstName string) ([]string, bool) {
+	initials := strings.Split(firstName, ".")
+	periods := strings.Count(firstName, ".")
+	if periods == 2 {
+		return []string{initials[0], initials[1]}, true
+	} else {
+		if len(initials) == 1 {
+			if len(initials[0]) == 2 {
+				return []string{string(initials[0][0]), string(initials[0][1])}, true
+			} else {
+				return []string{}, false
+			}
+		} else {
+			return []string{}, false
+		}
+	}
+}
+
+func (b Book) AlternateAuthorFullNames() []string {
+	removeSurname := " " + b.AuthorSurname
+	firstName, success := strings.CutSuffix(b.AuthorFullName, removeSurname)
+	if success {
+		var names []string
+		initials, hasInitials := initialisedName(firstName)
+		if !hasInitials {
+			return []string{b.AuthorFullName}
+		} else {
+			combined := strings.Join(initials, "")
+			periodNoSpace := strings.Join(initials, ".") + "."
+			periodWithSpacing := strings.Join(initials, ". ") + "."
+			names = append(names, combined+" "+b.AuthorSurname)
+			names = append(names, periodNoSpace+" "+b.AuthorSurname)
+			names = append(names, periodWithSpacing+" "+b.AuthorSurname)
+			return names
+		}
+	} else {
+		return []string{b.AuthorFullName}
+	}
+}
+
 func (b Book) MakeLinkedSmallCoverImageTag() template.HTML {
 	return b.makeLinkedImageTag(SmallCover)
 }
