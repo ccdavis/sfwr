@@ -42,11 +42,11 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 	}
 
 	fmt.Println("Generate static pages...")
-	byAuthor := pages.RenderBookListPage("templates/by_author.html", pages.BooksByAuthor(books))
-	check(os.WriteFile(path.Join(outputDir, "books_by_author.html"), []byte(byAuthor), 0644))
+	byPubDate := pages.RenderBookListPage("templates/book_list.html", pages.BooksByPublicationDate(books))
+	check(os.WriteFile(path.Join(outputDir, "book_list_by_pub_date.html"), []byte(byPubDate), 0644))
 
-	bookGrid := pages.RenderBookListPage("templates/book_boxes.html", pages.BooksByAuthor(books))
-	check(os.WriteFile(path.Join(outputDir, "book_boxes.html"), []byte(bookGrid), 0644))
+	bookGrid := pages.RenderBookListPage("templates/book_boxes.html", pages.BooksByPublicationDate(books))
+	check(os.WriteFile(path.Join(outputDir, "book_boxes_by_pub_date.html"), []byte(bookGrid), 0644))
 
 	authorIndex := pages.RenderAuthorIndexPage("templates/author_index.html", authors)
 	check(os.WriteFile(path.Join(outputDir, "author_index.html"), []byte(authorIndex), 0644))

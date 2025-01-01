@@ -188,6 +188,23 @@ func (b Book) FormatTitle() string {
 	return title
 }
 
+func (b Book) FormatRating() string {
+	rating, err := StringToRating(b.Rating)
+	if err != nil {
+		return "Unrated"
+	} else {
+		return rating.Display()
+	}
+}
+
+func (b Book) FormatPubDate() string {
+	if b.PubDate == Missing {
+		return "  ? "
+	} else {
+		return fmt.Sprint(b.PubDate)
+	}
+}
+
 // Some databases like Open Library aren't consistent with their author initials, for instance
 // CJ Cherryh vs C.J. Cherryh or C. J. Cherryh. We need an easy way to try all three. With all the
 // sorts of names people have this is far from perfect but seems to handle 80% of problem cases in English..

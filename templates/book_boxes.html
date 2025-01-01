@@ -39,16 +39,20 @@ Recently Read
 	</div>
 	{{if gt (len .SubTitle) 0}}
 		<div class="citation book-subtitle">
-			<h5>{{.SubTitle}}</h5>
+			<h4>{{.SubTitle}}</h4>
 		</div>
 	
 	{{end}}
  
 	<div class="citation book-author">
-	 <h4> {{.AuthorFullName}} </h4> 
+	 <h4>by  {{.AuthorFullName}}  </h4> 
+	 <h5> published  {{.FormatPubDate}}</h5>
+	 <h4> rating: {{.FormatRating}}</h4>
 	</div>
 	
-	<div>{{.BookPageLink }} </div>
+	
+	
+	<div>{{.BookPageLink}} </div>
 </div>
 	
  </div> 
