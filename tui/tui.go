@@ -341,22 +341,32 @@ func findOrCreateAuthorTui(db *gorm.DB) (models.Author, error) {
 	}
 }
 
+type choice uint64
+
+const (
+	AddBook choice = iota
+	SearchBook
+	UpdateBook
+	UpdateAll
+	Quit
+)
+
 // Really basic 80s style text entry
 func MainMenuTui(db *gorm.DB, siteCoverImagesDir string) {
 	var err error
-	var choice uint64
-	for choice != 4 && err == nil {
-		fmt.Println("(1) Add book ")
-		fmt.Println("(2) Search Open Library")
-		fmt.Println("(3) Update existing book with Open Library data")
-		fmt.Println("(4) Update all books missing covers or details from Open Library ")
-		fmt.Println("(5) Quit")
-		_, err = fmt.Scanf("%d", &choice)
+	var ch choice
+	for ch != Quit && err == nil {
+		fmt.Println("(", AddBook, ") Add book ")
+		fmt.Println("(", SearchBook, ") Search Open Library")
+		fmt.Println("(", UpdateBook, ") Update existing book with Open Library data")
+		fmt.Println("(", UpdateAll, ") Update all books missing covers or details from Open Library ")
+		fmt.Println("(", Quit, ") Quit")
+		_, err = fmt.Scanf("%d", &ch)
 		if err != nil {
 			fmt.Println("Choice must be a valid number: ", err)
 			continue
 		}
-		if choice == 1 {
+		if ch == AddBook {
 			author, authorError := findOrCreateAuthorTui(db)
 			if authorError != nil {
 				fmt.Println("Error getting author: ", authorError, ", try again.")
@@ -369,21 +379,21 @@ func MainMenuTui(db *gorm.DB, siteCoverImagesDir string) {
 			} else {
 				fmt.Println("Success: Book added.")
 			}
-		} else if choice == 2 {
+		} else if ch == SearchBook {
 			searchBookTui()
-		} else if choice == 3 {
+		} else if ch == UpdateBook {
 			updateBookTui(db, siteCoverImagesDir)
-		} else if choice == 4 {
+		} else if ch == UpdateAll {
 			allBooks, err := models.LoadAllBooks(db)
 			if err != nil {
 				fmt.Println("can't retrieve books from sfwr db: ", err)
 			} else {
 				UpdateMissingCoversAndBookData(db, allBooks, siteCoverImagesDir)
 			}
-		} else if choice == 5 {
+		} else if ch == Quit {
 			fmt.Println("Quitting")
 		} else {
-			fmt.Println("Invalid choice: ", choice)
+			fmt.Println("Invalid choice: ", ch)
 		}
 	}
 }
