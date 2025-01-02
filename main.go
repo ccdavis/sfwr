@@ -42,6 +42,9 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 	}
 
 	fmt.Println("Generate static pages...")
+	indexPage := pages.RenderBookListPage("templates/index.html", pages.BooksMostRecentlyAdded(books, 10))
+	check(os.WriteFile(path.Join(outputDir, "index.html"), []byte(indexPage), 0644))
+
 	byPubDate := pages.RenderBookListPage("templates/book_list.html", pages.BooksByPublicationDate(books))
 	check(os.WriteFile(path.Join(outputDir, "book_list_by_pub_date.html"), []byte(byPubDate), 0644))
 

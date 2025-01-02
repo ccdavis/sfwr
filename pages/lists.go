@@ -11,7 +11,6 @@ import (
 )
 
 // GroupByProperty groups a slice of structs by a specific property.
-
 func GroupByProperty[T any, K comparable](items []T, getProperty func(T) K) map[K][]T {
 	grouped := make(map[K][]T)
 	for _, item := range items {
@@ -32,7 +31,7 @@ func BooksMostRecentlyAdded(books []models.Book, listSize int) []models.Book {
 	sort.Slice(books, func(left, right int) bool {
 		return books[left].DateAdded.Unix() > books[right].DateAdded.Unix()
 	})
-	return books
+	return books[:listSize]
 }
 
 func BooksByAuthor(books []models.Book) []models.Book {
