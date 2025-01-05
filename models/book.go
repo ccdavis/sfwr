@@ -248,16 +248,29 @@ func (b Book) AlternateAuthorFullNames() []string {
 	}
 }
 
-func (b Book) MakeLinkedSmallCoverImageTag() template.HTML {
-	return b.makeLinkedImageTag(SmallCover)
+func (b Book) imageDirPrefix(p []string) string {
+	if len(p) > 0 {
+		return p[0]
+	} else {
+		return "."
+	}
 }
 
-func (b Book) MakeLinkedMediumCoverImageTag() template.HTML {
-	return b.makeLinkedImageTag(MediumCover)
+func (b Book) MakeLinkedSmallCoverImageTag(args ...string) template.HTML {
+	return b.makeLinkedImageTag(SmallCover, b.imageDirPrefix(args))
+
 }
 
-func (b Book) makeLinkedImageTag(size string) template.HTML {
-	imageTag := b.makeImageTagForCover(size)
+func (b Book) MakeLinkedMediumCoverImageTag(args ...string) template.HTML {
+	return b.makeLinkedImageTag(MediumCover, b.imageDirPrefix(args))
+}
+
+func (b Book) MakeLinkedLargeCoverImageTag(args ...string) template.HTML {
+	return b.makeLinkedImageTag(LargeCover, b.imageDirPrefix(args))
+}
+
+func (b Book) makeLinkedImageTag(size string, relativePath string) template.HTML {
+	imageTag := b.makeImageTagForCover(size, relativePath)
 	olUrl := b.makeOpenLibraryUrl()
 	linkTag := fmt.Sprintf("<a href=\"%s\"> %s </a>", olUrl, imageTag)
 	fmt.Println(b.MainTitle, ": rendering link tag: ", linkTag)
@@ -283,8 +296,9 @@ func makeCoverImageUrlForIsbn(isbn string, size string) string {
 	return url
 }
 
-func (b Book) makeImageTagForCover(size string) template.HTML {
-	link := b.MakeCoverImageFilename(ImageDir, size)
+func (b Book) makeImageTagForCover(size string, relativeToImageDir string) template.HTML {
+	completePath := relativeToImageDir + "/" + ImageDir
+	link := b.MakeCoverImageFilename(completePath, size)
 	label := "Open Library"
 	tag := fmt.Sprintf("<img src=\"%s\" alt=\"%s\" />", link, label)
 	return template.HTML(tag)

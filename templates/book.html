@@ -5,61 +5,55 @@
  
      
     <div class="menu-item">
-        <a href="index.html">Home</a>
+        <a href="../index.html">Home</a>
         </div>
             
     <div class="menu-item">
-    <a href="author_index.html"> Author Index</a>
+    <a href="../author_index.html"> Author Index</a>
     </div>
 
     <div class="menu-item">
-        <a href="decades_index.html"> Decades Index</a>
+        <a href="../decades_index.html"> Decades Index</a>
         </div>
         
  <div class="menu-item">
- <a href="book_boxes_by_pub_date.html"> All Books by Publication Date (Grid)</a>
+ <a href="../book_boxes_by_pub_date.html"> All Books by Publication Date (Grid)</a>
  </div>
 
  <div class="menu-item">
-    <a href="book_list_by_pub_date.html"> All Books by Publication Date (List)</a>
+    <a href="../book_list_by_pub_date.html"> All Books by Publication Date (List)</a>
     </div>
  
 </div>
 
 
-
  <div class="content-container">
 
- <div class="book-entry">
+    <div class="book-entry">
 
+        <div class="medium-cover-image">
+            <div>  {{.MakeLinkedLargeCoverImageTag ".."}}</div>
+        </div>
 
-<div class="medium-cover-image">
-<div>  {{.MakeLinkedMediumCoverImageTag}}</div>
-    </div>
-
-   <div>	
-        <div class="citation book-title">
-        <h1>{{.MainTitle}} </h1>
-       </div>
-       {{if gt (len .SubTitle) 0}}
-           <div class="citation book-subtitle">
-               <h3>{{.SubTitle}}</h3>
-           </div>
-       
-       {{end}}
-       <div class="citation book-author">
-        <h4>by  {{.AuthorFullName}} -- published {{.FormatPubDate}} </h4> 
-       </div>	
-       <div>rating: {{.DisplayRating}}</div>
-       <p>
-       
-       </p>
-        
-   </div>
-
-
-
-   
+        <div>	
+                <div class="citation book-title">
+                <h1>{{.MainTitle}} </h1>
+            </div>
+            {{if gt (len .SubTitle) 0}}
+                <div class="citation book-subtitle">
+                    <h3>{{.SubTitle}}</h3>
+                </div>
+            
+            {{end}}
+            <div class="citation book-author">
+                <h4>by  {{.AuthorFullName}} -- published {{.FormatPubDate}} </h4> 
+            </div>	
+            <div>rating: {{.DisplayRating}}</div>
+            <p>
+            
+            </p>
+                
+        </div>
 
 </div>
 </div>
