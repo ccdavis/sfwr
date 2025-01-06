@@ -1,31 +1,7 @@
  {{define "title"}}Recently read{{end}} 
  {{define "body"}}
 
- <div class="top-menu">
- 
-     
-     <div class="menu-item">
-         <a href="index.html">Home</a>
-         </div>
-             
-     <div class="menu-item">
-     <a href="author_index.html"> Author Index</a>
-     </div>
- 
-     <div class="menu-item">
-         <a href="decades_index.html"> Decades Index</a>
-         </div>
-         
-  <div class="menu-item">
-  <a href="book_boxes_by_pub_date.html"> All Books by Publication Date (Grid)</a>
-  </div>
- 
-  <div class="menu-item">
-     <a href="book_list_by_pub_date.html"> All Books by Publication Date (List)</a>
-     </div>
-  
- </div>
- 
+
   
  {{if eq (len .) 0}}
  No book listings available.
@@ -33,7 +9,7 @@
  <div class="content-container">
 
     <div class="site-name">SF Worth Reading</div>
-    <div class="article-text"><p style="text-align:center;"> A collection of worthwhile reads, and a few that aren't.</p>p></div>
+    <div class="article-text"><p style="text-align:center;"> A collection of worthwhile reads, and a few that aren't.</p></div>
 
 <hr></hr>
 
@@ -45,11 +21,19 @@
  {{range .}}
  <div class="book-item">
  
- <div class="medium-cover-image">
- <div>{{.MakeLinkedMediumCoverImageTag}}</div>
+ <div class="small-cover-image">
+
+        <div>{{.MakeLinkedSmallCoverImageTag}}</div>
  
- </div>
-<div>	
+    	<div> <p>   {{.BookPageLink }} </p></div>
+    
+
+ 
+ 
+    </div>
+
+<div class="book-info">	
+
 	<div class="citation book-title">
  	<h3>{{.MainTitle}} </h3>
 	</div>
@@ -60,13 +44,12 @@
 	
 	{{end}}
  
-	<div class="citation book-author">
-	 <h4>by  {{.AuthorFullName}} -- published {{.FormatPubDate}} </h4> 
+	<div class="citation">
+	 <h4>by  <span class="book-author"> {{.AuthorFullName}}</span> -- published {{.FormatPubDate}} </h4> 
 	</div>	
-	<div>rating: {{.DisplayRating}}</div>
-    <p>
-	<div    >{{.BookPageLink }} </div>
-    </p>
+    <div>rating: {{.DisplayRating}}</div>
+	
+    
 	 
 </div>
 	

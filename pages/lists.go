@@ -98,7 +98,7 @@ func RenderAuthorPage(authorTemplateFile string, author models.Author) string {
 
 func RenderBookPage(bookTemplateFile string, book models.Book) string {
 	var doc bytes.Buffer
-	t, parseErr := template.ParseFiles("templates/base.html", bookTemplateFile)
+	t, parseErr := template.ParseFiles("templates/child_dir_base.html", bookTemplateFile)
 	if parseErr != nil {
 		log.Fatal("Error parsing book page template: %w", parseErr)
 	}

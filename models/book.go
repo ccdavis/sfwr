@@ -177,7 +177,7 @@ func (b Book) SiteFileName() string {
 }
 
 func (b Book) BookPageLink() template.HTML {
-	return template.HTML(fmt.Sprint("<a href=\"books/", b.SiteFileName(), "\"> More </a>"))
+	return template.HTML(fmt.Sprint("<a class=\"buttonlink\" href=\"books/", b.SiteFileName(), "\"> More </a>"))
 }
 
 func (b Book) FormatTitle() string {

@@ -1,32 +1,6 @@
 {{define "title"}}Book Page{{end}} 
 {{define "body"}} 
 
-<div class="top-menu">
- 
-     
-    <div class="menu-item">
-        <a href="../index.html">Home</a>
-        </div>
-            
-    <div class="menu-item">
-    <a href="../author_index.html"> Author Index</a>
-    </div>
-
-    <div class="menu-item">
-        <a href="../decades_index.html"> Decades Index</a>
-        </div>
-        
- <div class="menu-item">
- <a href="../book_boxes_by_pub_date.html"> All Books by Publication Date (Grid)</a>
- </div>
-
- <div class="menu-item">
-    <a href="../book_list_by_pub_date.html"> All Books by Publication Date (List)</a>
-    </div>
- 
-</div>
-
-
  <div class="content-container">
 
     <div class="book-list">
@@ -46,11 +20,12 @@
                 </div>
             
             {{end}}
-            <div class="citation book-author">
-                <h4>by  {{.AuthorFullName}} -- published {{.FormatPubDate}} </h4> 
+            <div class="citation">
+                <h4> by <span class="book-author"> {{.AuthorFullName}}</span> -- published {{.FormatPubDate}} </h4> 
             </div>	
             <div>rating: {{.DisplayRating}}</div>
             <p>
+                {{.Review}}
             
             </p>
                 
