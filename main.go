@@ -42,7 +42,7 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 	}
 
 	fmt.Println("Generate static pages...")
-	indexPage := pages.RenderBookListPage("templates/index.html", pages.BooksMostRecentlyAdded(books, 10))
+	indexPage := pages.RenderBookListPage("templates/index.html", pages.BooksMostRecentlyAdded(books, 25))
 	check(os.WriteFile(path.Join(outputDir, "index.html"), []byte(indexPage), 0644))
 
 	byPubDate := pages.RenderBookListPage("templates/book_list.html", pages.BooksByPublicationDate(books))
@@ -53,6 +53,14 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 
 	authorIndex := pages.RenderAuthorIndexPage("templates/author_index.html", authors)
 	check(os.WriteFile(path.Join(outputDir, "author_index.html"), []byte(authorIndex), 0644))
+	for _, a := range authors {
+		authorPage := pages.RenderAuthorPage("templates/author.html", a)
+		err = os.MkdirAll(path.Join(outputDir, "authors"), 0775)
+		if err != nil {
+			log.Fatal("Can't create output directory for generated site: ", outputDir)
+		}
+		check(os.WriteFile(path.Join(outputDir, "authors", a.SiteName()), []byte(authorPage), 0644))
+	}
 
 	for _, b := range books {
 		//fmt.Println("Make page for ", b.AuthorFullName, ": ", b.FormatTitle())

@@ -119,6 +119,18 @@ type Author struct {
 	Books    []Book `gorm:"many2many:book_authors;"`
 }
 
+func (a Author) GetBooks() []Book {
+	return a.Books
+}
+
+func (a Author) SiteName() string {
+	name, err := filenamify.Filenamify(fmt.Sprint(a.ID, "_", a.FullName), filenamify.Options{})
+	if err != nil {
+		exitOnError(fmt.Sprint("Can't convert author ", a.FullName, " using filenamify."), err)
+	}
+	return fmt.Sprint(strings.Replace(name, " ", "-", -1), ".html")
+}
+
 func LoadAllBooks(db *gorm.DB) ([]Book, error) {
 	var allBooks []Book
 	result := db.Preload("Authors").Find(&allBooks)
@@ -131,7 +143,7 @@ func (b Book) UpdateFromOpenLibrary(db *gorm.DB, olSearchResult BookSearchResult
 	}
 
 	if len(olSearchResult.CoverEditionKey) > 0 {
-		fmt.Println("Cover edition id: ", olSearchResult.CoverEditionKey)
+		//		fmt.Println("Cover edition id: ", olSearchResult.CoverEditionKey)
 		b.OlCoverEditionId = olSearchResult.CoverEditionKey
 	} else {
 		fmt.Println("Search result had no cover edition ID, not updating.")
@@ -273,7 +285,7 @@ func (b Book) makeLinkedImageTag(size string, relativePath string) template.HTML
 	imageTag := b.makeImageTagForCover(size, relativePath)
 	olUrl := b.makeOpenLibraryUrl()
 	linkTag := fmt.Sprintf("<a href=\"%s\"> %s </a>", olUrl, imageTag)
-	fmt.Println(b.MainTitle, ": rendering link tag: ", linkTag)
+	//fmt.Println(b.MainTitle, ": rendering link tag: ", linkTag)
 	return template.HTML(linkTag)
 }
 
