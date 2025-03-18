@@ -12,8 +12,6 @@
     <div class="article-text"><p style="text-align:center;"> A collection of worthwhile reads, and a few that aren't.</p></div>
 
 <hr></hr>
-
- 
     
 <div class="list-name"> Recent Additions</div>
 
@@ -23,13 +21,9 @@
  
  <div class="small-cover-image">
 
-        <div>{{.MakeLinkedSmallCoverImageTag}}</div>
- 
+        <div>{{.MakeLinkedSmallCoverImageTag}}</div> 
     	<div> <p>   {{.BookPageLink }} </p></div>
     
-
- 
- 
     </div>
 
 <div class="book-info">	
@@ -45,12 +39,9 @@
 	{{end}}
  
 	<div class="citation">
-	 <h4>by  <span class="book-author"> {{.AuthorFullName}}</span> -- published {{.FormatPubDate}} </h4> 
+	 <h4>BY <span class="citation book-author"> {{.AuthorFullName}}</span> - Pub Year {{.FormatPubDate}} </h4> 
 	</div>	
-    <div>rating: {{.DisplayRating}}</div>
-	
-    
-	 
+    <div>rating: {{.DisplayRating}}</div>	 
 </div>
 	
  </div> 
