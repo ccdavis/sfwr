@@ -1,6 +1,18 @@
  <!DOCTYPE html>
  <html lang="en">
  <head>
+<script>
+
+
+const resizeOps = () => {
+    document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
+  };
+
+  resizeOps();
+  window.addEventListener("resize", resizeOps);
+
+	</script>
+
 
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,10 +22,13 @@
   
  <style>
  
- html,body {
-	height:100%;
-	margin: em;
- }
+
+html, body {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+
 
  .buttonlink{
 	display:block;
@@ -302,7 +317,7 @@ div.book-box:hover {
  }
  
   
- 
+
  </style>
    <meta charset="UTF-8">
    <title>{{ template "title" . }}</title>  
