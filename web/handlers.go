@@ -27,6 +27,7 @@ type PageData struct {
 	Author  *models.Author
 	Message string
 	Error   string
+	SortBy  string
 }
 
 func NewWebServer(db *gorm.DB, imageDir string) *WebServer {
@@ -75,15 +76,36 @@ func (ws *WebServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ws *WebServer) listBooksHandler(w http.ResponseWriter, r *http.Request) {
-	books, err := models.LoadAllBooks(ws.db)
+	sortBy := r.URL.Query().Get("sort")
+	if sortBy == "" {
+		sortBy = "recent"
+	}
+
+	var books []models.Book
+	var err error
+	
+	switch sortBy {
+	case "recent":
+		err = ws.db.Preload("Authors").Order("date_added DESC").Find(&books).Error
+	case "title":
+		err = ws.db.Preload("Authors").Order("main_title ASC").Find(&books).Error
+	case "author":
+		err = ws.db.Preload("Authors").Order("author_full_name ASC").Find(&books).Error
+	case "year":
+		err = ws.db.Preload("Authors").Order("pub_date DESC").Find(&books).Error
+	default:
+		err = ws.db.Preload("Authors").Order("date_added DESC").Find(&books).Error
+	}
+
 	if err != nil {
 		ws.renderError(w, "Failed to load books", err)
 		return
 	}
 
 	data := PageData{
-		Title: "All Books",
-		Books: books,
+		Title:  "All Books",
+		Books:  books,
+		SortBy: sortBy,
 	}
 	ws.renderTemplate(w, "book_list", data)
 }

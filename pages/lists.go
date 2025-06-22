@@ -87,7 +87,7 @@ func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) s
 
 func RenderAuthorPage(authorTemplateFile string, author models.Author) string {
 	var doc bytes.Buffer
-	t, _ := template.ParseFiles("templates/base.html", authorTemplateFile)
+	t, _ := template.ParseFiles("templates/child_dir_base.html", authorTemplateFile)
 	err := t.Execute(&doc, author)
 	if err != nil {
 		log.Fatal("Error parsing author page template: %w", err)

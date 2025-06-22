@@ -291,15 +291,19 @@ func (b Book) makeLinkedImageTag(size string, relativePath string) template.HTML
 }
 
 func (b Book) MakeCoverImageUrl(size string) string {
-	if Missing != b.OlCoverId {
+	if Missing != b.OlCoverId && b.OlCoverId != 0 {
 		url := fmt.Sprintf("http://covers.openlibrary.org/b/id/%d-%s.jpg", b.OlCoverId, size)
 		return url
 	} else {
-		return ""
+		return fmt.Sprintf("placeholder-%s.jpg", size)
 	}
 }
 
 func (b Book) MakeCoverImageFilename(imageDir string, size string) string {
+	if b.OlCoverId == Missing || b.OlCoverId == 0 {
+		filename := fmt.Sprintf("placeholder-%s.jpg", size)
+		return path.Join(imageDir, filename)
+	}
 	filename := fmt.Sprintf("%d-%s.jpg", b.OlCoverId, size)
 	return path.Join(imageDir, filename)
 }
@@ -321,8 +325,9 @@ func (b Book) makeOpenLibraryUrl() string {
 	if b.OlCoverEditionId != "" {
 		return fmt.Sprintf("http://openlibrary.org/olid/%s", b.OlCoverEditionId)
 	} else {
-		//TODO  get an isbn
-		return ""
+		// For books without Open Library IDs (like placeholders), search by title and author
+		searchQuery := strings.ReplaceAll(b.MainTitle+" "+b.AuthorFullName, " ", "+")
+		return fmt.Sprintf("https://openlibrary.org/search?q=%s", searchQuery)
 	}
 }
 

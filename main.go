@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -131,6 +132,12 @@ func main() {
 			fmt.Println("Retrieved ", result.RowsAffected, " author records.")
 		}
 		generateSite(allBooks, authors, GeneratedSiteDir)
+		
+		// Copy placeholder images to the output directory
+		err := copyPlaceholderImages(siteCoverImagesDir)
+		if err != nil {
+			log.Printf("Warning: Failed to copy placeholder images: %v", err)
+		}
 	}
 
 	if *webPortPtr != "" {
@@ -141,4 +148,32 @@ func main() {
 	if addBookFlag {
 		tui.MainMenuTui(db, siteCoverImagesDir)
 	}
+}
+
+func copyPlaceholderImages(destDir string) error {
+	placeholderDir := "saved_cover_images"
+	placeholderSizes := []string{"S", "M", "L"}
+	
+	for _, size := range placeholderSizes {
+		srcFile := path.Join(placeholderDir, fmt.Sprintf("placeholder-%s.jpg", size))
+		destFile := path.Join(destDir, fmt.Sprintf("placeholder-%s.jpg", size))
+		
+		src, err := os.Open(srcFile)
+		if err != nil {
+			return fmt.Errorf("failed to open placeholder image %s: %v", srcFile, err)
+		}
+		defer src.Close()
+		
+		dest, err := os.Create(destFile)
+		if err != nil {
+			return fmt.Errorf("failed to create destination file %s: %v", destFile, err)
+		}
+		defer dest.Close()
+		
+		_, err = io.Copy(dest, src)
+		if err != nil {
+			return fmt.Errorf("failed to copy placeholder image %s: %v", srcFile, err)
+		}
+	}
+	return nil
 }

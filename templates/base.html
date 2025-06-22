@@ -188,7 +188,9 @@ html, body {
 div.content-container {	
 	overflow-y: scroll;	
 	height: 90%;
-	width:95%;	
+	width: 100%;
+	padding: 0 2.5%;
+	box-sizing: border-box;
  }
 
  div.book-entry {
@@ -224,16 +226,18 @@ div.content-container {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
-	gap: 4.0em 8.0em;
+	gap: 2.0em 4.0em;
 	max-width: 2100px;
 	margin: 0 auto;
+	padding: 0 1em;
 	background-color: #111;
+	box-sizing: border-box;
  }
  
  div.book-box {	
      flex: 1 1 calc(20% - 40px);
-	min-height: 25	0px;
-	min-width: 350px;
+	min-height: 250px;
+	min-width: 280px;
 	padding: 5px;
 	border-radius: 5px;
 	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -241,20 +245,91 @@ div.content-container {
 	background-color: #111;
 	display:flex;
 	flex-direction: row;
+	box-sizing: border-box;
  }
 
 
         @media (max-width: 768px) {
+            div.book-grid {
+                gap: 1.5em 2.0em;
+                padding: 0 0.5em;
+            }
+            
             div.book-box {
                 flex-basis: 48%;
-                min-height: 150px;
+                min-width: 0;
+                min-height: 200px;
+            }
+            
+            div.site-name {
+                font-size: 2.5em;
+            }
+            
+            div.list-name {
+                font-size: 28px;
+            }
+            
+            div.top-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            div.menu-item {
+                padding: 1%;
+                margin: 0.2em;
             }
         }
 
         @media (max-width: 480px) {
+            div.book-grid {
+                gap: 1.0em;
+                padding: 0 0.25em;
+            }
+            
             div.book-box {
                 flex-basis: 100%;
-                min-height: 100px;
+                min-width: 0;
+                min-height: 180px;
+            }
+            
+            div.site-name {
+                font-size: 2.0em;
+                margin: 0.2em 0;
+            }
+            
+            div.list-name {
+                font-size: 24px;
+                margin: 0.8em 0 0.4em 0;
+            }
+            
+            div.content-container {
+                padding: 0 1%;
+            }
+            
+            div.book-item {
+                margin: 1.0em 0;
+                flex-direction: column;
+            }
+            
+            div.small-cover-image {
+                margin: 0 0 1em 0;
+                align-items: flex-start;
+            }
+            
+            .citation .main h1 {
+                font-size: 28px;
+            }
+            
+            .citation .main h2 {
+                font-size: 24px;
+            }
+            
+            .citation .main h3 {
+                font-size: 20px;
+            }
+            
+            .citation .main h4 {
+                font-size: 16px;
             }
         }
  
@@ -327,11 +402,11 @@ div.book-box:hover {
  
      
 		<div class="menu-item">
-			<a class="buttonlink" href="index.html">Home</a>
+			<a class="buttonlink" href="./index.html">Home</a>
 			</div>
 				
 		<div class="menu-item">
-		<a class="buttonlink" href="author_index.html"> Authors </a>
+		<a class="buttonlink" href="./author_index.html"> Authors </a>
 		</div>
 		   
 		   <div class="menu-item">
@@ -341,11 +416,11 @@ div.book-box:hover {
 	  <table>
 	 <tr>
 	   <td>
-	 <a class="buttonlink" href="book_boxes_by_pub_date.html"> Grid</a>
+	 <a class="buttonlink" href="./book_boxes_by_pub_date.html"> Grid</a>
 	   </td>
 	   <td style="margin:0 1.0em 0 1.0em; "> | </td>
 	   <td>
-	   <a class="buttonlink" href="book_list_by_pub_date.html"> List</a>
+	   <a class="buttonlink" href="./book_list_by_pub_date.html"> List</a>
 	   </td>
 	 </tr>
 	 </table>
