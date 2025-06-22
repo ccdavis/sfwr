@@ -188,8 +188,9 @@ func (b Book) SiteFileName() string {
 	return fmt.Sprint(strings.Replace(name, " ", "-", -1), ".html")
 }
 
-func (b Book) BookPageLink() template.HTML {
-	return template.HTML(fmt.Sprint("<a class=\"buttonlink\" href=\"books/", b.SiteFileName(), "\"> More </a>"))
+func (b Book) BookPageLink(args ...string) template.HTML {
+	prefix := b.imageDirPrefix(args)
+	return template.HTML(fmt.Sprint("<a class=\"buttonlink\" href=\"", prefix, "/books/", b.SiteFileName(), "\"> More </a>"))
 }
 
 func (b Book) FormatTitle() string {

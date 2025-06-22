@@ -1,0 +1,12 @@
+{{template "base.html" .}}
+
+{{define "content"}}
+<h1>Error</h1>
+
+<div class="error">{{.Error}}</div>
+
+<div style="margin-top: 30px;">
+    <a class="buttonlink" href="/" style="font-size: 16px; padding: 12px 24px;">Go Home</a>
+    <a class="buttonlink" href="javascript:history.back()" style="font-size: 16px; padding: 12px 24px;">Go Back</a>
+</div>
+{{end}}

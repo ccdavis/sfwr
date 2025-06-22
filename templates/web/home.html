@@ -1,0 +1,33 @@
+{{template "base.html" .}}
+
+{{define "content"}}
+<h1>{{.Title}}</h1>
+
+{{if .Message}}
+<div class="message">{{.Message}}</div>
+{{end}}
+
+<div style="text-align: center; margin-top: 50px;">
+    <h2>Quick Actions</h2>
+    <div style="margin: 30px 0;">
+        <a class="buttonlink" href="/books/new" style="font-size: 18px; padding: 15px 30px;">Add New Book</a>
+        <a class="buttonlink" href="/books" style="font-size: 18px; padding: 15px 30px;">View All Books</a>
+    </div>
+    <div style="margin: 30px 0;">
+        <a class="buttonlink" href="/authors/new" style="font-size: 18px; padding: 15px 30px;">Add New Author</a>
+        <a class="buttonlink" href="/authors" style="font-size: 18px; padding: 15px 30px;">View All Authors</a>
+    </div>
+</div>
+
+<div style="margin-top: 50px; padding: 20px; background-color: #222; border-radius: 5px;">
+    <h3 style="color: #6Cf;">About SFWR Management</h3>
+    <p>This web interface allows you to manage your science fiction book collection. You can:</p>
+    <ul>
+        <li>Add new books and authors</li>
+        <li>Edit existing book information</li>
+        <li>View and organize your collection</li>
+        <li>Delete books when needed</li>
+    </ul>
+    <p>All changes are saved to your SFWR database and will appear in your generated static site.</p>
+</div>
+{{end}}

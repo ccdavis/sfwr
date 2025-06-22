@@ -1,0 +1,30 @@
+{{template "base.html" .}}
+
+{{define "content"}}
+<h1>{{.Title}}</h1>
+
+{{if .Message}}
+<div class="message">{{.Message}}</div>
+{{end}}
+
+{{if .Error}}
+<div class="error">{{.Error}}</div>
+{{end}}
+
+<form method="POST" action="/authors/create">
+    <div class="form-group">
+        <label for="full_name">Author Full Name *</label>
+        <input type="text" id="full_name" name="full_name" value="{{if .Author}}{{.Author.FullName}}{{end}}" required>
+        <small style="color: #aaa; display: block; margin-top: 5px;">
+            Enter the author's full name (e.g., "Isaac Asimov" or "Ursula K. Le Guin")
+        </small>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="buttonlink" style="font-size: 16px; padding: 12px 24px;">
+            {{if .Author}}Update Author{{else}}Create Author{{end}}
+        </button>
+        <a class="buttonlink" href="/authors" style="font-size: 16px; padding: 12px 24px;">Cancel</a>
+    </div>
+</form>
+{{end}}

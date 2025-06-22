@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="author" content="Colin Davis" />
+    
+    <style>
+        html, body {
+            height: 100vh;
+            font-family: 'Tahoma', sans-serif;
+            background-color: #111;
+            color: #ddd;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .buttonlink {
+            display: inline-block;
+            border-style: solid;
+            border-color: #bbb #888 #666 #aaa;
+            border-width: 3px 4px 4px 3px;
+            padding: 8px 16px;
+            background: #ccc;
+            color: #333;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 900;
+            margin: 2px;
+        }
+
+        .buttonlink:hover {
+            border-color: #666 #aaa #bbb #888;
+            border-width: 4px 3px 3px 4px;
+            color: #000;
+        }
+
+        .button-danger {
+            background: #d44;
+            color: white;
+        }
+
+        .button-danger:hover {
+            background: #f66;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #6Cf;
+            font-family: 'Hammersmith One', sans-serif;
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 30px;
+            color: #6Cf;
+            font-family: 'Hammersmith One', sans-serif;
+            margin-bottom: 20px;
+        }
+
+        .nav-menu {
+            background-color: #115;
+            color: #dd1;
+            padding: 15px 0;
+            margin-bottom: 30px;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-menu li {
+            display: inline;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            border: 2px solid #555;
+            background-color: #222;
+            color: #ddd;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #6Cf;
+            outline: none;
+        }
+
+        .book-item, .author-item {
+            background-color: #222;
+            border: 1px solid #444;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .book-title {
+            color: #6Cf;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .book-author {
+            color: #aaa;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .book-details {
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .actions {
+            margin-top: 15px;
+        }
+
+        .message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #3a5;
+            color: white;
+        }
+
+        .error {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #d44;
+            color: white;
+        }
+
+        .rating-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .rating-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rating-option input[type="radio"] {
+            width: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-menu ul {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+    </style>
+    
+    <title>{{.Title}} - SFWR Management</title>
+</head>
+<body>
+    <div class="nav-menu">
+        <ul>
+            <li><a class="buttonlink" href="/">Home</a></li>
+            <li><a class="buttonlink" href="/books">Books</a></li>
+            <li><a class="buttonlink" href="/books/new">Add Book</a></li>
+            <li><a class="buttonlink" href="/authors">Authors</a></li>
+            <li><a class="buttonlink" href="/authors/new">Add Author</a></li>
+        </ul>
+    </div>
+    
+    <div class="container">
+        <h1>{{.Title}}</h1>
+
+        {{if .Message}}
+        <div class="message">{{.Message}}</div>
+        {{end}}
+
+        <div style="margin-bottom: 30px;">
+            <a class="buttonlink" href="/authors/new">Add New Author</a>
+        </div>
+
+        {{if .Authors}}
+        {{range .Authors}}
+        <div class="author-item">
+            <div class="book-title">{{.FullName}}</div>
+            <div class="book-details">
+                <strong>Books:</strong>
+                {{if .Books}}
+                {{range .Books}}
+                <a href="/books/edit/{{.ID}}" style="color: #6Cf;">{{.MainTitle}}</a> 
+                {{end}}
+                {{else}}
+                No books assigned
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+        {{else}}
+        <div style="text-align: center; margin-top: 50px;">
+            <h2>No authors found</h2>
+            <p>Start by <a href="/authors/new">adding your first author</a>!</p>
+        </div>
+        {{end}}
+    </div>
+</body>
+</html>

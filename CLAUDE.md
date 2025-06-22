@@ -15,6 +15,7 @@ SFWR is a book recommendation web application written in Go that functions as a 
 - **Generate static site**: `./sfwr -build` (outputs to `output/public/`)
 - **Add new book interactively**: `./sfwr -new`
 - **Load custom book data**: `./sfwr -load-books custom_file.json`
+- **Start web UI server**: `./sfwr -web=8080` (launches web interface on port 8080)
 
 ### Development
 - **Run without building**: `go run main.go [flags]`
@@ -29,7 +30,9 @@ SFWR is a book recommendation web application written in Go that functions as a 
   - `open_library.go`: Open Library API integration for cover images
 - **Pages** (`/pages/`): HTML generation logic for different page types
 - **Templates** (`/templates/`): HTML templates with embedded CSS
+  - `/templates/web/`: Web UI templates for CRUD operations
 - **TUI** (`/tui/`): Text interface for adding books interactively
+- **Web** (`/web/`): Web UI for book and author management (CRUD operations)
 
 ### Data Flow
 1. Books stored in `book_database.json` are imported to SQLite database
@@ -50,6 +53,29 @@ SFWR is a book recommendation web application written in Go that functions as a 
 
 ## Rating System
 Uses custom enum: Unknown, VeryGood, Excellent, Kindle, Interesting, NotGood
+
+## Web UI
+The web interface provides a browser-based CRUD application for managing books and authors:
+
+### Features
+- **Home dashboard** with quick actions and overview
+- **Book management**: Create, read, update, delete books
+- **Author management**: Create and view authors
+- **Form validation** with proper error handling
+- **Responsive design** consistent with existing site styling
+
+### Endpoints
+- `/` - Home dashboard
+- `/books` - List all books
+- `/books/new` - Add new book form
+- `/books/edit/{id}` - Edit existing book
+- `/authors` - List all authors
+- `/authors/new` - Add new author form
+
+### Testing
+- Unit tests with in-memory SQLite database
+- Full CRUD operation testing
+- Error handling validation
 
 ## Open Library Integration
 - Fetches cover images in multiple sizes (S, M, L)

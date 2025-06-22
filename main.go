@@ -10,6 +10,7 @@ import (
 	"github.com/ccdavis/sfwr/models"
 	"github.com/ccdavis/sfwr/pages"
 	"github.com/ccdavis/sfwr/tui"
+	"github.com/ccdavis/sfwr/web"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -89,6 +90,7 @@ func main() {
 	var (
 		bookFilePtr      = flag.String("load-books", "book_database.json", "A JSON file of book data")
 		databaseNamePtr  = flag.String("createdb", "", "Create new database")
+		webPortPtr       = flag.String("web", "", "Start web server on specified port (e.g., -web=8080)")
 		saveImagesFlag   bool
 		addBookFlag      bool
 		generateSiteFlag bool
@@ -129,6 +131,11 @@ func main() {
 			fmt.Println("Retrieved ", result.RowsAffected, " author records.")
 		}
 		generateSite(allBooks, authors, GeneratedSiteDir)
+	}
+
+	if *webPortPtr != "" {
+		server := web.NewWebServer(db, siteCoverImagesDir)
+		log.Fatal(server.ServeHTTP(*webPortPtr))
 	}
 
 	if addBookFlag {
