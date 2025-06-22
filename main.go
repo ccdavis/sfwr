@@ -64,6 +64,18 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 		check(os.WriteFile(path.Join(outputDir, "authors", a.SiteName()), []byte(authorPage), 0644))
 	}
 
+	decadesIndex := pages.RenderDecadesIndexPage("templates/decades_index.html", books)
+	check(os.WriteFile(path.Join(outputDir, "decades_index.html"), []byte(decadesIndex), 0644))
+	groupedBooks := pages.BooksByDecade(books)
+	for decade, decadeBooks := range groupedBooks {
+		decadePage := pages.RenderDecadePage("templates/decade.html", decadeBooks, decade)
+		err = os.MkdirAll(path.Join(outputDir, "decades"), 0775)
+		if err != nil {
+			log.Fatal("Can't create output directory for decades: ", outputDir)
+		}
+		check(os.WriteFile(path.Join(outputDir, "decades", decade+".html"), []byte(decadePage), 0644))
+	}
+
 	for _, b := range books {
 		//fmt.Println("Make page for ", b.AuthorFullName, ": ", b.FormatTitle())
 		//fmt.Println("Rating ", b.Rating)
@@ -116,6 +128,8 @@ func main() {
 	}
 
 	siteCoverImagesDir := path.Join(GeneratedSiteDir, models.ImageDir)
+	savedCoverImagesDir := "saved_cover_images"
+	
 	if saveImagesFlag {
 		allBooks := loadAllBooks(db)
 		fmt.Println("Saving cover images...")
@@ -141,12 +155,12 @@ func main() {
 	}
 
 	if *webPortPtr != "" {
-		server := web.NewWebServer(db, siteCoverImagesDir)
+		server := web.NewWebServer(db, savedCoverImagesDir)
 		log.Fatal(server.ServeHTTP(*webPortPtr))
 	}
 
 	if addBookFlag {
-		tui.MainMenuTui(db, siteCoverImagesDir)
+		tui.MainMenuTui(db, savedCoverImagesDir)
 	}
 }
 

@@ -2,6 +2,7 @@ package pages
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -62,6 +63,22 @@ func AuthorsBySurname(authors []models.Author) map[string][]models.Author {
 	return groupedBySurname
 }
 
+func BooksByDecade(books []models.Book) map[string][]models.Book {
+	sort.Slice(books, func(left, right int) bool {
+		return books[left].PubDate < books[right].PubDate
+	})
+
+	groupedByDecade := GroupByProperty(books, func(b models.Book) string {
+		if b.PubDate == models.Missing {
+			return "Unknown"
+		}
+		decade := (b.PubDate / 10) * 10
+		return fmt.Sprintf("%ds", decade)
+	})
+
+	return groupedByDecade
+}
+
 func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) string {
 	groupedAuthors := AuthorsBySurname(authors)
 	var letters []string
@@ -105,6 +122,70 @@ func RenderBookPage(bookTemplateFile string, book models.Book) string {
 	err := t.Execute(&doc, book)
 	if err != nil {
 		log.Fatal("Error  rendering book page template: %w", err)
+		os.Exit(1)
+	}
+	return doc.String()
+}
+
+type DecadeInfo struct {
+	Decade string
+	Books  []models.Book
+}
+
+func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) string {
+	groupedBooks := BooksByDecade(books)
+	var decades []string
+	for d, _ := range groupedBooks {
+		decades = append(decades, d)
+	}
+	
+	// Sort decades newest to oldest, with "Unknown" at the end
+	sort.Slice(decades, func(i, j int) bool {
+		if decades[i] == "Unknown" {
+			return false
+		}
+		if decades[j] == "Unknown" {
+			return true
+		}
+		return decades[i] > decades[j] // Reverse alphabetical for newest first
+	})
+
+	var decadeInfos []DecadeInfo
+	for _, d := range decades {
+		decadeInfos = append(decadeInfos, DecadeInfo{
+			Decade: d,
+			Books:  groupedBooks[d],
+		})
+	}
+
+	var doc bytes.Buffer
+	t, _ := template.ParseFiles("templates/base.html", decadeTemplateFile)
+	err := t.Execute(&doc, decadeInfos)
+	if err != nil {
+		log.Fatal("Error parsing decades index template: %w", err)
+		os.Exit(1)
+	}
+	return doc.String()
+}
+
+func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade string) string {
+	sort.Slice(books, func(left, right int) bool {
+		if books[left].PubDate != books[right].PubDate {
+			return books[left].PubDate < books[right].PubDate
+		}
+		return books[left].MainTitle < books[right].MainTitle
+	})
+
+	decadeInfo := DecadeInfo{
+		Decade: decade,
+		Books:  books,
+	}
+
+	var doc bytes.Buffer
+	t, _ := template.ParseFiles("templates/child_dir_base.html", decadeTemplateFile)
+	err := t.Execute(&doc, decadeInfo)
+	if err != nil {
+		log.Fatal("Error parsing decade page template: %w", err)
 		os.Exit(1)
 	}
 	return doc.String()

@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ccdavis/sfwr/models"
+	"github.com/ccdavis/sfwr/pages"
 	"gorm.io/gorm"
 )
 
@@ -20,14 +22,16 @@ type WebServer struct {
 }
 
 type PageData struct {
-	Title   string
-	Books   []models.Book
-	Authors []models.Author
-	Book    *models.Book
-	Author  *models.Author
-	Message string
-	Error   string
-	SortBy  string
+	Title     string
+	Books     []models.Book
+	Authors   []models.Author
+	Book      *models.Book
+	Author    *models.Author
+	Decades   []pages.DecadeInfo
+	Decade    *pages.DecadeInfo
+	Message   string
+	Error     string
+	SortBy    string
 }
 
 func NewWebServer(db *gorm.DB, imageDir string) *WebServer {
@@ -58,6 +62,8 @@ func (ws *WebServer) ServeHTTP(port string) error {
 	http.HandleFunc("/authors", ws.listAuthorsHandler)
 	http.HandleFunc("/authors/new", ws.newAuthorHandler)
 	http.HandleFunc("/authors/create", ws.createAuthorHandler)
+	http.HandleFunc("/decades", ws.listDecadesHandler)
+	http.HandleFunc("/decades/", ws.decadeHandler)
 	http.HandleFunc("/books/search-openlibrary", ws.searchOpenLibraryHandler)
 	http.HandleFunc("/books/update-from-openlibrary", ws.updateFromOpenLibraryHandler)
 	http.HandleFunc("/books/create-from-openlibrary", ws.createFromOpenLibraryHandler)
@@ -581,6 +587,79 @@ func (ws *WebServer) createFromOpenLibraryHandler(w http.ResponseWriter, r *http
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func (ws *WebServer) listDecadesHandler(w http.ResponseWriter, r *http.Request) {
+	var books []models.Book
+	err := ws.db.Preload("Authors").Find(&books).Error
+	if err != nil {
+		http.Error(w, "Error fetching books", http.StatusInternalServerError)
+		return
+	}
+
+	groupedBooks := pages.BooksByDecade(books)
+	var decadeNames []string
+	for decade, _ := range groupedBooks {
+		decadeNames = append(decadeNames, decade)
+	}
+	
+	// Sort decades newest to oldest, with "Unknown" at the end
+	sort.Slice(decadeNames, func(i, j int) bool {
+		if decadeNames[i] == "Unknown" {
+			return false
+		}
+		if decadeNames[j] == "Unknown" {
+			return true
+		}
+		return decadeNames[i] > decadeNames[j] // Reverse alphabetical for newest first
+	})
+	
+	var decades []pages.DecadeInfo
+	for _, decade := range decadeNames {
+		decades = append(decades, pages.DecadeInfo{
+			Decade: decade,
+			Books:  groupedBooks[decade],
+		})
+	}
+
+	data := PageData{
+		Title:   "All Decades",
+		Decades: decades,
+	}
+	ws.renderTemplate(w, "decades", data)
+}
+
+func (ws *WebServer) decadeHandler(w http.ResponseWriter, r *http.Request) {
+	decade := strings.TrimPrefix(r.URL.Path, "/decades/")
+	if decade == "" {
+		http.Redirect(w, r, "/decades", http.StatusFound)
+		return
+	}
+
+	var books []models.Book
+	err := ws.db.Preload("Authors").Find(&books).Error
+	if err != nil {
+		http.Error(w, "Error fetching books", http.StatusInternalServerError)
+		return
+	}
+
+	groupedBooks := pages.BooksByDecade(books)
+	decadeBooks, exists := groupedBooks[decade]
+	if !exists {
+		http.NotFound(w, r)
+		return
+	}
+
+	decadeInfo := pages.DecadeInfo{
+		Decade: decade,
+		Books:  decadeBooks,
+	}
+
+	data := PageData{
+		Title:  "Books from " + decade,
+		Decade: &decadeInfo,
+	}
+	ws.renderTemplate(w, "decade", data)
 }
 
 func (ws *WebServer) writeJSONError(w http.ResponseWriter, message string, statusCode int) {
