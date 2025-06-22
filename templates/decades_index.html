@@ -1,0 +1,28 @@
+{{define "title"}}All Decades{{end}} 
+{{define "body"}}
+
+{{if eq (len .) 0}}
+Nothing to see here
+{{end}}
+<div class="content-container">
+
+<div class="author-index">
+    
+{{range . }}
+<br/>
+	
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
+        <h1>{{.Decade}}</h1>
+        <a class="buttonlink" href="decades/{{.Decade}}.html">See All</a>
+    </div>
+        
+    <div class="citation book-author">
+        {{ len .Books}} books
+    </div>
+   
+   {{end}}
+
+</div>
+   
+</div> 
+{{end}}

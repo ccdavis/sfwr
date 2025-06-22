@@ -1,0 +1,46 @@
+ {{define "title" }} Books from {{.Decade}} {{end}} 
+ {{define "body"}}
+ 
+ 
+ {{if eq (len .Books) 0}}
+ Nothing to see here
+ {{end}}
+ <div class="content-container">
+
+<div class="list-name"> {{.Decade}}</div>
+
+ <div class="book-list">
+ {{range .Books}}
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div>{{.MakeLinkedMediumCoverImageTag ".."}}</div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>{{.MainTitle}} </h3>
+	</div>
+	{{if gt (len .SubTitle) 0}}
+		<div class="citation book-subtitle">
+			<h4>{{.SubTitle}}</h4>
+		</div>
+	
+	{{end}}
+ 
+	<div class="citation book-author">
+	 <h4>BY  {{.AuthorFullName}} - Pub Year {{.FormatPubDate}} </h4> 
+	</div>	
+	<div>rating: {{.DisplayRating}}</div>
+	<hr>
+	<div>{{.BookPageLink ".." }} </div>
+	 
+</div>
+	
+ </div> 
+ {{end}}
+ </div>
+ 
+ </div>
+ 
+ {{end}}
