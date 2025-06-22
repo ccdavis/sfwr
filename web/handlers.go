@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -56,6 +57,9 @@ func (ws *WebServer) ServeHTTP(port string) error {
 	http.HandleFunc("/authors", ws.listAuthorsHandler)
 	http.HandleFunc("/authors/new", ws.newAuthorHandler)
 	http.HandleFunc("/authors/create", ws.createAuthorHandler)
+	http.HandleFunc("/books/search-openlibrary", ws.searchOpenLibraryHandler)
+	http.HandleFunc("/books/update-from-openlibrary", ws.updateFromOpenLibraryHandler)
+	http.Handle("/saved_cover_images/", http.StripPrefix("/saved_cover_images/", http.FileServer(http.Dir(ws.imageDir))))
 
 	fmt.Printf("Web server starting on http://localhost:%s\n", port)
 	return http.ListenAndServe(":"+port, nil)
@@ -318,4 +322,148 @@ func (ws *WebServer) renderError(w http.ResponseWriter, message string, err erro
 		Error: fmt.Sprintf("%s: %v", message, err),
 	}
 	ws.renderTemplate(w, "error", data)
+}
+
+// OpenLibrary API request/response structures
+type SearchRequest struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	BookID uint   `json:"bookId"`
+}
+
+type SearchResponse struct {
+	Results []SearchResultItem `json:"results,omitempty"`
+	Error   string            `json:"error,omitempty"`
+}
+
+type SearchResultItem struct {
+	Title              string   `json:"title"`
+	Authors            []string `json:"authors"`
+	FirstYearPublished int      `json:"first_year_published"`
+	CoverEditionKey    string   `json:"cover_edition_key"`
+	CoverImageID       string   `json:"cover_image_id"`
+	CoverURL           string   `json:"cover_url"`
+	Number             int      `json:"number"`
+}
+
+type UpdateRequest struct {
+	BookID         uint             `json:"bookId"`
+	SelectedResult SearchResultItem `json:"selectedResult"`
+}
+
+type UpdateResponse struct {
+	Success bool   `json:"success"`
+	Error   string `json:"error,omitempty"`
+}
+
+func (ws *WebServer) searchOpenLibraryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req SearchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ws.writeJSONError(w, "Invalid request format", http.StatusBadRequest)
+		return
+	}
+
+	if req.Title == "" || req.Author == "" {
+		ws.writeJSONError(w, "Title and author are required", http.StatusBadRequest)
+		return
+	}
+
+	// Search Open Library using the existing model function
+	searchResults := models.SearchBook(req.Title, req.Author)
+	
+	// Convert to response format and add cover URLs
+	var responseItems []SearchResultItem
+	for _, result := range searchResults {
+		item := SearchResultItem{
+			Title:              result.Title,
+			Authors:            result.Authors,
+			FirstYearPublished: result.FirstYearPublished,
+			CoverEditionKey:    result.CoverEditionKey,
+			CoverImageID:       result.CoverImageId,
+			Number:             result.Number,
+		}
+		
+		// Generate cover URL for small images
+		if result.CoverEditionKey != "" {
+			item.CoverURL = result.GetBookCoverUrl("S")
+		}
+		
+		responseItems = append(responseItems, item)
+	}
+
+	response := SearchResponse{
+		Results: responseItems,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func (ws *WebServer) updateFromOpenLibraryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req UpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ws.writeJSONError(w, "Invalid request format", http.StatusBadRequest)
+		return
+	}
+
+	if req.BookID == 0 {
+		ws.writeJSONError(w, "Book ID is required", http.StatusBadRequest)
+		return
+	}
+
+	// Find the book
+	var book models.Book
+	if err := ws.db.First(&book, req.BookID).Error; err != nil {
+		ws.writeJSONError(w, "Book not found", http.StatusNotFound)
+		return
+	}
+
+	// Convert web result back to models.BookSearchResult format
+	olResult := models.BookSearchResult{
+		Number:             req.SelectedResult.Number,
+		FirstYearPublished: req.SelectedResult.FirstYearPublished,
+		Title:              req.SelectedResult.Title,
+		Authors:            req.SelectedResult.Authors,
+		CoverEditionKey:    req.SelectedResult.CoverEditionKey,
+		CoverImageId:       req.SelectedResult.CoverImageID,
+	}
+
+	// Update the book using the existing model method
+	updatedBook, err := book.UpdateFromOpenLibrary(ws.db, olResult)
+	if err != nil {
+		ws.writeJSONError(w, fmt.Sprintf("Failed to update book: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Download cover images if we have the necessary data
+	if updatedBook.HasCoverImageId() {
+		go func() {
+			// Run in background to avoid blocking the response
+			models.CaptureAllSizeCovers(updatedBook, ws.imageDir)
+		}()
+	}
+
+	response := UpdateResponse{
+		Success: true,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func (ws *WebServer) writeJSONError(w http.ResponseWriter, message string, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	response := map[string]string{"error": message}
+	json.NewEncoder(w).Encode(response)
 }

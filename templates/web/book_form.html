@@ -224,6 +224,27 @@
         <div class="error">{{.Error}}</div>
         {{end}}
 
+        {{if .Book}}
+        <div class="form-group" style="margin-bottom: 30px;">
+            <label>Current Cover Image</label>
+            <div id="current-cover" style="margin-top: 10px;">
+                {{if .Book.HasCoverImageId}}
+                <img src="/saved_cover_images/{{.Book.OlCoverId}}-M.jpg" 
+                     style="max-width: 200px; max-height: 300px; border: 2px solid #555;"
+                     alt="Book cover for {{.Book.FormatTitle}}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display: none; padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
+                    No cover image available
+                </div>
+                {{else}}
+                <div style="padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
+                    No cover image available
+                </div>
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+
         <form method="POST" action="{{if .Book}}/books/update/{{.Book.ID}}{{else}}/books/create{{end}}">
             <div class="form-group">
                 <label for="main_title">Main Title *</label>
@@ -245,7 +266,7 @@
                 <select id="author_id" name="author_id" required>
                     <option value="">Select an author...</option>
                     {{range .Authors}}
-                    <option value="{{.ID}}" {{if $.Book}}{{range $.Book.Authors}}{{if eq .ID $.ID}}selected{{end}}{{end}}{{end}}>{{.FullName}}</option>
+                    <option value="{{.ID}}" {{if $.Book}}{{$authorID := .ID}}{{range $.Book.Authors}}{{if eq .ID $authorID}}selected{{end}}{{end}}{{end}}>{{.FullName}}</option>
                     {{end}}
                 </select>
                 <small style="color: #aaa; display: block; margin-top: 5px;">
@@ -294,6 +315,11 @@
                     {{if .Book}}Update Book{{else}}Create Book{{end}}
                 </button>
                 <a class="buttonlink" href="/books" style="font-size: 16px; padding: 12px 24px;">Cancel</a>
+                {{if .Book}}
+                <button type="button" id="updateFromOL" class="buttonlink" style="font-size: 16px; padding: 12px 24px; background-color: #4a7c59;">
+                    Update from Open Library
+                </button>
+                {{end}}
             </div>
         </form>
 
@@ -306,5 +332,172 @@
         </div>
         {{end}}
     </div>
+
+    <!-- Open Library Search Modal -->
+    <div id="olModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
+        <div style="background-color: #222; margin: 5% auto; padding: 20px; border: 2px solid #555; width: 80%; max-width: 800px; max-height: 80%; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #6Cf; margin: 0;">Select Open Library Edition</h2>
+                <button id="closeModal" style="background: #d44; color: white; border: none; padding: 10px 15px; font-size: 18px; cursor: pointer;">&times;</button>
+            </div>
+            <div id="searchStatus" style="margin-bottom: 20px; padding: 10px; background-color: #115; color: #dd1; display: none;"></div>
+            <div id="searchResults"></div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button id="cancelSelection" class="buttonlink">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateBtn = document.getElementById('updateFromOL');
+            const modal = document.getElementById('olModal');
+            const closeBtn = document.getElementById('closeModal');
+            const cancelBtn = document.getElementById('cancelSelection');
+            const searchStatus = document.getElementById('searchStatus');
+            const searchResults = document.getElementById('searchResults');
+
+            if (updateBtn) {
+                updateBtn.addEventListener('click', function() {
+                    // Show loading status
+                    searchStatus.style.display = 'block';
+                    searchStatus.innerHTML = 'Searching Open Library...';
+                    searchResults.innerHTML = '';
+                    modal.style.display = 'block';
+
+                    // Get book data
+                    const title = document.getElementById('main_title').value;
+                    const author = document.getElementById('author_full_name').value;
+                    const bookId = {{if .Book}}{{.Book.ID}}{{else}}0{{end}};
+
+                    // Make AJAX request to search Open Library
+                    fetch('/books/search-openlibrary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: title,
+                            author: author,
+                            bookId: bookId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        searchStatus.style.display = 'none';
+                        if (data.error) {
+                            searchResults.innerHTML = '<div style="color: #d44; padding: 20px; text-align: center;">Error: ' + data.error + '</div>';
+                            return;
+                        }
+                        if (data.results && data.results.length > 0) {
+                            displaySearchResults(data.results, bookId);
+                        } else {
+                            searchResults.innerHTML = '<div style="color: #aaa; padding: 20px; text-align: center;">No editions found in Open Library for this title and author.</div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        searchStatus.style.display = 'none';
+                        searchResults.innerHTML = '<div style="color: #d44; padding: 20px; text-align: center;">Network error occurred while searching.</div>';
+                    });
+                });
+            }
+
+            function displaySearchResults(results, bookId) {
+                let html = '<div style="color: #ddd; margin-bottom: 15px;">Found ' + results.length + ' edition(s). Click on one to update the book:</div>';
+                
+                results.forEach(function(result, index) {
+                    const coverUrl = result.cover_url || '';
+                    const authors = Array.isArray(result.authors) ? result.authors.join(', ') : result.authors || '';
+                    
+                    html += '<div style="border: 1px solid #444; margin-bottom: 15px; padding: 15px; background-color: #333; cursor: pointer; display: flex; gap: 15px;" class="search-result" data-index="' + index + '">';
+                    
+                    // Cover image
+                    if (coverUrl) {
+                        html += '<div style="flex-shrink: 0;"><img src="' + coverUrl + '" style="width: 60px; height: 90px; object-fit: cover; border: 1px solid #555;" onerror="this.style.display=\'none\'"></div>';
+                    } else {
+                        html += '<div style="flex-shrink: 0; width: 60px; height: 90px; background-color: #222; border: 1px solid #555; display: flex; align-items: center; justify-content: center; color: #666; font-size: 10px;">No Cover</div>';
+                    }
+                    
+                    // Book details
+                    html += '<div style="flex: 1;">';
+                    html += '<div style="color: #6Cf; font-weight: bold; margin-bottom: 5px;">' + (result.title || 'Unknown Title') + '</div>';
+                    html += '<div style="color: #aaa; margin-bottom: 5px;">by ' + authors + '</div>';
+                    if (result.first_year_published && result.first_year_published > 0) {
+                        html += '<div style="color: #ccc; margin-bottom: 5px;">Published: ' + result.first_year_published + '</div>';
+                    }
+                    if (result.cover_edition_key) {
+                        html += '<div style="color: #999; font-size: 12px;">Edition ID: ' + result.cover_edition_key + '</div>';
+                    }
+                    html += '</div>';
+                    
+                    html += '</div>';
+                });
+                
+                searchResults.innerHTML = html;
+
+                // Add click handlers to results
+                document.querySelectorAll('.search-result').forEach(function(element) {
+                    element.addEventListener('click', function() {
+                        const index = this.getAttribute('data-index');
+                        const selectedResult = results[index];
+                        updateBookFromSelection(selectedResult, bookId);
+                    });
+                });
+            }
+
+            function updateBookFromSelection(result, bookId) {
+                searchStatus.style.display = 'block';
+                searchStatus.innerHTML = 'Updating book with selected Open Library data...';
+                searchResults.innerHTML = '';
+
+                fetch('/books/update-from-openlibrary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bookId: bookId,
+                        selectedResult: result
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        searchStatus.innerHTML = 'Error: ' + data.error;
+                        searchStatus.style.backgroundColor = '#d44';
+                        return;
+                    }
+                    searchStatus.innerHTML = 'Book updated successfully! Reloading page...';
+                    searchStatus.style.backgroundColor = '#3a5';
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Update error:', error);
+                    searchStatus.innerHTML = 'Network error occurred while updating.';
+                    searchStatus.style.backgroundColor = '#d44';
+                });
+            }
+
+            // Modal close handlers
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
