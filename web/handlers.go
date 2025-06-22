@@ -59,6 +59,7 @@ func (ws *WebServer) ServeHTTP(port string) error {
 	http.HandleFunc("/authors/create", ws.createAuthorHandler)
 	http.HandleFunc("/books/search-openlibrary", ws.searchOpenLibraryHandler)
 	http.HandleFunc("/books/update-from-openlibrary", ws.updateFromOpenLibraryHandler)
+	http.HandleFunc("/books/create-from-openlibrary", ws.createFromOpenLibraryHandler)
 	http.Handle("/saved_cover_images/", http.StripPrefix("/saved_cover_images/", http.FileServer(http.Dir(ws.imageDir))))
 
 	fmt.Printf("Web server starting on http://localhost:%s\n", port)
@@ -89,7 +90,7 @@ func (ws *WebServer) listBooksHandler(w http.ResponseWriter, r *http.Request) {
 
 func (ws *WebServer) newBookHandler(w http.ResponseWriter, r *http.Request) {
 	var authors []models.Author
-	result := ws.db.Find(&authors)
+	result := ws.db.Order("full_name ASC").Find(&authors)
 	if result.Error != nil {
 		ws.renderError(w, "Failed to load authors", result.Error)
 		return
@@ -108,23 +109,6 @@ func (ws *WebServer) createBookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	book := models.Book{
-		MainTitle:      r.FormValue("main_title"),
-		SubTitle:       r.FormValue("sub_title"),
-		AuthorFullName: r.FormValue("author_full_name"),
-		AuthorSurname:  models.ExtractSurname(r.FormValue("author_full_name")),
-		Rating:         r.FormValue("rating"),
-		Review:         r.FormValue("review"),
-		DateAdded:      time.Now(),
-	}
-
-	pubYear, err := strconv.ParseInt(r.FormValue("pub_date"), 10, 64)
-	if err != nil {
-		book.PubDate = models.Missing
-	} else {
-		book.PubDate = pubYear
-	}
-
 	authorID, err := strconv.ParseUint(r.FormValue("author_id"), 10, 32)
 	if err != nil {
 		ws.renderError(w, "Invalid author selected", err)
@@ -135,6 +119,23 @@ func (ws *WebServer) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	if err := ws.db.First(&author, authorID).Error; err != nil {
 		ws.renderError(w, "Author not found", err)
 		return
+	}
+
+	book := models.Book{
+		MainTitle:      r.FormValue("main_title"),
+		SubTitle:       r.FormValue("sub_title"),
+		AuthorFullName: author.FullName,
+		AuthorSurname:  author.Surname,
+		Rating:         r.FormValue("rating"),
+		Review:         r.FormValue("review"),
+		DateAdded:      time.Now(),
+	}
+
+	pubYear, err := strconv.ParseInt(r.FormValue("pub_date"), 10, 64)
+	if err != nil {
+		book.PubDate = models.Missing
+	} else {
+		book.PubDate = pubYear
 	}
 
 	result := ws.db.Create(&book)
@@ -163,7 +164,7 @@ func (ws *WebServer) editBookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var authors []models.Author
-	result := ws.db.Find(&authors)
+	result := ws.db.Order("full_name ASC").Find(&authors)
 	if result.Error != nil {
 		ws.renderError(w, "Failed to load authors", result.Error)
 		return
@@ -197,20 +198,6 @@ func (ws *WebServer) updateBookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	book.MainTitle = r.FormValue("main_title")
-	book.SubTitle = r.FormValue("sub_title")
-	book.AuthorFullName = r.FormValue("author_full_name")
-	book.AuthorSurname = models.ExtractSurname(r.FormValue("author_full_name"))
-	book.Rating = r.FormValue("rating")
-	book.Review = r.FormValue("review")
-
-	pubYear, err := strconv.ParseInt(r.FormValue("pub_date"), 10, 64)
-	if err != nil {
-		book.PubDate = models.Missing
-	} else {
-		book.PubDate = pubYear
-	}
-
 	authorID, err := strconv.ParseUint(r.FormValue("author_id"), 10, 32)
 	if err != nil {
 		ws.renderError(w, "Invalid author selected", err)
@@ -221,6 +208,20 @@ func (ws *WebServer) updateBookHandler(w http.ResponseWriter, r *http.Request) {
 	if err := ws.db.First(&author, authorID).Error; err != nil {
 		ws.renderError(w, "Author not found", err)
 		return
+	}
+
+	book.MainTitle = r.FormValue("main_title")
+	book.SubTitle = r.FormValue("sub_title")
+	book.AuthorFullName = author.FullName
+	book.AuthorSurname = author.Surname
+	book.Rating = r.FormValue("rating")
+	book.Review = r.FormValue("review")
+
+	pubYear, err := strconv.ParseInt(r.FormValue("pub_date"), 10, 64)
+	if err != nil {
+		book.PubDate = models.Missing
+	} else {
+		book.PubDate = pubYear
 	}
 
 	result := ws.db.Save(&book)
@@ -312,7 +313,7 @@ func (ws *WebServer) renderTemplate(w http.ResponseWriter, name string, data Pag
 	}
 	err := ws.templates.ExecuteTemplate(w, name+".html", data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Template error for %s: %v", name, err), http.StatusInternalServerError)
 	}
 }
 
@@ -348,6 +349,13 @@ type SearchResultItem struct {
 
 type UpdateRequest struct {
 	BookID         uint             `json:"bookId"`
+	SelectedResult SearchResultItem `json:"selectedResult"`
+}
+
+type CreateRequest struct {
+	AuthorID       uint             `json:"authorId"`
+	Rating         string           `json:"rating"`
+	Review         string           `json:"review"`
 	SelectedResult SearchResultItem `json:"selectedResult"`
 }
 
@@ -455,6 +463,98 @@ func (ws *WebServer) updateFromOpenLibraryHandler(w http.ResponseWriter, r *http
 
 	response := UpdateResponse{
 		Success: true,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func (ws *WebServer) createFromOpenLibraryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req CreateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ws.writeJSONError(w, "Invalid request format", http.StatusBadRequest)
+		return
+	}
+
+	if req.AuthorID == 0 || req.Rating == "" {
+		ws.writeJSONError(w, "Author and rating are required", http.StatusBadRequest)
+		return
+	}
+
+	// Find the author
+	var author models.Author
+	if err := ws.db.First(&author, req.AuthorID).Error; err != nil {
+		ws.writeJSONError(w, "Author not found", http.StatusNotFound)
+		return
+	}
+
+	// Create the book with Open Library data
+	book := models.Book{
+		MainTitle:      req.SelectedResult.Title,
+		AuthorFullName: author.FullName,
+		AuthorSurname:  author.Surname,
+		Rating:         req.Rating,
+		Review:         req.Review,
+		DateAdded:      time.Now(),
+	}
+
+	// Set cover ID if available
+	if req.SelectedResult.CoverImageID != "" {
+		if coverId, err := strconv.ParseInt(req.SelectedResult.CoverImageID, 10, 64); err == nil {
+			book.OlCoverId = coverId
+		}
+	}
+
+	// Set publication date if available
+	if req.SelectedResult.FirstYearPublished > 0 {
+		book.PubDate = int64(req.SelectedResult.FirstYearPublished)
+	} else {
+		book.PubDate = models.Missing
+	}
+
+	// Create the book
+	result := ws.db.Create(&book)
+	if result.Error != nil {
+		ws.writeJSONError(w, fmt.Sprintf("Failed to create book: %v", result.Error), http.StatusInternalServerError)
+		return
+	}
+
+	// Associate with author
+	ws.db.Model(&book).Association("Authors").Append(&author)
+
+	// Convert web result to models.BookSearchResult format for Open Library update
+	olResult := models.BookSearchResult{
+		Number:             req.SelectedResult.Number,
+		FirstYearPublished: req.SelectedResult.FirstYearPublished,
+		Title:              req.SelectedResult.Title,
+		Authors:            req.SelectedResult.Authors,
+		CoverEditionKey:    req.SelectedResult.CoverEditionKey,
+		CoverImageId:       req.SelectedResult.CoverImageID,
+	}
+
+	// Update the book with Open Library metadata
+	updatedBook, err := book.UpdateFromOpenLibrary(ws.db, olResult)
+	if err != nil {
+		// Log error but don't fail the creation since the book was already created
+		fmt.Printf("Warning: Failed to update book with Open Library data: %v\n", err)
+	}
+
+	// Download cover images if we have the necessary data
+	if updatedBook.HasCoverImageId() {
+		go func() {
+			// Run in background to avoid blocking the response
+			models.CaptureAllSizeCovers(updatedBook, ws.imageDir)
+		}()
+	}
+
+	response := map[string]interface{}{
+		"success": true,
+		"bookId":  book.ID,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

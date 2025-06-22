@@ -257,18 +257,17 @@
             </div>
 
             <div class="form-group">
-                <label for="author_full_name">Author Full Name *</label>
-                <input type="text" id="author_full_name" name="author_full_name" value="{{if .Book}}{{.Book.AuthorFullName}}{{end}}" required>
-            </div>
-
-            <div class="form-group">
                 <label for="author_id">Select Author *</label>
-                <select id="author_id" name="author_id" required>
-                    <option value="">Select an author...</option>
+                <input type="text" id="author_id" name="author_id" list="authors_list" 
+                       value="{{if .Book}}{{range .Book.Authors}}{{.FullName}}{{end}}{{end}}" 
+                       placeholder="Type to search authors..." required>
+                <datalist id="authors_list">
                     {{range .Authors}}
-                    <option value="{{.ID}}" {{if $.Book}}{{$authorID := .ID}}{{range $.Book.Authors}}{{if eq .ID $authorID}}selected{{end}}{{end}}{{end}}>{{.FullName}}</option>
+                    <option value="{{.FullName}}" data-id="{{.ID}}">{{.FullName}}</option>
                     {{end}}
-                </select>
+                </datalist>
+                <input type="hidden" id="author_id_hidden" name="author_id_value" 
+                       value="{{if .Book}}{{range .Book.Authors}}{{.ID}}{{end}}{{end}}">
                 <small style="color: #aaa; display: block; margin-top: 5px;">
                     Don't see the author? <a href="/authors/new" target="_blank">Add a new author first</a>
                 </small>
@@ -315,11 +314,9 @@
                     {{if .Book}}Update Book{{else}}Create Book{{end}}
                 </button>
                 <a class="buttonlink" href="/books" style="font-size: 16px; padding: 12px 24px;">Cancel</a>
-                {{if .Book}}
-                <button type="button" id="updateFromOL" class="buttonlink" style="font-size: 16px; padding: 12px 24px; background-color: #4a7c59;">
-                    Update from Open Library
+                <button type="button" id="searchFromOL" class="buttonlink" style="font-size: 16px; padding: 12px 24px; background-color: #4a7c59;">
+                    {{if .Book}}Update from Open Library{{else}}Search Open Library{{end}}
                 </button>
-                {{end}}
             </div>
         </form>
 
@@ -350,15 +347,40 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const updateBtn = document.getElementById('updateFromOL');
+            // Handle author datalist selection
+            const authorInput = document.getElementById('author_id');
+            const authorHidden = document.getElementById('author_id_hidden');
+            const authorsList = document.getElementById('authors_list');
+
+            authorInput.addEventListener('input', function() {
+                const selectedOption = Array.from(authorsList.options).find(option => option.value === this.value);
+                if (selectedOption) {
+                    authorHidden.value = selectedOption.getAttribute('data-id');
+                } else {
+                    authorHidden.value = '';
+                }
+            });
+
+            // Set up form submission to use the hidden field value
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (authorHidden.value === '') {
+                    alert('Please select a valid author from the list');
+                    e.preventDefault();
+                    return false;
+                }
+                // Update the name attribute so the backend receives the ID
+                authorHidden.name = 'author_id';
+                authorInput.name = 'author_name_display';
+            });
+            const searchBtn = document.getElementById('searchFromOL');
             const modal = document.getElementById('olModal');
             const closeBtn = document.getElementById('closeModal');
             const cancelBtn = document.getElementById('cancelSelection');
             const searchStatus = document.getElementById('searchStatus');
             const searchResults = document.getElementById('searchResults');
 
-            if (updateBtn) {
-                updateBtn.addEventListener('click', function() {
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
                     // Show loading status
                     searchStatus.style.display = 'block';
                     searchStatus.innerHTML = 'Searching Open Library...';
@@ -367,7 +389,7 @@
 
                     // Get book data
                     const title = document.getElementById('main_title').value;
-                    const author = document.getElementById('author_full_name').value;
+                    const author = document.getElementById('author_id').value;
                     const bookId = {{if .Book}}{{.Book.ID}}{{else}}0{{end}};
 
                     // Make AJAX request to search Open Library
@@ -441,8 +463,111 @@
                     element.addEventListener('click', function() {
                         const index = this.getAttribute('data-index');
                         const selectedResult = results[index];
-                        updateBookFromSelection(selectedResult, bookId);
+                        if (bookId === 0) {
+                            // New book - populate form fields
+                            populateFormFromSelection(selectedResult);
+                        } else {
+                            // Existing book - update in database
+                            updateBookFromSelection(selectedResult, bookId);
+                        }
                     });
+                });
+            }
+
+            function populateFormFromSelection(result) {
+                // Show options: populate form or create directly
+                searchStatus.style.display = 'block';
+                searchStatus.innerHTML = `
+                    <div style="margin-bottom: 15px;">Selected: ${result.title}</div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button id="populateForm" class="buttonlink">Fill Form Only</button>
+                        <button id="createDirectly" class="buttonlink" style="background-color: #3a5;">Create Book Now</button>
+                    </div>
+                `;
+                searchResults.innerHTML = '';
+
+                // Handle populate form option
+                document.getElementById('populateForm').addEventListener('click', function() {
+                    const titleField = document.getElementById('main_title');
+                    const pubDateField = document.getElementById('pub_date');
+                    
+                    if (titleField && result.title) {
+                        titleField.value = result.title;
+                    }
+                    
+                    if (pubDateField && result.first_year_published && result.first_year_published > 0) {
+                        pubDateField.value = result.first_year_published;
+                    }
+                    
+                    modal.style.display = 'none';
+                    
+                    // Show success message briefly
+                    searchStatus.style.display = 'block';
+                    searchStatus.innerHTML = 'Form populated with Open Library data. Review and save to create the book.';
+                    searchStatus.style.backgroundColor = '#3a5';
+                    
+                    setTimeout(() => {
+                        searchStatus.style.display = 'none';
+                    }, 3000);
+                });
+
+                // Handle create directly option
+                document.getElementById('createDirectly').addEventListener('click', function() {
+                    createBookFromSelection(result);
+                });
+            }
+
+            function createBookFromSelection(result) {
+                // Validate required fields
+                const authorHidden = document.getElementById('author_id_hidden');
+                const rating = document.querySelector('input[name="rating"]:checked');
+                const review = document.getElementById('review').value;
+
+                if (!authorHidden.value) {
+                    searchStatus.innerHTML = 'Please select an author first.';
+                    searchStatus.style.backgroundColor = '#d44';
+                    return;
+                }
+
+                if (!rating) {
+                    searchStatus.innerHTML = 'Please select a rating first.';
+                    searchStatus.style.backgroundColor = '#d44';
+                    return;
+                }
+
+                searchStatus.innerHTML = 'Creating book with Open Library data...';
+                searchStatus.style.backgroundColor = '#115';
+
+                fetch('/books/create-from-openlibrary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        authorId: parseInt(authorHidden.value),
+                        rating: rating.value,
+                        review: review,
+                        selectedResult: result
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        searchStatus.innerHTML = 'Error: ' + data.error;
+                        searchStatus.style.backgroundColor = '#d44';
+                        return;
+                    }
+                    searchStatus.innerHTML = 'Book created successfully! Redirecting...';
+                    searchStatus.style.backgroundColor = '#3a5';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/books/edit/' + data.bookId + '?message=Book created successfully with Open Library data';
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Create error:', error);
+                    searchStatus.innerHTML = 'Network error occurred while creating book.';
+                    searchStatus.style.backgroundColor = '#d44';
                 });
             }
 
