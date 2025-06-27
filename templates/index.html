@@ -17,15 +17,15 @@
 
  <div class="book-list">
  {{range .}}
+ <hr>
  <div class="book-item">
  
- <div class="small-cover-image">
+  <div class="medium-cover-image">
+ <div>{{.MakeLinkedMediumCoverImageTag "."}}</div>
+ 
+ </div>
 
-        <div>{{.MakeLinkedSmallCoverImageTag}}</div> 
-    	<div> <p>   {{.BookPageLink }} </p></div>
-    
-    </div>
-
+ 
 <div class="book-info">	
 
 	<div class="citation book-title">
@@ -43,6 +43,7 @@
 	</div>	
     <div>rating: {{.DisplayRating}}</div>	 
 </div>
+<div> <p>   {{.BookPageLink }} </p></div>
 	
  </div> 
  {{end}}
