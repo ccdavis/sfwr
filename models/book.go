@@ -123,6 +123,15 @@ func (a Author) GetBooks() []Book {
 	return a.Books
 }
 
+func (a Author) HasBook(book Book) bool {
+	for _, b := range a.Books {
+		if b.ID == book.ID {
+			return true
+		}
+	}
+	return false
+}
+
 func (a Author) SiteName() string {
 	name, err := filenamify.Filenamify(fmt.Sprint(a.ID, "_", a.FullName), filenamify.Options{})
 	if err != nil {

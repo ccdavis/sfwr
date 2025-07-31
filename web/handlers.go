@@ -62,6 +62,8 @@ func (ws *WebServer) ServeHTTP(port string) error {
 	http.HandleFunc("/authors", ws.listAuthorsHandler)
 	http.HandleFunc("/authors/new", ws.newAuthorHandler)
 	http.HandleFunc("/authors/create", ws.createAuthorHandler)
+	http.HandleFunc("/authors/edit/", ws.editAuthorHandler)
+	http.HandleFunc("/authors/update/", ws.updateAuthorHandler)
 	http.HandleFunc("/decades", ws.listDecadesHandler)
 	http.HandleFunc("/decades/", ws.decadeHandler)
 	http.HandleFunc("/books/search-openlibrary", ws.searchOpenLibraryHandler)
@@ -332,6 +334,147 @@ func (ws *WebServer) createAuthorHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	http.Redirect(w, r, "/authors?message=Author created successfully", http.StatusSeeOther)
+}
+
+func (ws *WebServer) editAuthorHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := strings.TrimPrefix(r.URL.Path, "/authors/edit/")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		ws.renderError(w, "Invalid author ID", err)
+		return
+	}
+
+	var author models.Author
+	if err := ws.db.Preload("Books").First(&author, id).Error; err != nil {
+		ws.renderError(w, "Author not found", err)
+		return
+	}
+
+	// Get all books for reassignment
+	var allBooks []models.Book
+	if err := ws.db.Preload("Authors").Order("main_title ASC").Find(&allBooks).Error; err != nil {
+		ws.renderError(w, "Failed to load books", err)
+		return
+	}
+
+	// Get all authors except the current one for reassignment options
+	var otherAuthors []models.Author
+	if err := ws.db.Where("id != ?", id).Order("full_name ASC").Find(&otherAuthors).Error; err != nil {
+		ws.renderError(w, "Failed to load authors", err)
+		return
+	}
+
+	data := PageData{
+		Title:   "Edit Author",
+		Author:  &author,
+		Books:   allBooks,
+		Authors: otherAuthors,
+		Message: r.URL.Query().Get("message"),
+	}
+	ws.renderTemplate(w, "author_edit", data)
+}
+
+func (ws *WebServer) updateAuthorHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Redirect(w, r, "/authors", http.StatusSeeOther)
+		return
+	}
+
+	idStr := strings.TrimPrefix(r.URL.Path, "/authors/update/")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		ws.renderError(w, "Invalid author ID", err)
+		return
+	}
+
+	var author models.Author
+	if err := ws.db.Preload("Books").First(&author, id).Error; err != nil {
+		ws.renderError(w, "Author not found", err)
+		return
+	}
+
+	// Update author name
+	fullName := strings.TrimSpace(r.FormValue("full_name"))
+	if fullName == "" {
+		ws.renderError(w, "Author name is required", fmt.Errorf("empty author name"))
+		return
+	}
+
+	author.FullName = fullName
+	author.Surname = models.ExtractSurname(fullName)
+
+	// Update all books with this author's name change
+	for _, book := range author.Books {
+		book.AuthorFullName = author.FullName
+		book.AuthorSurname = author.Surname
+		ws.db.Save(&book)
+	}
+
+	// Save the author
+	if err := ws.db.Save(&author).Error; err != nil {
+		ws.renderError(w, "Failed to update author", err)
+		return
+	}
+
+	// Handle book assignments/removals
+	action := r.FormValue("book_action")
+	switch action {
+	case "add":
+		// Add selected books to this author
+		bookIDs := r.Form["add_book_ids"]
+		if len(bookIDs) > 0 {
+			var books []models.Book
+			if err := ws.db.Find(&books, bookIDs).Error; err != nil {
+				ws.renderError(w, "Failed to find books", err)
+				return
+			}
+			for _, book := range books {
+				ws.db.Model(&author).Association("Books").Append(&book)
+				// Update the book's author fields
+				book.AuthorFullName = author.FullName
+				book.AuthorSurname = author.Surname
+				ws.db.Save(&book)
+			}
+		}
+
+	case "remove":
+		// Remove selected books and reassign to another author
+		bookIDs := r.Form["remove_book_ids"]
+		newAuthorID := r.FormValue("new_author_id")
+		
+		if len(bookIDs) > 0 && newAuthorID != "" {
+			newAuthorIDUint, err := strconv.ParseUint(newAuthorID, 10, 32)
+			if err != nil {
+				ws.renderError(w, "Invalid new author ID", err)
+				return
+			}
+
+			var newAuthor models.Author
+			if err := ws.db.First(&newAuthor, newAuthorIDUint).Error; err != nil {
+				ws.renderError(w, "New author not found", err)
+				return
+			}
+
+			var books []models.Book
+			if err := ws.db.Find(&books, bookIDs).Error; err != nil {
+				ws.renderError(w, "Failed to find books", err)
+				return
+			}
+
+			for _, book := range books {
+				// Remove from current author
+				ws.db.Model(&author).Association("Books").Delete(&book)
+				// Add to new author
+				ws.db.Model(&newAuthor).Association("Books").Append(&book)
+				// Update the book's author fields
+				book.AuthorFullName = newAuthor.FullName
+				book.AuthorSurname = newAuthor.Surname
+				ws.db.Save(&book)
+			}
+		}
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/authors/edit/%d?message=Author updated successfully", author.ID), http.StatusSeeOther)
 }
 
 func (ws *WebServer) renderTemplate(w http.ResponseWriter, name string, data PageData) {
