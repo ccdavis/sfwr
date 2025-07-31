@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/ccdavis/sfwr/models"
 	"github.com/ccdavis/sfwr/pages"
@@ -147,10 +148,10 @@ func main() {
 		}
 		generateSite(allBooks, authors, GeneratedSiteDir)
 		
-		// Copy placeholder images to the output directory
-		err := copyPlaceholderImages(siteCoverImagesDir)
+		// Copy all cover images from saved_cover_images to the output directory
+		err := copyAllCoverImages(savedCoverImagesDir, siteCoverImagesDir)
 		if err != nil {
-			log.Printf("Warning: Failed to copy placeholder images: %v", err)
+			log.Printf("Warning: Failed to copy cover images: %v", err)
 		}
 	}
 
@@ -164,30 +165,51 @@ func main() {
 	}
 }
 
-func copyPlaceholderImages(destDir string) error {
-	placeholderDir := "saved_cover_images"
-	placeholderSizes := []string{"S", "M", "L"}
+func copyAllCoverImages(srcDir, destDir string) error {
+	// Create destination directory if it doesn't exist
+	err := os.MkdirAll(destDir, 0775)
+	if err != nil {
+		return fmt.Errorf("failed to create destination directory %s: %v", destDir, err)
+	}
 	
-	for _, size := range placeholderSizes {
-		srcFile := path.Join(placeholderDir, fmt.Sprintf("placeholder-%s.jpg", size))
-		destFile := path.Join(destDir, fmt.Sprintf("placeholder-%s.jpg", size))
-		
-		src, err := os.Open(srcFile)
-		if err != nil {
-			return fmt.Errorf("failed to open placeholder image %s: %v", srcFile, err)
-		}
-		defer src.Close()
-		
-		dest, err := os.Create(destFile)
-		if err != nil {
-			return fmt.Errorf("failed to create destination file %s: %v", destFile, err)
-		}
-		defer dest.Close()
-		
-		_, err = io.Copy(dest, src)
-		if err != nil {
-			return fmt.Errorf("failed to copy placeholder image %s: %v", srcFile, err)
+	// Read all files from source directory
+	files, err := os.ReadDir(srcDir)
+	if err != nil {
+		return fmt.Errorf("failed to read source directory %s: %v", srcDir, err)
+	}
+	
+	// Copy each .jpg file
+	for _, file := range files {
+		if !file.IsDir() && strings.HasSuffix(file.Name(), ".jpg") {
+			srcFile := path.Join(srcDir, file.Name())
+			destFile := path.Join(destDir, file.Name())
+			
+			// Open source file
+			src, err := os.Open(srcFile)
+			if err != nil {
+				log.Printf("Warning: Failed to open source image %s: %v", srcFile, err)
+				continue
+			}
+			
+			// Create destination file
+			dest, err := os.Create(destFile)
+			if err != nil {
+				src.Close()
+				log.Printf("Warning: Failed to create destination file %s: %v", destFile, err)
+				continue
+			}
+			
+			// Copy file
+			_, err = io.Copy(dest, src)
+			src.Close()
+			dest.Close()
+			
+			if err != nil {
+				log.Printf("Warning: Failed to copy image %s: %v", srcFile, err)
+			}
 		}
 	}
+	
+	fmt.Printf("Copied cover images from %s to %s\n", srcDir, destDir)
 	return nil
 }
