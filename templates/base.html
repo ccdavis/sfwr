@@ -201,6 +201,9 @@ div.content-container {
  div.book-list{ 			
 	display: table;
 	margin:0 auto;
+	max-width: 900px;
+	padding: 0 15px;
+	box-sizing: border-box;
  }
  
  div.author-index{ 			
@@ -213,8 +216,14 @@ div.content-container {
 	display: flex;
 	flex-direction: row;	
 	padding: 5px;
-	margin: 2.0em 0 2.0em 0;
+	margin: 2.0em 0 0 0;
  }
+
+ div.book-review {
+	padding: 10px 5px 20px 5px;
+	margin: 0 0 2.0em 0;
+ }
+
 
  div.book-info {
 	display: flex;
@@ -278,6 +287,16 @@ div.content-container {
                 padding: 1%;
                 margin: 0.2em;
             }
+            
+            div.book-item {
+                flex-direction: column;
+            }
+            
+            div.medium-cover-image,
+            div.large-cover-image {
+                padding-right: 0;
+                margin-bottom: 1em;
+            }
         }
 
         @media (max-width: 480px) {
@@ -309,11 +328,25 @@ div.content-container {
             div.book-item {
                 margin: 1.0em 0;
                 flex-direction: column;
+                align-items: center;
             }
             
-            div.small-cover-image {
+            div.book-info {
+                text-align: center;
+                margin: 0;
+            }
+            
+            div.book-info > div:last-child {
+                justify-content: center !important;
+                gap: 20px;
+            }
+            
+            div.small-cover-image,
+            div.medium-cover-image,
+            div.large-cover-image {
                 margin: 0 0 1em 0;
-                align-items: flex-start;
+                align-items: center;
+                padding-right: 0;
             }
             
             .citation .main h1 {

@@ -184,6 +184,9 @@ div.content-container {
  div.book-list{ 			
 	display: table;
 	margin:0 auto;
+	max-width: 900px;
+	padding: 0 15px;
+	box-sizing: border-box;
  }
  
  div.author-index{ 			
@@ -234,12 +237,41 @@ div.content-container {
                 flex-basis: 48%;
                 min-height: 150px;
             }
+            
+            div.book-item {
+                flex-direction: column;
+            }
+            
+            div.medium-cover-image,
+            div.large-cover-image {
+                padding-right: 0;
+                margin-bottom: 1em;
+            }
         }
 
         @media (max-width: 480px) {
             div.book-box {
                 flex-basis: 100%;
                 min-height: 100px;
+            }
+            
+            div.book-item {
+                margin: 1.0em 0;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            div.book-info {
+                text-align: center;
+                margin: 0;
+            }
+            
+            div.small-cover-image,
+            div.medium-cover-image,
+            div.large-cover-image {
+                margin: 0 0 1em 0;
+                align-items: center;
+                padding-right: 0;
             }
         }
  

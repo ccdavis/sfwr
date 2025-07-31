@@ -21,13 +21,10 @@
  <div class="book-item">
  
   <div class="medium-cover-image">
- <div>{{.MakeLinkedMediumCoverImageTag "."}}</div>
- 
- </div>
+   <div>{{.MakeLinkedMediumCoverImageTag "."}}</div>
+  </div>
 
- 
-<div class="book-info">	
-
+  <div class="book-info">	
 	<div class="citation book-title">
  	<h3>{{.MainTitle}} </h3>
 	</div>
@@ -41,11 +38,18 @@
 	<div class="citation">
 	 <h4>BY <span class="citation book-author"> {{.AuthorFullName}}</span> - Pub Year {{.FormatPubDate}} </h4> 
 	</div>	
-    <div>rating: {{.DisplayRating}}</div>	 
-</div>
-<div> <p>   {{.BookPageLink }} </p></div>
-	
- </div> 
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span>rating: {{.DisplayRating}}</span>
+      <span>{{.BookPageLink }}</span>
+    </div>	 
+  </div>
+ </div>
+ {{if .Review}}
+ <div class="book-review">
+  <strong>Review: </strong> {{.Review}}
+ </div>
+ {{end}}
+                 
  {{end}}
  </div>
  
