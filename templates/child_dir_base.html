@@ -20,7 +20,7 @@
 	border-style:solid;
 	border-color:#bbb #888 #666 #aaa;
 	border-width:3px 4px 4px 3px;
-	width:3.7em;
+	min-width:3.7em;
 	height:1.5em;
 	background:#ccc;
 	color:#333;
@@ -28,6 +28,8 @@
 	text-align:center;
 	text-decoration:none;
 	font-weight:900;
+	padding: 0 0.5em;
+	box-sizing: border-box;
 }
 .buttonlink:hover{
 	border-color: #666 #aaa #bbb #888;
@@ -173,7 +175,10 @@
 div.content-container {	
 	overflow-y: auto;	
 	height: 90%;
-	width:100%;	
+	width:100%;
+	padding: 0 2.5%;
+	box-sizing: border-box;
+	max-width: 100%;	
  }
 
  div.book-entry {
@@ -184,6 +189,7 @@ div.content-container {
  div.book-list{ 			
 	display: table;
 	margin:0 auto;
+	width: 100%;
 	max-width: 900px;
 	padding: 0 15px;
 	box-sizing: border-box;
@@ -221,7 +227,7 @@ div.content-container {
  div.book-box {	
      flex: 1 1 calc(20% - 40px);
 	min-height: 25	0px;
-	min-width: 350px;
+	min-width: 280px;
 	padding: 5px;
 	border-radius: 5px;
 	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -236,6 +242,7 @@ div.content-container {
             div.book-box {
                 flex-basis: 48%;
                 min-height: 150px;
+                min-width: 0;
             }
             
             div.book-item {
@@ -246,6 +253,12 @@ div.content-container {
             div.large-cover-image {
                 padding-right: 0;
                 margin-bottom: 1em;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            div.content-container {
+                padding: 0 1.5%;
             }
         }
 
@@ -253,6 +266,7 @@ div.content-container {
             div.book-box {
                 flex-basis: 100%;
                 min-height: 100px;
+                min-width: 0;
             }
             
             div.book-item {
@@ -266,12 +280,68 @@ div.content-container {
                 margin: 0;
             }
             
+            div.content-container {
+                padding: 0 1%;
+            }
+            
+            div.book-list {
+                padding: 0 5px;
+                width: 100%;
+            }
+            
             div.small-cover-image,
             div.medium-cover-image,
             div.large-cover-image {
                 margin: 0 0 1em 0;
                 align-items: center;
                 padding-right: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                padding: 0 0.3em;
+                font-size: 0.9em;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            div.top-menu {
+                padding: 0;
+            }
+            
+            div.menu-item {
+                padding: 0.5%;
+                font-size: 0.9em;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                font-size: 0.8em;
+                padding: 0 0.2em;
+                border-width: 2px 3px 3px 2px;
+            }
+            
+            .buttonlink:hover {
+                border-width: 3px 2px 2px 3px;
+            }
+            
+            table {
+                margin: 0;
+            }
+            
+            h1 { font-size: 24px; }
+            h2 { font-size: 20px; }
+            h3 { font-size: 18px; }
+            h4 { font-size: 14px; }
+            
+            div.site-name {
+                font-size: 1.8em;
+            }
+            
+            div.list-name {
+                font-size: 20px;
             }
         }
  

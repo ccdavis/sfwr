@@ -35,7 +35,7 @@ html, body {
 	border-style:solid;
 	border-color:#bbb #888 #666 #aaa;
 	border-width:3px 4px 4px 3px;
-	width:3.7em;
+	min-width:3.7em;
 	height:1.5em;
 	background:#ccc;
 	color:#333;
@@ -43,6 +43,8 @@ html, body {
 	text-align:center;
 	text-decoration:none;
 	font-weight:900;
+	padding: 0 0.5em;
+	box-sizing: border-box;
 }
 .buttonlink:hover{
 	border-color: #666 #aaa #bbb #888;
@@ -191,6 +193,7 @@ div.content-container {
 	width: 100%;
 	padding: 0 2.5%;
 	box-sizing: border-box;
+	max-width: 100%;
  }
 
  div.book-entry {
@@ -201,6 +204,7 @@ div.content-container {
  div.book-list{ 			
 	display: table;
 	margin:0 auto;
+	width: 100%;
 	max-width: 900px;
 	padding: 0 15px;
 	box-sizing: border-box;
@@ -296,6 +300,8 @@ div.content-container {
             div.large-cover-image {
                 padding-right: 0;
                 margin-bottom: 1em;
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -325,6 +331,11 @@ div.content-container {
                 padding: 0 1%;
             }
             
+            div.book-list {
+                padding: 0 5px;
+                width: 100%;
+            }
+            
             div.book-item {
                 margin: 1.0em 0;
                 flex-direction: column;
@@ -347,6 +358,19 @@ div.content-container {
                 margin: 0 0 1em 0;
                 align-items: center;
                 padding-right: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            div.book-list {
+                padding: 0 5px;
+                width: 100%;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                padding: 0 0.3em;
+                font-size: 0.9em;
             }
             
             .citation .main h1 {
@@ -363,6 +387,45 @@ div.content-container {
             
             .citation .main h4 {
                 font-size: 16px;
+            }
+        }
+
+        @media (max-width: 375px) {
+            div.top-menu {
+                padding: 0;
+            }
+            
+            div.menu-item {
+                padding: 0.5%;
+                font-size: 0.9em;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                font-size: 0.8em;
+                padding: 0 0.2em;
+                border-width: 2px 3px 3px 2px;
+            }
+            
+            .buttonlink:hover {
+                border-width: 3px 2px 2px 3px;
+            }
+            
+            table {
+                margin: 0;
+            }
+            
+            h1, .citation .main h1 { font-size: 24px; }
+            h2, .citation .main h2 { font-size: 20px; }
+            h3, .citation .main h3 { font-size: 18px; }
+            h4, .citation .main h4 { font-size: 14px; }
+            
+            div.site-name {
+                font-size: 1.8em;
+            }
+            
+            div.list-name {
+                font-size: 20px;
             }
         }
  
@@ -412,15 +475,15 @@ div.book-box:hover {
  div.medium-cover-image {
 	display:flex;
 	align-items: center;
-	padding-right: 10%;
+	padding-right: 15px;
 	padding-top: 5px;	
  }
  
  div.large-cover-image {
 	display:flex;
 	align-items: center;
-	padding-right: 10%;
-	padding-top: 5%;
+	padding-right: 15px;
+	padding-top: 10px;
  }
  
   
