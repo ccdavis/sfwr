@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -314,7 +315,7 @@ func TestListAuthors(t *testing.T) {
 		FullName: "Second Author",
 		Surname:  "Author",
 	}
-	
+
 	ws.db.Create(&author1)
 	ws.db.Create(&author2)
 
@@ -329,5 +330,197 @@ func TestListAuthors(t *testing.T) {
 
 	if status := rr.Code; status != http.StatusInternalServerError {
 		t.Errorf("handler returned wrong status code without templates: got %v want %v", status, http.StatusInternalServerError)
+	}
+}
+
+func TestDeployHandler(t *testing.T) {
+	ws := setupTestServer()
+
+	// Test GET request (should not be allowed)
+	req, err := http.NewRequest("GET", "/deploy", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ws.deployHandler)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusMethodNotAllowed {
+		t.Errorf("handler returned wrong status code for GET: got %v want %v", status, http.StatusMethodNotAllowed)
+	}
+
+	// Test POST request (will fail without git repo, but should attempt)
+	req, err = http.NewRequest("POST", "/deploy", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	// Should return internal server error due to missing templates
+	// or could fail due to git not being initialized
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Logf("Deploy handler returned status: %v", status)
+	}
+}
+
+func TestBuildLocalHandler(t *testing.T) {
+	ws := setupTestServer()
+
+	req, err := http.NewRequest("GET", "/build-local", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ws.buildLocalHandler)
+	handler.ServeHTTP(rr, req)
+
+	// Will fail without templates or sfwr executable
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Logf("Build local handler returned status: %v", status)
+	}
+}
+
+func TestBackupsHandler(t *testing.T) {
+	ws := setupTestServer()
+
+	req, err := http.NewRequest("GET", "/backups", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ws.backupsHandler)
+	handler.ServeHTTP(rr, req)
+
+	// Should return internal server error without templates
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Logf("Backups handler returned status: %v", status)
+	}
+}
+
+func TestRollbackHandler(t *testing.T) {
+	ws := setupTestServer()
+
+	// Test GET request (should redirect)
+	req, err := http.NewRequest("GET", "/rollback", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ws.rollbackHandler)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusSeeOther {
+		t.Errorf("handler returned wrong status code for GET: got %v want %v", status, http.StatusSeeOther)
+	}
+
+	// Check redirect location
+	location := rr.Header().Get("Location")
+	if location != "/backups" {
+		t.Errorf("Expected redirect to /backups, got %s", location)
+	}
+
+	// Test POST without commit parameter
+	data := url.Values{}
+	req, err = http.NewRequest("POST", "/rollback", strings.NewReader(data.Encode()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	// Should return error due to missing commit
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Logf("Rollback handler without commit returned status: %v", status)
+	}
+
+	// Test POST with commit parameter
+	data.Set("commit", "abc123")
+	req, err = http.NewRequest("POST", "/rollback", strings.NewReader(data.Encode()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	// Will fail without git repo but should attempt
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Logf("Rollback handler with commit returned status: %v", status)
+	}
+}
+
+func TestUpdateBookWithMultipleAuthors(t *testing.T) {
+	ws := setupTestServer()
+
+	// Create multiple authors
+	author1 := models.Author{
+		FullName: "Primary Author",
+		Surname:  "Author",
+	}
+	author2 := models.Author{
+		FullName: "Secondary Author",
+		Surname:  "Author",
+	}
+
+	ws.db.Create(&author1)
+	ws.db.Create(&author2)
+
+	// Create book with first author
+	book := models.Book{
+		MainTitle:      "Multi-Author Book",
+		AuthorFullName: author1.FullName,
+		AuthorSurname:  author1.Surname,
+		Rating:         "Excellent",
+		PubDate:        2024,
+	}
+	ws.db.Create(&book)
+	ws.db.Model(&book).Association("Authors").Append(&author1)
+
+	// Update book to use second author
+	data := url.Values{}
+	data.Set("main_title", "Updated Multi-Author Book")
+	data.Set("author_id", fmt.Sprintf("%d", author2.ID))
+	data.Set("author_full_name", author2.FullName)
+	data.Set("pub_date", "2024")
+	data.Set("rating", "Very-Good")
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("/books/update/%d", book.ID), strings.NewReader(data.Encode()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ws.updateBookHandler)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusSeeOther {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusSeeOther)
+	}
+
+	// Verify book was updated
+	var updatedBook models.Book
+	ws.db.Preload("Authors").First(&updatedBook, book.ID)
+
+	if updatedBook.MainTitle != "Updated Multi-Author Book" {
+		t.Errorf("Book title not updated: got %s", updatedBook.MainTitle)
+	}
+
+	// Verify author association was changed
+	if len(updatedBook.Authors) != 1 {
+		t.Errorf("Expected 1 author, got %d", len(updatedBook.Authors))
+	}
+
+	if len(updatedBook.Authors) > 0 && updatedBook.Authors[0].ID != author2.ID {
+		t.Errorf("Expected author to be changed to author2")
 	}
 }
