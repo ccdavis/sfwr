@@ -59,7 +59,7 @@ func TestBooksByPublicationDate(t *testing.T) {
 	sorted := BooksByPublicationDate(books)
 
 	// Should be sorted newest to oldest
-	expectedYears := []uint{2020, 2015, 2005, 1995, 1985}
+	expectedYears := []int64{2020, 2015, 2005, 1995, 1985}
 
 	if len(sorted) != len(expectedYears) {
 		t.Errorf("Expected %d books, got %d", len(expectedYears), len(sorted))
@@ -220,19 +220,22 @@ func TestSortByAuthorSurname(t *testing.T) {
 }
 
 func TestAuthorsFromBooks(t *testing.T) {
-	// Create authors
+	// Create authors with IDs
 	author1 := models.Author{
 		FullName: "Author One",
 		Surname:  "One",
 	}
+	author1.ID = 1
 	author2 := models.Author{
 		FullName: "Author Two",
 		Surname:  "Two",
 	}
+	author2.ID = 2
 	author3 := models.Author{
 		FullName: "Author Three",
 		Surname:  "Three",
 	}
+	author3.ID = 3
 
 	// Create books with authors
 	books := []models.Book{

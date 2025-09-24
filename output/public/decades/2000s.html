@@ -1,0 +1,2894 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="author" content="Colin Davis" />
+
+  
+ <style>
+ 
+ html,body {
+	height:100%;
+	margin: em;
+ }
+
+ .buttonlink{
+	display:block;
+	border-style:solid;
+	border-color:#bbb #888 #666 #aaa;
+	border-width:3px 4px 4px 3px;
+	min-width:3.7em;
+	height:1.5em;
+	background:#ccc;
+	color:#333;
+	line-height:1.5;
+	text-align:center;
+	text-decoration:none;
+	font-weight:900;
+	padding: 0 0.5em;
+	box-sizing: border-box;
+}
+.buttonlink:hover{
+	border-color: #666 #aaa #bbb #888;
+	border-width:4px 3px 3px 4px;
+	color:#000;
+}
+
+	  
+	 h1 {
+		font-size: 36px;
+		
+	}
+
+	h2 {
+		font-size: 30px;
+		
+	}
+
+	h3 {
+		font-size: 24px;
+		
+	}
+
+	h4 {
+		font-size: 18px;		
+	}
+
+	div.site-name {
+	text-align:center;
+	font-size: 3.5em;	
+	line-height: 1.1em;
+	margin: 0.1em 0 .1em 0;
+	font-weight: bold;
+	
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;	
+}
+
+	div.list-name {
+		text-align:center;
+		font-size: 36px;
+		line-height: 38px;
+		margin: 1em 0 .6em 0;
+		font-weight: bold;
+	
+		font-family: 'Hammersmith One', sans-serif;
+		text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+		position: relative;	
+	}
+
+	div.article-text {
+		font-size: 1.0em;
+		font-weight: normal;
+		font-family: 'Tahoma', sans-serif;
+	}
+
+
+
+.citation .main h2:after, 
+.citation .main h3:after, 
+.citation .main h4:after {	
+	content: "";
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 5px;
+	border-radius: 2px;
+	box-shadow: 
+		inset 0 1px 1px rgba(0,0,0,0.5), 
+		0 1px 1px rgba(255,255,255,0.3);
+}
+
+.citation .main h2:after { background: #0AF; }
+.citation .main h3:after { background: #3BF; }
+.citation .main h4:after { background: #6Cf; }
+
+.citation .main h1 {
+	font-size: 36px;
+	line-height: 40px;
+	margin: 1em 0 .6em 0;
+	font-weight: normal;
+	
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	color: #6Cf;
+}
+
+.citation .main h2 {
+	margin: 1em 0 .6em 0;
+	padding: 0 0 0 20px;
+	font-weight: normal;
+	color: white;
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	font-size: 30px;
+	line-height: 25px;
+}
+
+.citation .main h3 {
+	margin: 1em 0 .6em 0;
+	padding: 0 0 0 20px;
+	font-weight: normal;
+	color: white;
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	font-size: 24px;
+	line-height: 25px;
+	font-family: 'Questrial', sans-serif;
+}
+
+.citation .main h4 { 
+	margin: 1em 0 .6em 0;
+	padding: 0 0 0 20px;
+	font-weight: normal;
+	color: white;
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	font-size: 18px;
+	line-height: 20px;
+	font-family: 'Questrial', sans-serif;
+}
+	  
+	  
+ div.top-menu {	
+	width:100%;
+	display:flex;
+	flex-direction:row;
+	background-color: #117;
+	color: #dd1;	
+ }
+
+
+ div.menu-item {	
+	padding: 2%;
+	align-items: center;	
+ }
+ 
+div.content-container {	
+	overflow-y: auto;	
+	height: 90%;
+	width:100%;
+	padding: 0 2.5%;
+	box-sizing: border-box;
+	max-width: 100%;	
+ }
+
+ div.book-entry {
+	display: table;
+	margin:0 auto;	
+ }
+ 
+ div.book-list{ 			
+	display: table;
+	margin:0 auto;
+	width: 100%;
+	max-width: 900px;
+	padding: 0 15px;
+	box-sizing: border-box;
+ }
+ 
+ div.author-index{ 			
+	display: table;
+	margin:0 auto;
+ }
+ 
+ 
+ div.book-item{	
+	display: flex;
+	flex-direction: row;	
+	padding: 5px;
+	margin: 2.0em 0 2.0em 0;
+ }
+
+ div.book-info {
+	display: flex;
+	flex-direction: column;		
+	margin: 0 0 0 0.6em;
+ }
+ 
+ div.book-grid {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 4.0em 8.0em;
+	max-width: 2100px;
+	margin: 0 auto;
+	background-color: #111;
+ }
+ 
+ div.book-box {	
+     flex: 1 1 calc(20% - 40px);
+	min-height: 25	0px;
+	min-width: 280px;
+	padding: 5px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	transition: transform 0.3s ease;	
+	background-color: #111;
+	display:flex;
+	flex-direction: row;
+ }
+
+
+        @media (max-width: 768px) {
+            div.book-box {
+                flex-basis: 48%;
+                min-height: 150px;
+                min-width: 0;
+            }
+            
+            div.book-item {
+                flex-direction: column;
+            }
+            
+            div.medium-cover-image,
+            div.large-cover-image {
+                padding-right: 0;
+                margin-bottom: 1em;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            div.content-container {
+                padding: 0 1.5%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            div.book-box {
+                flex-basis: 100%;
+                min-height: 100px;
+                min-width: 0;
+            }
+            
+            div.book-item {
+                margin: 1.0em 0;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            div.book-info {
+                text-align: center;
+                margin: 0;
+            }
+            
+            div.content-container {
+                padding: 0 1%;
+            }
+            
+            div.book-list {
+                padding: 0 5px;
+                width: 100%;
+            }
+            
+            div.small-cover-image,
+            div.medium-cover-image,
+            div.large-cover-image {
+                margin: 0 0 1em 0;
+                align-items: center;
+                padding-right: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                padding: 0 0.3em;
+                font-size: 0.9em;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            div.top-menu {
+                padding: 0;
+            }
+            
+            div.menu-item {
+                padding: 0.5%;
+                font-size: 0.9em;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                font-size: 0.8em;
+                padding: 0 0.2em;
+                border-width: 2px 3px 3px 2px;
+            }
+            
+            .buttonlink:hover {
+                border-width: 3px 2px 2px 3px;
+            }
+            
+            table {
+                margin: 0;
+            }
+            
+            h1 { font-size: 24px; }
+            h2 { font-size: 20px; }
+            h3 { font-size: 18px; }
+            h4 { font-size: 14px; }
+            
+            div.site-name {
+                font-size: 1.8em;
+            }
+            
+            div.list-name {
+                font-size: 20px;
+            }
+        }
+ 
+div.book-box:hover {
+	transform: translateY(-5px);
+}
+
+ 
+ div.book-title {	
+	text-transform: uppercase;
+	text-decoration: underline;
+ }
+ 
+ div.book-subtitle {	
+	text-align: center;
+	text-decoration: none;	
+ }
+ 
+ div.book-author {
+	text-decoration: none;	
+ }
+ 
+ div.small-cover-image {
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 1.4em 0.5em 0 0;
+	padding-right: 10px;
+ }
+
+ div.medium-cover-image {
+	display:flex;
+	align-items: center;
+	padding-right: 10%;
+	padding-top: 5px;	
+ }
+ 
+ div.large-cover-image {
+	display:flex;
+	align-items: center;
+	padding-right: 10%;
+	padding-top: 5%;
+ }
+ 
+  
+ 
+ </style>
+   <meta charset="UTF-8">
+   <title> Books from 2000s </title>  
+ </head>
+ <body>
+	<div class="top-menu">
+ 
+     
+		<div class="menu-item">
+			<a class="buttonlink" href="../index.html">Home</a>
+			</div>
+				
+		<div class="menu-item">
+		<a class="buttonlink" href="../author_index.html"> Authors </a>
+		</div>
+	
+		<div class="menu-item">
+			<a class="buttonlink" href="../decades_index.html"> Decades </a>
+			</div>
+   
+   
+		   <div class="menu-item">
+		   Books by Publication Date
+		   </div>
+   
+	  <table>
+	 <tr>
+	   <td>
+	 <a class="buttonlink" href="../book_boxes_by_pub_date.html"> Grid</a>
+	   </td>
+	   <td style="margin:0 1.0em 0 1.0em; "> | </td>
+	   <td>
+	   <a class="buttonlink" href="../book_list_by_pub_date.html"> List</a>
+	   </td>
+	 </tr>
+	 </table>
+   
+	</div>
+	
+
+
+
+ 
+ 
+ 
+ 
+ <div class="content-container">
+
+<div class="list-name"> 2000s</div>
+
+ <div class="book-list">
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24745128M"> <img src="../images/cover_images/6798801-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Blind Waves </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Steven Gould - Pub Year 2000 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/330_Steven-GouldBlind-Waves.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3972135M"> <img src="../images/cover_images/683482-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Child of Flame </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4>Book Four, Crown of Stars</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kate Elliott - Pub Year 2000 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/409_Kate-ElliottChild-of-Flame.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL38564M"> <img src="../images/cover_images/432882-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Queen of Attolia </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Megan Whalen Turner - Pub Year 2000 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/97_Megan-Whalen-TurnerThe-Queen-of-Attolia.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL26656789M"> <img src="../images/cover_images/8231859-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>American Gods </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Neil Gaiman - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/238_Neil-GaimanAmerican-Gods.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8998962M"> <img src="../images/cover_images/909146-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Dark Moon </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Julia Gray - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/363_Julia-GrayDark-Moon.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL6788727M"> <img src="../images/cover_images/44013-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Hammerfall </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  CJ Cherryh - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/394_CJ-CherryhHammerfall.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8919927M"> <img src="../images/cover_images/886048-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Knight&#39;s Dawn </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4> (Red Pavilion series) </h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kim Hunter - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/115_Kim-HunterKnight's-Dawn.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3944626M"> <img src="../images/cover_images/183352-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Chronoliths </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Robert Charles Wilson - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/308_Robert-Charles-WilsonThe-Chronoliths.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL6788329M"> <img src="../images/cover_images/238000-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Curse of Chalion </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Lois McMaster Bujold - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/301_Lois-McMaster-BujoldThe-Curse-of-Chalion.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL27098439M"> <img src="../images/cover_images/8737940-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Words of Radiance </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Brandon Sanderson - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/77_Brandon-SandersonWords-of-Radiance.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL27265444M"> <img src="../images/cover_images/8754148-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Zero World </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4>A Novel</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jason M. Hough - Pub Year 2001 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/48_Jason-M.-HoughZero-World.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3585763M"> <img src="../images/cover_images/854455-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Dreams of the Compass Rose </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Vera Nazarian - Pub Year 2002 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/220_Vera-NazarianDreams-of-the-Compass-Rose.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24317827M"> <img src="../images/cover_images/9695998-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Madouc </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jack Vance - Pub Year 2002 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/190_Jack-VanceMadouc.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3956553M"> <img src="../images/cover_images/524013-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Permanence </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Karl Schroeder - Pub Year 2002 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/264_Karl-SchroederPermanence.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL9425735M"> <img src="../images/cover_images/2029147-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Storm of Iron </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Graham McNeill - Pub Year 2002 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/436_Graham-McNeillStorm-of-Iron.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL27290972M"> <img src="../images/cover_images/8770822-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Green Pearl </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jack Vance - Pub Year 2002 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/188_Jack-VanceThe-Green-Pearl.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3558969M"> <img src="../images/cover_images/523941-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Prize in the Game </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jo Walton - Pub Year 2002 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/118_Jo-WaltonThe-Prize-in-the-Game.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL25551873M"> <img src="../images/cover_images/9883189-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Alternative Three </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Ken Mitchell - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Interesting</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/141_Ken-MitchellAlternative-Three.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3685260M"> <img src="../images/cover_images/523940-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Blind Lake </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Robert Charles Wilson - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/303_Robert-Charles-WilsonBlind-Lake.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3565560M"> <img src="../images/cover_images/374139-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Lord of Snow and Shadows </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Sarah Ash - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/252_Sarah-AshLord-of-Snow-and-Shadows.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3386405M"> <img src="../images/cover_images/373257-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Nine Layers of Sky </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Liz Williams - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/288_Liz-WilliamsNine-Layers-of-Sky.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3568057M"> <img src="../images/cover_images/8373619-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Pattern Recognition </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4> followed by  Spook Country   and  Zero History</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  William Gibson - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/158_William-GibsonPattern-Recognition.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3309208M"> <img src="../images/cover_images/370092-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Etched City </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  K.J. Bishop - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/277_K.J.-BishopThe-Etched-City.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3778258M"> <img src="../images/cover_images/503704-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Gathering Storm </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4>Book Five, Crown of Stars</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kate Elliott - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/410_Kate-ElliottThe-Gathering-Storm.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3684197M"> <img src="../images/cover_images/284083-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Light Ages </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Ian R. MacLeod - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/213_Ian-R.-MacLeodThe-Light-Ages.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8053928M"> <img src="../images/cover_images/525026-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Risen Empire </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Scott Westerfeld - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/230_Scott-WesterfeldThe-Risen-Empire.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3559124M"> <img src="../images/cover_images/210339-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Speed of Dark </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Elizabeth Moon - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/174_Elizabeth-MoonThe-Speed-of-Dark.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL9413642M"> <img src="../images/cover_images/210842-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The White Wolf </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  David Gemmell - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/222_David-GemmellThe-White-Wolf.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL26102029M"> <img src="../images/cover_images/7728763-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Thursday Next </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jasper Fforde - Pub Year 2003 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/68_Jasper-FfordeThursday-Next.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7878736M"> <img src="../images/cover_images/380176-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Century Rain </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Alastair Reynolds - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/26_Alastair-ReynoldsCentury-Rain.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL11761367M"> <img src="../images/cover_images/6714077-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Cloud Atlas </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  David Mitchell - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/130_David-MitchellCloud-Atlas.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3691971M"> <img src="../images/cover_images/374119-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Forty Signs of Rain </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kim Stanley Robinson - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/90_Kim-Stanley-RobinsonForty-Signs-of-Rain.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3472468M"> <img src="../images/cover_images/373386-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Hammered </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Elizabeth Bear - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/279_Elizabeth-BearHammered.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3306915M"> <img src="../images/cover_images/373381-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Natural History </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Justina Robson - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/390_Justina-RobsonNatural-History.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3681373M"> <img src="../images/cover_images/524110-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Newton&#39;s Wake </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Ken MacLeod - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/95_Ken-MacLeodNewton's-Wake.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7830352M"> <img src="../images/cover_images/373501-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Recursion </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4>(2004)</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Tony Ballantyne - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/100_Tony-BallantyneRecursion.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7878878M"> <img src="../images/cover_images/380345-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Stamping Butterflies </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jon Courtenay Grimwood - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/434_Jon-Courtenay-GrimwoodStamping-Butterflies.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3313443M"> <img src="../images/cover_images/210843-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Swords of Night and Day </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  David Gemmell - Pub Year 2004 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/221_David-GemmellThe-Swords-of-Night-and-Day.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8884499M"> <img src="../images/cover_images/876292-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Agent to the Stars </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  John Scalzi - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/59_John-ScalziAgent-to-the-Stars.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8920080M"> <img src="../images/cover_images/886241-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Devices and Desires </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  K. J. Parker - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/101_K.-J.-ParkerDevices-and-Desires.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8920023M"> <img src="../images/cover_images/886173-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Double Vision </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Tricia Sullivan - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/328_Tricia-SullivanDouble-Vision.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL25420535M"> <img src="../images/cover_images/7247322-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Fifty Degrees Below </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kim Stanley Robinson - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/91_Kim-Stanley-RobinsonFifty-Degrees-Below.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3420664M"> <img src="../images/cover_images/524605-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Four and Twenty Blackbirds </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Cherie Priest - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/76_Cherie-PriestFour-and-Twenty-Blackbirds.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7993523M"> <img src="../images/cover_images/503762-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>In the Ruins </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4>Book Six, Crown of Stars</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kate Elliott - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/411_Kate-ElliottIn-the-Ruins.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3312223M"> <img src="../images/cover_images/524561-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Lady of Mazes </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Karl Schroeder - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/261_Karl-SchroederLady-of-Mazes.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL27050530M"> <img src="../images/cover_images/8668771-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Living Next Door to the God of Love </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Justina Robson - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/389_Justina-RobsonLiving-Next-Door-to-the-God-of-Love.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3305664M"> <img src="../images/cover_images/210816-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Market Forces </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Richard K. Morgan - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/211_Richard-K.-MorganMarket-Forces.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3406693M"> <img src="../images/cover_images/759624-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Resonance </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Chris Dolley - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/57_Chris-DolleyResonance.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3309498M"> <img src="../images/cover_images/524591-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Someone Comes to Town, Someone Leaves Town </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Cory Doctorow - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/15_Cory-DoctorowSomeone-Comes-to-Town,-Someone-Leaves-Town.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3309864M"> <img src="../images/cover_images/6632328-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Spin </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Robert Charles Wilson - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/314_Robert-Charles-WilsonSpin.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8054040M"> <img src="../images/cover_images/525172-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Merchant Princes </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4>  (The six volume series in its entirety.)</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Charles Stross - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/425_Charles-StrossThe-Merchant-Princes.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL23273913M"> <img src="../images/cover_images/8259169-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Naming </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Alison Croggon - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/107_Alison-CroggonThe-Naming.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3422354M"> <img src="../images/cover_images/227407-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Traveler </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  John Twelve Hawks - Pub Year 2005 </h4> 
+	</div>	
+	<div>rating: Interesting</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/226_John-Twelve-HawksThe-Traveler.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8021090M"> <img src="../images/cover_images/606411-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Black Swan Green </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  David Mitchell - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/129_David-MitchellBlack-Swan-Green.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Broken+Crescent+S.+Andrew+Swan"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Broken Crescent </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  S. Andrew Swan - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/66_S.-Andrew-SwanBroken-Crescent.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL3432201M"> <img src="../images/cover_images/39393-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Dawn of Empire </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Sam Barone - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Not Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/376_Sam-BaroneDawn-of-Empire.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7830380M"> <img src="../images/cover_images/373531-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>End of the World Blues </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jon Courtenay Grimwood - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/432_Jon-Courtenay-GrimwoodEnd-of-the-World-Blues.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24746328M"> <img src="../images/cover_images/6799999-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Farthing </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jo Walton - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/117_Jo-WaltonFarthing.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7524329M"> <img src="../images/cover_images/284352-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Glasshouse </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Charles Stross - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/423_Charles-StrossGlasshouse.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8884525M"> <img src="../images/cover_images/876316-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Missile Gap </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Charles Stross - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/428_Charles-StrossMissile-Gap.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8851183M"> <img src="../images/cover_images/8293000-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Paragaea </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Chris Roberson - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/367_Chris-RobersonParagaea.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL9420095M"> <img src="../images/cover_images/182444-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Rainbow&#39;s End </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Vernor Vinge - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/372_Vernor-VingeRainbow's-End.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8053489M"> <img src="../images/cover_images/524471-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Spirit Gate </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kate Elliott - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/413_Kate-ElliottSpirit-Gate.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL26683614M"> <img src="../images/cover_images/8355736-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Spook Country </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  William Gibson - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/165_William-GibsonSpook-Country.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8053640M"> <img src="../images/cover_images/524723-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Sun of Suns </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Karl Schroeder - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/262_Karl-SchroederSun-of-Suns.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8587140M"> <img src="../images/cover_images/741893-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Rys Chronicles </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4> (1,2,3) </h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Tracy Falbe - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Interesting</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/139_Tracy-FalbeThe-Rys-Chronicles.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8884519M"> <img src="../images/cover_images/876311-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Three Days to Never </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Tim Powers - Pub Year 2006 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/122_Tim-PowersThree-Days-to-Never.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL9635032M"> <img src="../images/cover_images/1726563-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Crooked Little Vein </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Warren Ellis - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/326_Warren-EllisCrooked-Little-Vein.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL10634196M"> <img src="../images/cover_images/2519488-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Dust </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Elizabeth Bear - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/280_Elizabeth-BearDust.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL9733133M"> <img src="../images/cover_images/1174773-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Evil for Evil </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  K. J. Parker - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/102_K.-J.-ParkerEvil-for-Evil.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL9902327M"> <img src="../images/cover_images/1121222-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Generation Loss </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Elizabeth Hand - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/136_Elizabeth-HandGeneration-Loss.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL10679370M"> <img src="../images/cover_images/2403585-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Incarceron </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Catherine Fisher - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/268_Catherine-FisherIncarceron.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL8776314M"> <img src="../images/cover_images/2114051-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Kill or Cure (the Afterblight Chronicles #2) </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Rebecca Levene - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/353_Rebecca-LeveneKill-or-Cure-(the-Afterblight-Chronicles-#2).html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7993670M"> <img src="../images/cover_images/1413226-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Sleeping God </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Violette Malan - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/180_Violette-MalanThe-Sleeping-God.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL7434913M"> <img src="../images/cover_images/236357-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Time&#39;s Child </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Rebecca Ore - Pub Year 2007 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/336_Rebecca-OreTime's-Child.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL16727417M"> <img src="../images/cover_images/9295672-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Anathem </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Neal Stephenson - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/418_Neal-StephensonAnathem.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL28286503M"> <img src="../images/cover_images/10211439-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Empire in Black and Gold </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Adrian Tchaikovsky - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/53_Adrian-TchaikovskyEmpire-in-Black-and-Gold.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL23204398M"> <img src="../images/cover_images/8073992-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Gordath Wood </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Patrice Sarath - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/350_Patrice-SarathGordath-Wood.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL26972752M"> <img src="../images/cover_images/8579854-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>On Stranger Tides </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Tim Powers - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/121_Tim-PowersOn-Stranger-Tides.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL16922372M"> <img src="../images/cover_images/5357319-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Superpowers </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  David J. Schwartz - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/16_David-J.-SchwartzSuperpowers.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL12308240M"> <img src="../images/cover_images/3056422-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Baum Plan for Financial Independence and Other Stories </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  John Kessel - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/181_John-KesselThe-Baum-Plan-for-Financial-Independence-and-Other-Stories.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24251775M"> <img src="../images/cover_images/9890625-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Explosionist </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jenny Davidson - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/192_Jenny-DavidsonThe-Explosionist.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24295455M"> <img src="../images/cover_images/8690062-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Magic Thief </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Sarah Prineas - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/112_Sarah-PrineasThe-Magic-Thief.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL22690393M"> <img src="../images/cover_images/8220266-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Tomorrow Code </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Brian Falkner - Pub Year 2008 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/251_Brian-FalknerThe-Tomorrow-Code.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24019150M"> <img src="../images/cover_images/10202563-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>A Madness of Angels </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kate Griffin - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/210_Kate-GriffinA-Madness-of-Angels.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL23977979M"> <img src="../images/cover_images/6279318-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Ariel </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Steven R. Boyett - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/11_Steven-R.-BoyettAriel.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL23391780M"> <img src="../images/cover_images/6276847-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Ash </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Malinda Lo - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/229_Malinda-LoAsh.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24322767M"> <img src="../images/cover_images/12189991-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Bitter Angels </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  C. L. Anderson - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/355_C.-L.-AndersonBitter-Angels.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24276417M"> <img src="../images/cover_images/6404884-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Daemon </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Daniel Suarez - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Not Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/201_Daniel-SuarezDaemon.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL32438565M"> <img src="../images/cover_images/11098446-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Flank Hawk </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Terry W. Ervin - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Kindle</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/28_Terry-W.-ErvinFlank-Hawk.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL22666029M"> <img src="../images/cover_images/7094933-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Fragment </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Warren Fahy - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/269_Warren-FahyFragment.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL23192597M"> <img src="../images/cover_images/7387066-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Ice Song </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kirsten Imani Kasai - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/50_Kirsten-Imani-KasaiIce-Song.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24083333M"> <img src="../images/cover_images/6297650-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Julian Comstock </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Robert Charles Wilson - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/313_Robert-Charles-WilsonJulian-Comstock.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL25966857M"> <img src="../images/cover_images/7476722-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Red Gold Bridge </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Patrice Sarath - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/351_Patrice-SarathRed-Gold-Bridge.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL32922215M"> <img src="../images/cover_images/11545750-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Angel&#39;s Game </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Carlos Ruiz Zafon - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Excellent</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/8_Carlos-Ruiz-ZafonThe-Angel's-Game.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL22671727M"> <img src="../images/cover_images/8105580-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Walls of the Universe </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Paul Melko - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/298_Paul-MelkoThe-Walls-of-the-Universe.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24423523M"> <img src="../images/cover_images/6680922-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Winter Ghosts </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Kate Mosse - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/204_Kate-MosseThe-Winter-Ghosts.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24265216M"> <img src="../images/cover_images/10865985-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>This is Not a Game </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Walter Jon Williams - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/346_Walter-Jon-WilliamsThis-is-Not-a-Game.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL24268538M"> <img src="../images/cover_images/6298942-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Without Warning </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  John Birmingham - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/79_John-BirminghamWithout-Warning.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Xenolith+A.+Sparrow"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Xenolith </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  A. Sparrow - Pub Year 2009 </h4> 
+	</div>	
+	<div>rating: Very Good</div>
+	<hr>
+	<div><a class="buttonlink" href="../books/171_A.-SparrowXenolith.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ </div>
+ 
+ </div>
+ 
+ 
+ </body>
+ </html>

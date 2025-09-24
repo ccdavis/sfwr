@@ -116,7 +116,8 @@ type GitCommit struct {
 	BookCount int
 }
 
-func (ws *WebServer) getRecentCommits() ([]GitCommit, error) {
+// GetRecentCommits returns recent deployment commits from git history
+func (ws *WebServer) GetRecentCommits() ([]GitCommit, error) {
 	// Only get commits with [DEPLOY] tag
 	cmd := exec.Command("git", "log", "--grep=\\[DEPLOY\\]", "--oneline", "-n", "20", "--", "sfwr_database.db")
 	output, err := cmd.Output()
@@ -174,7 +175,8 @@ func (ws *WebServer) getRecentCommits() ([]GitCommit, error) {
 	return commits, nil
 }
 
-func (ws *WebServer) rollbackToCommit(commitHash string) error {
+// RollbackToCommit rolls back the database to a specific commit
+func (ws *WebServer) RollbackToCommit(commitHash string) error {
 	// Check for uncommitted changes
 	cmd := exec.Command("git", "diff", "--exit-code", "sfwr_database.db")
 	if err := cmd.Run(); err != nil {

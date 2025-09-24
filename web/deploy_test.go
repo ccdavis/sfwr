@@ -190,7 +190,7 @@ func TestGetRecentCommits(t *testing.T) {
 	commit3 := createTestDeployment(t, db, 15)
 
 	// Get recent commits
-	commits, err := ws.getRecentCommits()
+	commits, err := ws.GetRecentCommits()
 	if err != nil {
 		t.Fatal("Failed to get recent commits:", err)
 	}
@@ -243,7 +243,7 @@ func TestRollbackToCommit(t *testing.T) {
 	}
 
 	// Rollback to first commit
-	err := ws.rollbackToCommit(commit1)
+	err := ws.RollbackToCommit(commit1)
 	if err != nil {
 		t.Fatal("Failed to rollback:", err)
 	}
@@ -289,7 +289,7 @@ func TestRollbackWithUncommittedChanges(t *testing.T) {
 	ws.db = db
 
 	// Try to rollback - should fail
-	err := ws.rollbackToCommit(commit1)
+	err := ws.RollbackToCommit(commit1)
 	if err == nil {
 		t.Error("Rollback should fail with uncommitted changes")
 	}

@@ -32,6 +32,9 @@ func BooksMostRecentlyAdded(books []models.Book, listSize int) []models.Book {
 	sort.Slice(books, func(left, right int) bool {
 		return books[left].DateAdded.Unix() > books[right].DateAdded.Unix()
 	})
+	if listSize > len(books) {
+		listSize = len(books)
+	}
 	return books[:listSize]
 }
 
@@ -69,7 +72,7 @@ func BooksByDecade(books []models.Book) map[string][]models.Book {
 	})
 
 	groupedByDecade := GroupByProperty(books, func(b models.Book) string {
-		if b.PubDate == models.Missing {
+		if b.PubDate == models.Missing || b.PubDate == 0 {
 			return "Unknown"
 		}
 		decade := (b.PubDate / 10) * 10
@@ -204,4 +207,68 @@ func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 		os.Exit(1)
 	}
 	return doc.String()
+}
+
+// GroupBooksByDecade groups books by their publication decade
+func GroupBooksByDecade(books []models.Book) []DecadeInfo {
+	groupedBooks := BooksByDecade(books)
+	var decades []string
+	for d := range groupedBooks {
+		decades = append(decades, d)
+	}
+
+	// Sort decades newest to oldest, with "Unknown" at the end
+	sort.Slice(decades, func(i, j int) bool {
+		if decades[i] == "Unknown" {
+			return false
+		}
+		if decades[j] == "Unknown" {
+			return true
+		}
+		return decades[i] > decades[j]
+	})
+
+	var decadeInfos []DecadeInfo
+	for _, d := range decades {
+		decadeInfos = append(decadeInfos, DecadeInfo{
+			Decade: d,
+			Books:  groupedBooks[d],
+		})
+	}
+	return decadeInfos
+}
+
+// SortByAuthorSurname sorts books by author surname alphabetically
+func SortByAuthorSurname(books []models.Book) []models.Book {
+	sorted := make([]models.Book, len(books))
+	copy(sorted, books)
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i].AuthorSurname < sorted[j].AuthorSurname
+	})
+	return sorted
+}
+
+// AuthorsFromBooks extracts unique authors from a list of books
+func AuthorsFromBooks(books []models.Book) []models.Author {
+	authorMap := make(map[uint]models.Author)
+
+	for _, book := range books {
+		for _, author := range book.Authors {
+			if author.ID != 0 {
+				authorMap[author.ID] = author
+			}
+		}
+	}
+
+	var authors []models.Author
+	for _, author := range authorMap {
+		authors = append(authors, author)
+	}
+
+	// Sort authors by surname for consistent output
+	sort.Slice(authors, func(i, j int) bool {
+		return authors[i].Surname < authors[j].Surname
+	})
+
+	return authors
 }

@@ -859,7 +859,7 @@ func (ws *WebServer) buildLocalHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ws *WebServer) backupsHandler(w http.ResponseWriter, r *http.Request) {
-	commits, err := ws.getRecentCommits()
+	commits, err := ws.GetRecentCommits()
 	if err != nil {
 		data := PageData{
 			Title: "Database Backups",
@@ -892,7 +892,7 @@ func (ws *WebServer) rollbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ws.rollbackToCommit(commitHash); err != nil {
+	if err := ws.RollbackToCommit(commitHash); err != nil {
 		data := PageData{
 			Title: "Database Backups",
 			Error: fmt.Sprintf("Rollback failed: %v", err),
@@ -908,7 +908,7 @@ func (ws *WebServer) rollbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get updated commits list
-	if commits, err := ws.getRecentCommits(); err == nil {
+	if commits, err := ws.GetRecentCommits(); err == nil {
 		data.Commits = commits
 	}
 

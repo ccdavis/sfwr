@@ -148,18 +148,18 @@ func TestCompleteBookLifecycle(t *testing.T) {
 		MainTitle:      "Integration Test Book",
 		SubTitle:       "Testing Everything",
 		AuthorFullName: author.FullName,
-		AuthorSurname:  author.Surname,
-		PubDate:        2024,
-		Rating:         "Excellent",
-		Review:         "This is an integration test book",
-		Isbn:           "9780123456789",
-		OpenLibraryId:  "OL12345M",
+		AuthorSurname:    author.Surname,
+		PubDate:          2024,
+		Rating:           "Excellent",
+		Review:           "This is an integration test book",
+		OlCoverEditionId: "OL12345M",
 	}
 
 	bookID, err := book.Create(db)
 	if err != nil {
 		t.Fatal("Failed to create book:", err)
 	}
+	book.ID = uint(bookID)
 
 	// Step 3: Associate book with author
 	db.Model(&book).Association("Authors").Append(&author)
@@ -230,7 +230,7 @@ func TestDeploymentAndRollbackIntegration(t *testing.T) {
 			AuthorFullName: author.FullName,
 			AuthorSurname:  author.Surname,
 			Rating:         "Very-Good",
-			PubDate:        2020 + uint(i),
+			PubDate:        int64(2020 + i),
 		}
 		db.Create(&book)
 		db.Model(&book).Association("Authors").Append(&author)
