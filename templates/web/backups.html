@@ -1,0 +1,97 @@
+{{template "base.html" .}}
+
+{{define "content"}}
+<h1>Deployment History</h1>
+
+{{if .Error}}
+<div class="error">{{.Error}}</div>
+{{end}}
+
+{{if .Message}}
+<div class="message">{{.Message}}</div>
+{{end}}
+
+<div style="margin: 20px 0;">
+    <a class="buttonlink" href="/">← Back to Home</a>
+</div>
+
+<div style="background-color: #333; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <h3 style="color: #17a2b8;">📌 About Deployment Checkpoints</h3>
+    <p>Each deployment creates a checkpoint of your entire database state. You can:</p>
+    <ul>
+        <li><strong>Continue editing</strong> after a deployment - add, edit, or delete books freely</li>
+        <li><strong>Deploy again</strong> to save your changes as a new checkpoint</li>
+        <li><strong>Rollback</strong> to any previous deployment if you want to discard recent changes</li>
+    </ul>
+    <p style="color: #ffa500;"><strong>Note:</strong> Rollback will discard ALL changes made since the selected deployment.</p>
+</div>
+
+<h2>Deployment Checkpoints</h2>
+
+{{if .Commits}}
+<table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <thead>
+        <tr style="border-bottom: 2px solid #666;">
+            <th style="text-align: left; padding: 10px;">Date</th>
+            <th style="text-align: left; padding: 10px;">Description</th>
+            <th style="text-align: center; padding: 10px;">Books</th>
+            <th style="text-align: center; padding: 10px;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range $index, $commit := .Commits}}
+        <tr style="border-bottom: 1px solid #444;">
+            <td style="padding: 10px; font-family: monospace; font-size: 12px;">
+                {{$commit.Date}}
+            </td>
+            <td style="padding: 10px;">
+                {{$commit.Message}}
+                {{if eq $index 0}}
+                <span style="color: #28a745; font-weight: bold;">(CURRENT)</span>
+                {{end}}
+            </td>
+            <td style="padding: 10px; text-align: center;">
+                {{if gt $commit.BookCount 0}}
+                    {{$commit.BookCount}}
+                {{else}}
+                    -
+                {{end}}
+            </td>
+            <td style="padding: 10px; text-align: center;">
+                {{if eq $index 0}}
+                    <span style="color: #666;">Current State</span>
+                {{else}}
+                    <form action="/rollback" method="post" style="display: inline;"
+                          onsubmit="return confirm('Rollback to: {{$commit.Message}}\n\nThis will restore your database to this backup. Continue?');">
+                        <input type="hidden" name="commit" value="{{$commit.Hash}}">
+                        <button type="submit" class="buttonlink" style="background-color: #dc3545; padding: 5px 15px; font-size: 14px;">
+                            Rollback
+                        </button>
+                    </form>
+                {{end}}
+            </td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No database backups found. Backups are created automatically when you:</p>
+<ul>
+    <li>Deploy to GitHub Pages</li>
+    <li>Make changes through the web interface (if Git is configured)</li>
+</ul>
+{{end}}
+
+<div style="margin-top: 40px; padding: 20px; background-color: #222; border-radius: 5px;">
+    <h3 style="color: #6Cf;">How It Works</h3>
+    <p>Your deployment workflow:</p>
+    <ol>
+        <li><strong>Edit freely</strong> - Add, modify, or delete books through the web interface</li>
+        <li><strong>Deploy when ready</strong> - Click "Deploy to GitHub Pages" to save your changes and update the live site</li>
+        <li><strong>Continue editing</strong> - Make more changes without affecting the live site</li>
+        <li><strong>Deploy again or rollback</strong> - Save new changes or revert to a previous deployment</li>
+    </ol>
+    <p>Each deployment is tagged with <code>[DEPLOY]</code> in the commit message and shows the book/author count at that point.</p>
+</div>
+
+{{end}}

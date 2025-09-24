@@ -17,6 +17,14 @@
         <a class="buttonlink" href="/authors/new" style="font-size: 18px; padding: 15px 30px;">Add New Author</a>
         <a class="buttonlink" href="/authors" style="font-size: 18px; padding: 15px 30px;">View All Authors</a>
     </div>
+    <div style="margin: 30px 0; border-top: 1px solid #444; padding-top: 30px;">
+        <h3>Deployment & Version Control</h3>
+        <form action="/deploy" method="post" style="display: inline;" onsubmit="return confirm('This will create a deployment checkpoint and push to GitHub.\n\nAll your current changes will be saved and the site will be updated.\n\nContinue?');">
+            <button type="submit" class="buttonlink" style="font-size: 18px; padding: 15px 30px; background-color: #28a745;">Deploy to GitHub Pages</button>
+        </form>
+        <a class="buttonlink" href="/build-local" style="font-size: 18px; padding: 15px 30px;">Build Locally</a>
+        <a class="buttonlink" href="/backups" style="font-size: 18px; padding: 15px 30px; background-color: #17a2b8;">Deployment History</a>
+    </div>
 </div>
 
 <div style="margin-top: 50px; padding: 20px; background-color: #222; border-radius: 5px;">

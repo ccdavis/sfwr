@@ -32,6 +32,7 @@ type PageData struct {
 	Message   string
 	Error     string
 	SortBy    string
+	Commits   []GitCommit
 }
 
 func NewWebServer(db *gorm.DB, imageDir string) *WebServer {
@@ -69,6 +70,10 @@ func (ws *WebServer) ServeHTTP(port string) error {
 	http.HandleFunc("/books/search-openlibrary", ws.searchOpenLibraryHandler)
 	http.HandleFunc("/books/update-from-openlibrary", ws.updateFromOpenLibraryHandler)
 	http.HandleFunc("/books/create-from-openlibrary", ws.createFromOpenLibraryHandler)
+	http.HandleFunc("/deploy", ws.deployHandler)
+	http.HandleFunc("/build-local", ws.buildLocalHandler)
+	http.HandleFunc("/backups", ws.backupsHandler)
+	http.HandleFunc("/rollback", ws.rollbackHandler)
 	http.Handle("/saved_cover_images/", http.StripPrefix("/saved_cover_images/", http.FileServer(http.Dir(ws.imageDir))))
 
 	fmt.Printf("Web server starting on http://localhost:%s\n", port)
@@ -810,4 +815,102 @@ func (ws *WebServer) writeJSONError(w http.ResponseWriter, message string, statu
 	w.WriteHeader(statusCode)
 	response := map[string]string{"error": message}
 	json.NewEncoder(w).Encode(response)
+}
+
+func (ws *WebServer) deployHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	message, err := ws.deployToGitHub()
+	if err != nil {
+		data := PageData{
+			Title: "SFWR Book Management",
+			Error: fmt.Sprintf("Deployment failed: %v", err),
+		}
+		ws.renderTemplate(w, "home", data)
+		return
+	}
+
+	data := PageData{
+		Title:   "SFWR Book Management",
+		Message: message,
+	}
+	ws.renderTemplate(w, "home", data)
+}
+
+func (ws *WebServer) buildLocalHandler(w http.ResponseWriter, r *http.Request) {
+	message, err := ws.buildStatic()
+	if err != nil {
+		data := PageData{
+			Title: "SFWR Book Management",
+			Error: fmt.Sprintf("Build failed: %v", err),
+		}
+		ws.renderTemplate(w, "home", data)
+		return
+	}
+
+	data := PageData{
+		Title:   "SFWR Book Management",
+		Message: message,
+	}
+	ws.renderTemplate(w, "home", data)
+}
+
+func (ws *WebServer) backupsHandler(w http.ResponseWriter, r *http.Request) {
+	commits, err := ws.getRecentCommits()
+	if err != nil {
+		data := PageData{
+			Title: "Database Backups",
+			Error: fmt.Sprintf("Failed to get backup history: %v", err),
+		}
+		ws.renderTemplate(w, "backups", data)
+		return
+	}
+
+	data := PageData{
+		Title:   "Database Backups",
+		Commits: commits,
+	}
+	ws.renderTemplate(w, "backups", data)
+}
+
+func (ws *WebServer) rollbackHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/backups", http.StatusSeeOther)
+		return
+	}
+
+	commitHash := r.FormValue("commit")
+	if commitHash == "" {
+		data := PageData{
+			Title: "Database Backups",
+			Error: "No commit specified for rollback",
+		}
+		ws.renderTemplate(w, "backups", data)
+		return
+	}
+
+	if err := ws.rollbackToCommit(commitHash); err != nil {
+		data := PageData{
+			Title: "Database Backups",
+			Error: fmt.Sprintf("Rollback failed: %v", err),
+		}
+		ws.renderTemplate(w, "backups", data)
+		return
+	}
+
+	// Redirect to backups page with success message
+	data := PageData{
+		Title:   "Database Backups",
+		Message: fmt.Sprintf("Successfully rolled back to commit %s. The database has been restored.", commitHash[:7]),
+	}
+
+	// Get updated commits list
+	if commits, err := ws.getRecentCommits(); err == nil {
+		data.Commits = commits
+	}
+
+	ws.renderTemplate(w, "backups", data)
 }

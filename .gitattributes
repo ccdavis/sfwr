@@ -1,0 +1,5 @@
+sfwr_database.db filter=lfs diff=lfs merge=lfs -text
+saved_cover_images/** filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
