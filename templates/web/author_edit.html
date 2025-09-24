@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="author" content="Colin Davis" />
+    
+    <style>
+        html, body {
+            height: 100vh;
+            font-family: 'Tahoma', sans-serif;
+            background-color: #111;
+            color: #ddd;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .buttonlink {
+            display: inline-block;
+            border-style: solid;
+            border-color: #bbb #888 #666 #aaa;
+            border-width: 3px 4px 4px 3px;
+            padding: 8px 16px;
+            background: #ccc;
+            color: #333;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 900;
+            margin: 2px;
+        }
+
+        .buttonlink:hover {
+            border-color: #666 #aaa #bbb #888;
+            border-width: 4px 3px 3px 4px;
+            color: #000;
+        }
+
+        .button-danger {
+            background: #d44;
+            color: white;
+        }
+
+        .button-danger:hover {
+            background: #f66;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #6Cf;
+            font-family: 'Hammersmith One', sans-serif;
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 30px;
+            color: #6Cf;
+            font-family: 'Hammersmith One', sans-serif;
+            margin-bottom: 20px;
+        }
+
+        .nav-menu {
+            background-color: #115;
+            color: #dd1;
+            padding: 15px 0;
+            margin-bottom: 30px;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-menu li {
+            display: inline;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            border: 2px solid #555;
+            background-color: #222;
+            color: #ddd;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #6Cf;
+            outline: none;
+        }
+
+        .section {
+            background-color: #222;
+            border: 1px solid #444;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .book-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #444;
+            padding: 10px;
+            background-color: #1a1a1a;
+        }
+
+        .book-checkbox {
+            margin-bottom: 10px;
+        }
+
+        .book-checkbox input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #3a5;
+            color: white;
+        }
+
+        .error {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #d44;
+            color: white;
+        }
+
+        .submit-button {
+            background: #6Cf;
+            color: #111;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover {
+            background: #8Df;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-menu ul {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+    </style>
+    
+    <title>{{.Title}} - SFWR Management</title>
+</head>
+<body>
+    <div class="nav-menu">
+        <ul>
+            <li><a class="buttonlink" href="/">Home</a></li>
+            <li><a class="buttonlink" href="/books">Books</a></li>
+            <li><a class="buttonlink" href="/books/new">Add Book</a></li>
+            <li><a class="buttonlink" href="/authors">Authors</a></li>
+            <li><a class="buttonlink" href="/authors/new">Add Author</a></li>
+        </ul>
+    </div>
+    
+    <div class="container">
+        <h1>{{.Title}}</h1>
+
+        {{if .Message}}
+        <div class="message">{{.Message}}</div>
+        {{end}}
+
+        {{if .Error}}
+        <div class="error">{{.Error}}</div>
+        {{end}}
+
+        <form action="/authors/update/{{.Author.ID}}" method="POST">
+            <div class="section">
+                <h2>Author Information</h2>
+                <div class="form-group">
+                    <label for="full_name">Full Name:</label>
+                    <input type="text" id="full_name" name="full_name" value="{{.Author.FullName}}" required>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Current Books ({{len .Author.Books}})</h2>
+                {{if .Author.Books}}
+                <p>Select books to remove from this author and reassign to another:</p>
+                <div class="book-list">
+                    {{range .Author.Books}}
+                    <div class="book-checkbox">
+                        <label>
+                            <input type="checkbox" name="remove_book_ids" value="{{.ID}}">
+                            {{.MainTitle}} ({{.FormatPubDate}})
+                        </label>
+                    </div>
+                    {{end}}
+                </div>
+                
+                <div class="form-group">
+                    <label for="new_author_id">Reassign selected books to:</label>
+                    <select id="new_author_id" name="new_author_id">
+                        <option value="">-- Select an author --</option>
+                        {{range .Authors}}
+                        <option value="{{.ID}}">{{.FullName}}</option>
+                        {{end}}
+                    </select>
+                </div>
+                {{else}}
+                <p>No books currently assigned to this author.</p>
+                {{end}}
+            </div>
+
+            <div class="section">
+                <h2>Add Books to Author</h2>
+                <p>Select books to assign to this author:</p>
+                <div class="book-list">
+                    {{range .Books}}
+                    {{if not ($.Author.HasBook .)}}
+                    <div class="book-checkbox">
+                        <label>
+                            <input type="checkbox" name="add_book_ids" value="{{.ID}}">
+                            {{.MainTitle}} by {{.AuthorFullName}} ({{.FormatPubDate}})
+                        </label>
+                    </div>
+                    {{end}}
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Action:</label>
+                <select name="book_action">
+                    <option value="">Update name only</option>
+                    <option value="add">Add selected books</option>
+                    <option value="remove">Remove and reassign selected books</option>
+                </select>
+            </div>
+
+            <button type="submit" class="submit-button">Update Author</button>
+            <a class="buttonlink" href="/authors">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
