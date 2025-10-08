@@ -22,7 +22,16 @@ Your fork is completely independent - you can modify templates, styles, and feat
 # Install Go (if not already installed)
 # See https://golang.org/dl/
 
-# Install Git LFS
+# Install Git LFS (optional but recommended)
+# Ubuntu/Debian:
+sudo apt-get install git-lfs
+
+# macOS:
+brew install git-lfs
+
+# Windows: Download from https://git-lfs.github.com/
+
+# Initialize Git LFS (only needed if installed)
 git lfs install
 
 # Build the application
@@ -239,10 +248,16 @@ git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
 
 ### Large Repository Warning
 
-If you have many cover images:
+If you have many cover images, Git may warn about large files. Install and configure Git LFS:
 
 ```bash
+# Install Git LFS first (if not already installed)
+# Ubuntu/Debian: sudo apt-get install git-lfs
+# macOS: brew install git-lfs
+# Windows: https://git-lfs.github.com/
+
 # Set up Git LFS
+git lfs install
 git lfs track "*.jpg" "*.png" "*.db"
 git add .gitattributes
 git lfs migrate import --include="*.jpg,*.png,*.db"

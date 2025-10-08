@@ -12,12 +12,25 @@ This guide explains how to deploy your SFWR static site to GitHub Pages.
    - Source: **GitHub Actions**
 4. Save the settings
 
-### 2. Configure Git LFS (for cover images)
+### 2. Configure Git LFS (Optional, for large files)
 
-Since the database and cover images can be large:
+Git LFS helps manage large files like databases and images. While optional, it's recommended if you have many cover images.
 
+**Install Git LFS:**
 ```bash
-# Initialize Git LFS in your repository
+# Ubuntu/Debian
+sudo apt-get install git-lfs
+
+# macOS
+brew install git-lfs
+
+# Windows
+# Download from https://git-lfs.github.com/
+```
+
+**Configure Git LFS:**
+```bash
+# Initialize Git LFS
 git lfs install
 
 # Track database and image files
@@ -26,6 +39,8 @@ git lfs track "saved_cover_images/**"
 git add .gitattributes
 git commit -m "Configure Git LFS"
 ```
+
+**Note:** If you skip Git LFS, large files may trigger warnings from GitHub. The site will still work, but you may hit repository size limits with many images.
 
 ### 3. Initial Setup
 
@@ -123,8 +138,11 @@ Click the **"Build Locally"** button to generate the static site in `output/publ
 ### Large Files Warning
 
 If Git complains about large files:
-1. Ensure Git LFS is properly configured
-2. Run `git lfs migrate import --include="*.db,*.jpg,*.png"`
+1. Install Git LFS (see setup instructions above)
+2. Configure Git LFS: `git lfs install`
+3. Migrate existing files: `git lfs migrate import --include="*.db,*.jpg,*.png"`
+
+Alternatively, you can use Git without LFS for small collections (fewer than 50-100 books).
 
 ### Deployment Button Not Working
 
