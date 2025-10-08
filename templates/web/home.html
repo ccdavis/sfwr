@@ -19,12 +19,92 @@
     </div>
     <div style="margin: 30px 0; border-top: 1px solid #444; padding-top: 30px;">
         <h3>Deployment & Version Control</h3>
-        <form action="/deploy" method="post" style="display: inline;" onsubmit="return confirm('This will create a deployment checkpoint and push to GitHub.\n\nAll your current changes will be saved and the site will be updated.\n\nContinue?');">
-            <button type="submit" class="buttonlink" style="font-size: 18px; padding: 15px 30px; background-color: #28a745;">Deploy to GitHub Pages</button>
+        <div id="deploy-status" style="display: none; background-color: #ffa500; color: #000; padding: 15px; margin: 20px 0; border-radius: 5px; font-weight: bold;">
+            ⏳ Deploying... This may take a few seconds. Please wait.
+        </div>
+        <div id="build-status" style="display: none; background-color: #ffa500; color: #000; padding: 15px; margin: 20px 0; border-radius: 5px; font-weight: bold;">
+            🔨 Building site... Please wait.
+        </div>
+        <form id="deploy-form" action="/deploy" method="post" style="display: inline;" onsubmit="return handleDeploy(event);">
+            <button type="submit" id="deploy-button" class="buttonlink" style="font-size: 18px; padding: 15px 30px; background-color: #28a745;">Deploy to GitHub Pages</button>
         </form>
-        <a class="buttonlink" href="/build-local" style="font-size: 18px; padding: 15px 30px;">Build Locally</a>
+        <button type="button" id="build-button" onclick="handleBuild()" class="buttonlink" style="font-size: 18px; padding: 15px 30px;">Build Locally</button>
         <a class="buttonlink" href="/backups" style="font-size: 18px; padding: 15px 30px; background-color: #17a2b8;">Deployment History</a>
     </div>
+
+    <!-- Error Modal -->
+    <div id="error-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; padding: 30px; border-radius: 10px; border: 3px solid #d44; max-width: 600px; width: 90%;">
+            <h2 style="color: #d44; margin-top: 0;">Build Error</h2>
+            <div id="error-content" style="background: #333; padding: 15px; border-radius: 5px; color: #ddd; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+            <button onclick="closeErrorModal()" class="buttonlink" style="margin-top: 20px; background-color: #d44; color: white;">Close</button>
+        </div>
+    </div>
+
+    <script>
+    function handleDeploy(event) {
+        if (!confirm('This will create a deployment checkpoint and push to GitHub.\n\nAll your current changes will be saved and the site will be updated.\n\nContinue?')) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Show loading status
+        document.getElementById('deploy-status').style.display = 'block';
+        document.getElementById('deploy-button').disabled = true;
+        document.getElementById('deploy-button').textContent = 'Deploying...';
+        document.getElementById('deploy-button').style.opacity = '0.6';
+
+        return true;
+    }
+
+    async function handleBuild() {
+        const buildButton = document.getElementById('build-button');
+        const buildStatus = document.getElementById('build-status');
+
+        // Show loading status
+        buildStatus.style.display = 'block';
+        buildButton.disabled = true;
+        buildButton.textContent = 'Building...';
+        buildButton.style.opacity = '0.6';
+
+        try {
+            const response = await fetch('/build-local', {
+                method: 'POST'
+            });
+
+            const result = await response.json();
+
+            // Hide loading status
+            buildStatus.style.display = 'none';
+            buildButton.disabled = false;
+            buildButton.textContent = 'Build Locally';
+            buildButton.style.opacity = '1';
+
+            if (result.success) {
+                // Open preview in new tab
+                window.open('/preview', '_blank');
+            } else {
+                // Show error modal
+                document.getElementById('error-content').textContent = result.error;
+                document.getElementById('error-modal').style.display = 'block';
+            }
+        } catch (error) {
+            // Hide loading status
+            buildStatus.style.display = 'none';
+            buildButton.disabled = false;
+            buildButton.textContent = 'Build Locally';
+            buildButton.style.opacity = '1';
+
+            // Show error modal
+            document.getElementById('error-content').textContent = 'Network error: ' + error.message;
+            document.getElementById('error-modal').style.display = 'block';
+        }
+    }
+
+    function closeErrorModal() {
+        document.getElementById('error-modal').style.display = 'none';
+    }
+    </script>
 </div>
 
 <div style="margin-top: 50px; padding: 20px; background-color: #222; border-radius: 5px;">

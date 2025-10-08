@@ -72,9 +72,11 @@ func (ws *WebServer) ServeHTTP(port string) error {
 	http.HandleFunc("/books/create-from-openlibrary", ws.createFromOpenLibraryHandler)
 	http.HandleFunc("/deploy", ws.deployHandler)
 	http.HandleFunc("/build-local", ws.buildLocalHandler)
+	http.HandleFunc("/preview", ws.previewHandler)
 	http.HandleFunc("/backups", ws.backupsHandler)
 	http.HandleFunc("/rollback", ws.rollbackHandler)
 	http.Handle("/saved_cover_images/", http.StripPrefix("/saved_cover_images/", http.FileServer(http.Dir(ws.imageDir))))
+	http.Handle("/preview-site/", http.StripPrefix("/preview-site/", http.FileServer(http.Dir("output/public"))))
 
 	fmt.Printf("Web server starting on http://localhost:%s\n", port)
 	return http.ListenAndServe(":"+port, nil)
@@ -483,11 +485,15 @@ func (ws *WebServer) updateAuthorHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (ws *WebServer) renderTemplate(w http.ResponseWriter, name string, data PageData) {
-	if ws.templates == nil {
-		http.Error(w, "Templates not loaded", http.StatusInternalServerError)
+	// Parse base template + specific page template
+	tmpl, err := template.ParseFiles("templates/web/base.html", "templates/web/"+name+".html")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Template parse error for %s: %v", name, err), http.StatusInternalServerError)
 		return
 	}
-	err := ws.templates.ExecuteTemplate(w, name+".html", data)
+
+	// Execute the specific page template (which includes base)
+	err = tmpl.ExecuteTemplate(w, name+".html", data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Template error for %s: %v", name, err), http.StatusInternalServerError)
 	}
@@ -841,21 +847,86 @@ func (ws *WebServer) deployHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ws *WebServer) buildLocalHandler(w http.ResponseWriter, r *http.Request) {
-	message, err := ws.buildStatic()
-	if err != nil {
-		data := PageData{
-			Title: "SFWR Book Management",
-			Error: fmt.Sprintf("Build failed: %v", err),
-		}
-		ws.renderTemplate(w, "home", data)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	data := PageData{
-		Title:   "SFWR Book Management",
-		Message: message,
+	// Set Content-Type BEFORE doing anything else
+	w.Header().Set("Content-Type", "application/json")
+
+	message, err := ws.buildStatic()
+
+	if err != nil {
+		response := map[string]interface{}{
+			"success": false,
+			"error":   fmt.Sprintf("%v", err),
+		}
+		json.NewEncoder(w).Encode(response)
+		return
 	}
-	ws.renderTemplate(w, "home", data)
+
+	response := map[string]interface{}{
+		"success": true,
+		"message": message,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (ws *WebServer) previewHandler(w http.ResponseWriter, r *http.Request) {
+	// Serve a simple HTML page with iframe and banner
+	html := `<!DOCTYPE html>
+<html>
+<head>
+    <title>Local Preview - SFWR</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Tahoma', sans-serif;
+        }
+        .preview-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+        }
+        .preview-banner span {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-right: 15px;
+        }
+        .preview-banner a {
+            color: white;
+            text-decoration: underline;
+            margin-left: 15px;
+        }
+        iframe {
+            width: 100%;
+            height: calc(100vh - 60px);
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-banner">
+        <span>📋 LOCAL PREVIEW</span>
+        This is a preview of your locally built site.
+        <a href="javascript:window.close()">Close Preview</a>
+    </div>
+    <iframe src="/preview-site/index.html"></iframe>
+</body>
+</html>`
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(html))
 }
 
 func (ws *WebServer) backupsHandler(w http.ResponseWriter, r *http.Request) {

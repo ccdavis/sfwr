@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -62,9 +63,16 @@ func (ws *WebServer) deployToGitHub() (string, error) {
 func (ws *WebServer) buildStatic() (string, error) {
 	// Run the sfwr build command
 	cmd := exec.Command("./sfwr", "-build")
-	output, err := cmd.CombinedOutput()
+
+	// Explicitly capture stdout and stderr to prevent any leakage
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err := cmd.Run()
 	if err != nil {
-		return "", fmt.Errorf("failed to build static site: %v\n%s", err, output)
+		combinedOutput := stdout.String() + stderr.String()
+		return "", fmt.Errorf("failed to build static site: %v\n%s", err, combinedOutput)
 	}
 
 	// Note: ./sfwr -build already copies cover images to output/public/images/cover_images
@@ -109,7 +117,7 @@ type GitCommit struct {
 // GetRecentCommits returns recent deployment commits from git history
 func (ws *WebServer) GetRecentCommits() ([]GitCommit, error) {
 	// Only get commits with [DEPLOY] tag
-	cmd := exec.Command("git", "log", "--grep=\\[DEPLOY\\]", "--oneline", "-n", "20", "--", "sfwr_database.db")
+	cmd := exec.Command("git", "log", "--grep=[DEPLOY]", "--oneline", "-n", "20", "--", "sfwr_database.db")
 	output, err := cmd.Output()
 	if err != nil {
 		// Fallback to all commits if no deploy commits found
