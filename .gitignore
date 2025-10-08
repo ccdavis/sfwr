@@ -1,0 +1,20 @@
+# Generated static site output
+output/
+
+# Compiled binary
+sfwr
+
+# Go build artifacts
+*.test
+*.out
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

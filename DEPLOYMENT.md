@@ -2,6 +2,20 @@
 
 This guide explains how to deploy your SFWR static site to GitHub Pages.
 
+## Prerequisites
+
+**IMPORTANT:** For deployment to work, you **must be on the `main` branch**. GitHub Actions only triggers when you push to `main`, not other branches.
+
+To check your current branch:
+```bash
+git branch --show-current
+```
+
+If you're not on `main`, switch to it:
+```bash
+git checkout main
+```
+
 ## Setup Instructions
 
 ### 1. Enable GitHub Pages
@@ -11,6 +25,8 @@ This guide explains how to deploy your SFWR static site to GitHub Pages.
 3. Under "Build and deployment":
    - Source: **GitHub Actions**
 4. Save the settings
+5. Your site will be published at: `https://YOUR_USERNAME.github.io/YOUR_REPO/`
+   - Example: If your username is `johndoe` and repo is `sfwr`, your site will be at `https://johndoe.github.io/sfwr/`
 
 ### 2. Configure Git LFS (Optional, for large files)
 
@@ -49,7 +65,14 @@ git commit -m "Configure Git LFS"
    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
    ```
 
-2. Push the GitHub Actions workflow:
+2. Ensure `.gitignore` is present (should already exist in the repo):
+   ```bash
+   # The .gitignore file excludes the output/ directory from version control
+   # This prevents issues when switching branches
+   cat .gitignore
+   ```
+
+3. Push the GitHub Actions workflow:
    ```bash
    git add .github/workflows/deploy.yml
    git commit -m "Add deployment workflow"
@@ -85,12 +108,29 @@ SFWR uses a checkpoint-based deployment system:
 
 #### Deploying Your Changes
 
+**Before deploying, ensure you're on the `main` branch:**
+```bash
+git checkout main
+```
+
 Click the **"Deploy to GitHub Pages"** button when you want to:
 - Save your current work as a checkpoint
-- Update the live website
+- Push changes to the `main` branch on GitHub
+- Trigger GitHub Actions to build and publish your site
 - Create a recoverable backup point
 
 Each deployment is tagged with `[DEPLOY]` and shows the book/author count.
+
+**How it works:**
+1. The deploy button commits `sfwr_database.db` and `saved_cover_images/` to git
+2. Pushes the commit to the `main` branch on GitHub
+3. GitHub Actions detects changes to these files and automatically builds your site
+4. Your updated site goes live at `https://YOUR_USERNAME.github.io/YOUR_REPO/`
+
+**Monitoring the deployment:**
+- Visit `https://github.com/YOUR_USERNAME/YOUR_REPO/actions` to watch the build progress
+- Builds typically complete in 1-2 minutes
+- If the build fails, check the Actions tab for error messages
 
 #### Rolling Back Changes
 
@@ -131,9 +171,28 @@ Click the **"Build Locally"** button to generate the static site in `output/publ
 
 ### GitHub Actions Not Running
 
-- Check the Actions tab in your repository for error messages
-- Ensure GitHub Pages is enabled with "GitHub Actions" as the source
-- Verify the workflow file exists at `.github/workflows/deploy.yml`
+If you don't see any builds in the Actions tab after pushing:
+
+1. **Wrong branch** - GitHub Actions only triggers on the `main` branch
+   ```bash
+   # Check your current branch
+   git branch --show-current
+
+   # If not on main, switch to it
+   git checkout main
+   ```
+
+2. **No file changes detected** - The workflow only runs when these files change:
+   - `sfwr_database.db`
+   - `saved_cover_images/**`
+
+   If you only changed code files, the workflow won't trigger.
+
+3. **GitHub Pages not enabled** - Ensure GitHub Pages is enabled with "GitHub Actions" as the source in Settings → Pages
+
+4. **Workflow file missing** - Verify `.github/workflows/deploy.yml` exists in your repository
+
+5. **Check the Actions tab** - Visit `https://github.com/YOUR_USERNAME/YOUR_REPO/actions` for error messages
 
 ### Large Files Warning
 
@@ -146,9 +205,28 @@ Alternatively, you can use Git without LFS for small collections (fewer than 50-
 
 ### Deployment Button Not Working
 
-- Ensure you're in a git repository: `git status`
-- Check that you have a remote configured: `git remote -v`
-- Verify you have push permissions to the repository
+If the deploy button doesn't trigger a build:
+
+1. **Wrong branch** - You must be on `main`
+   ```bash
+   git checkout main
+   ```
+
+2. **Not in a git repository**
+   ```bash
+   git status
+   ```
+
+3. **No remote configured**
+   ```bash
+   git remote -v
+   # If empty, add your remote
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   ```
+
+4. **No push permissions** - Verify you can push to the repository
+
+5. **No changes to commit** - The deploy button will push even without changes, but won't create a new checkpoint. Check the web UI message after clicking deploy.
 
 ## Security Notes
 
