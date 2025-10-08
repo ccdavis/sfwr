@@ -1,0 +1,2741 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+<script>
+
+
+const resizeOps = () => {
+    document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
+  };
+
+  resizeOps();
+  window.addEventListener("resize", resizeOps);
+
+	</script>
+
+
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="author" content="Colin Davis" />
+
+  
+ <style>
+ 
+
+html, body {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+
+
+ .buttonlink{
+	display:block;
+	border-style:solid;
+	border-color:#bbb #888 #666 #aaa;
+	border-width:3px 4px 4px 3px;
+	min-width:3.7em;
+	height:1.5em;
+	background:#ccc;
+	color:#333;
+	line-height:1.5;
+	text-align:center;
+	text-decoration:none;
+	font-weight:900;
+	padding: 0 0.5em;
+	box-sizing: border-box;
+}
+.buttonlink:hover{
+	border-color: #666 #aaa #bbb #888;
+	border-width:4px 3px 3px 4px;
+	color:#000;
+}
+
+	  
+	 h1 {
+		font-size: 36px;
+		
+	}
+
+	h2 {
+		font-size: 30px;
+		
+	}
+
+	h3 {
+		font-size: 24px;
+		
+	}
+
+	h4 {
+		font-size: 18px;		
+	}
+
+	div.site-name {
+	text-align:center;
+	font-size: 3.5em;	
+	line-height: 1.1em;
+	margin: 0.1em 0 .1em 0;
+	font-weight: bold;
+	
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;	
+}
+
+	div.list-name {
+		text-align:center;
+		font-size: 36px;
+		line-height: 38px;
+		margin: 1em 0 .6em 0;
+		font-weight: bold;
+	
+		font-family: 'Hammersmith One', sans-serif;
+		text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+		position: relative;	
+	}
+
+	div.article-text {
+		font-size: 1.0em;
+		font-weight: normal;
+		font-family: 'Tahoma', sans-serif;
+	}
+
+
+
+.citation .main h2:after, 
+.citation .main h3:after, 
+.citation .main h4:after {	
+	content: "";
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 5px;
+	border-radius: 2px;
+	box-shadow: 
+		inset 0 1px 1px rgba(0,0,0,0.5), 
+		0 1px 1px rgba(255,255,255,0.3);
+}
+
+.citation .main h2:after { background: #0AF; }
+.citation .main h3:after { background: #3BF; }
+.citation .main h4:after { background: #6Cf; }
+
+.citation .main h1 {
+	font-size: 36px;
+	line-height: 40px;
+	margin: 1em 0 .6em 0;
+	font-weight: normal;
+	
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	color: #6Cf;
+}
+
+.citation .main h2 {
+	margin: 1em 0 .6em 0;
+	padding: 0 0 0 20px;
+	font-weight: normal;
+	color: white;
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	font-size: 30px;
+	line-height: 25px;
+}
+
+.citation .main h3 {
+	margin: 1em 0 .6em 0;
+	padding: 0 0 0 20px;
+	font-weight: normal;
+	color: white;
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	font-size: 24px;
+	line-height: 25px;
+	font-family: 'Questrial', sans-serif;
+}
+
+.citation .main h4 { 
+	margin: 1em 0 .6em 0;
+	padding: 0 0 0 20px;
+	font-weight: normal;
+	color: white;
+	font-family: 'Hammersmith One', sans-serif;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+	position: relative;
+	font-size: 18px;
+	line-height: 20px;
+	font-family: 'Questrial', sans-serif;
+}
+	  
+	  
+ div.top-menu {	
+	width:100%;
+	display:flex;
+	flex-direction:row;
+	background-color: #115;
+	color: #dd1;	
+ }
+
+
+ div.menu-item {	
+	padding: 2%;
+	align-items: center;	
+ }
+ 
+div.content-container {	
+	overflow-y: scroll;	
+	height: 90%;
+	width: 100%;
+	padding: 0 2.5%;
+	box-sizing: border-box;
+	max-width: 100%;
+ }
+
+ div.book-entry {
+	display: table;
+	margin:0 auto;	
+ }
+ 
+ div.book-list{ 			
+	display: table;
+	margin:0 auto;
+	width: 100%;
+	max-width: 900px;
+	padding: 0 15px;
+	box-sizing: border-box;
+ }
+ 
+ div.author-index{ 			
+	display: table;
+	margin:0 auto;
+ }
+ 
+ 
+ div.book-item{	
+	display: flex;
+	flex-direction: row;	
+	padding: 5px;
+	margin: 2.0em 0 0 0;
+ }
+
+ div.book-review {
+	padding: 10px 5px 20px 5px;
+	margin: 0 0 2.0em 0;
+ }
+
+
+ div.book-info {
+	display: flex;
+	flex-direction: column;		
+	margin: 0 0 0 0.6em;
+ }
+ 
+ div.book-grid {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 2.0em 4.0em;
+	max-width: 2100px;
+	margin: 0 auto;
+	padding: 0 1em;
+	background-color: #111;
+	box-sizing: border-box;
+ }
+ 
+ div.book-box {	
+     flex: 1 1 calc(20% - 40px);
+	min-height: 250px;
+	min-width: 280px;
+	padding: 5px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	transition: transform 0.3s ease;	
+	background-color: #111;
+	display:flex;
+	flex-direction: row;
+	box-sizing: border-box;
+ }
+
+
+        @media (max-width: 768px) {
+            div.book-grid {
+                gap: 1.5em 2.0em;
+                padding: 0 0.5em;
+            }
+            
+            div.book-box {
+                flex-basis: 48%;
+                min-width: 0;
+                min-height: 200px;
+            }
+            
+            div.site-name {
+                font-size: 2.5em;
+            }
+            
+            div.list-name {
+                font-size: 28px;
+            }
+            
+            div.top-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            div.menu-item {
+                padding: 1%;
+                margin: 0.2em;
+            }
+            
+            div.book-item {
+                flex-direction: column;
+            }
+            
+            div.medium-cover-image,
+            div.large-cover-image {
+                padding-right: 0;
+                margin-bottom: 1em;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            div.book-grid {
+                gap: 1.0em;
+                padding: 0 0.25em;
+            }
+            
+            div.book-box {
+                flex-basis: 100%;
+                min-width: 0;
+                min-height: 180px;
+            }
+            
+            div.site-name {
+                font-size: 2.0em;
+                margin: 0.2em 0;
+            }
+            
+            div.list-name {
+                font-size: 24px;
+                margin: 0.8em 0 0.4em 0;
+            }
+            
+            div.content-container {
+                padding: 0 1%;
+            }
+            
+            div.book-list {
+                padding: 0 5px;
+                width: 100%;
+            }
+            
+            div.book-item {
+                margin: 1.0em 0;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            div.book-info {
+                text-align: center;
+                margin: 0;
+            }
+            
+            div.book-info > div:last-child {
+                justify-content: center !important;
+                gap: 20px;
+            }
+            
+            div.small-cover-image,
+            div.medium-cover-image,
+            div.large-cover-image {
+                margin: 0 0 1em 0;
+                align-items: center;
+                padding-right: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            div.book-list {
+                padding: 0 5px;
+                width: 100%;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                padding: 0 0.3em;
+                font-size: 0.9em;
+            }
+            
+            .citation .main h1 {
+                font-size: 28px;
+            }
+            
+            .citation .main h2 {
+                font-size: 24px;
+            }
+            
+            .citation .main h3 {
+                font-size: 20px;
+            }
+            
+            .citation .main h4 {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 375px) {
+            div.top-menu {
+                padding: 0;
+            }
+            
+            div.menu-item {
+                padding: 0.5%;
+                font-size: 0.9em;
+            }
+            
+            .buttonlink {
+                min-width: auto;
+                font-size: 0.8em;
+                padding: 0 0.2em;
+                border-width: 2px 3px 3px 2px;
+            }
+            
+            .buttonlink:hover {
+                border-width: 3px 2px 2px 3px;
+            }
+            
+            table {
+                margin: 0;
+            }
+            
+            h1, .citation .main h1 { font-size: 24px; }
+            h2, .citation .main h2 { font-size: 20px; }
+            h3, .citation .main h3 { font-size: 18px; }
+            h4, .citation .main h4 { font-size: 14px; }
+            
+            div.site-name {
+                font-size: 1.8em;
+            }
+            
+            div.list-name {
+                font-size: 20px;
+            }
+        }
+ 
+div.book-box:hover {
+	transform: translateY(-5px);
+}
+
+ 
+ div.book-title {	
+	text-transform: uppercase;
+	text-decoration: underline;
+	font-weight: bold;
+ }
+
+ span.book-title {	
+	text-transform: uppercase;	
+	text-decoration: underline;
+	font-weight: bold;
+ }
+
+ 
+ 
+ div.book-subtitle {		
+	text-decoration: none;	
+ }
+ 
+ div.book-author {
+	text-decoration: none;	
+	text-transform: uppercase;
+	font-weight: 300;
+ }
+
+ span.book-author {
+	text-decoration: none;	
+	text-transform: uppercase;
+	font-weight: 300;
+ }
+ 
+ div.small-cover-image {
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 1.4em 0.5em 0 0;
+	padding-right: 10px;
+ }
+
+ div.medium-cover-image {
+	display:flex;
+	align-items: center;
+	padding-right: 15px;
+	padding-top: 5px;	
+ }
+ 
+ div.large-cover-image {
+	display:flex;
+	align-items: center;
+	padding-right: 15px;
+	padding-top: 10px;
+ }
+ 
+  
+
+ </style>
+   <meta charset="UTF-8">
+   <title>All Authors</title>  
+ </head>
+ <body>
+	<div class="top-menu">
+ 
+     
+		<div class="menu-item">
+			<a class="buttonlink" href="./index.html">Home</a>
+			</div>
+				
+		<div class="menu-item">
+		<a class="buttonlink" href="./author_index.html"> Authors </a>
+		</div>
+
+		<div class="menu-item">
+		<a class="buttonlink" href="./decades_index.html"> Decades </a>
+		</div>
+		   
+		   <div class="menu-item">
+		   Books by Year
+		   </div>
+   
+	  <table>
+	 <tr>
+	   <td>
+	 <a class="buttonlink" href="./book_boxes_by_pub_date.html"> Grid</a>
+	   </td>
+	   <td style="margin:0 1.0em 0 1.0em; "> | </td>
+	   <td>
+	   <a class="buttonlink" href="./book_list_by_pub_date.html"> List</a>
+	   </td>
+	 </tr>
+	 </table>
+   
+	</div>
+	
+
+
+
+ 
+
+
+
+<div class="content-container">
+
+<div class="author-index">
+    
+
+<br/>
+	
+    <h1> A </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/30_Jeff-Abugov.html"> Jeff Abugov</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/219_Douglas-Adams.html"> Douglas Adams</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/199_Brian-W.-Aldiss.html"> Brian W. Aldiss</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/109_Lloyd-Alexander.html"> Lloyd Alexander</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/166_Rysa-Walker-and-Caleb-Amsel.html"> Rysa Walker and Caleb Amsel</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/204_C.-L.-Anderson.html"> C. L. Anderson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/191_Catherine-Asaro.html"> Catherine Asaro</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/146_Sarah-Ash.html"> Sarah Ash</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/144_A.-A.-Atanasio.html"> A. A. Atanasio</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/240_Test-Author.html"> Test Author</a>   (0)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/241_Test-Author.html"> Test Author</a>   (0)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> B </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/154_Kage-Baker.html"> Kage Baker</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/53_Tony-Ballantyne.html"> Tony Ballantyne</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/151_Iain-M.-Banks.html"> Iain M. Banks</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/208_Steven-Barnes.html"> Steven Barnes</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/21_John-Barnes.html"> John Barnes</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/216_Sam-Barone.html"> Sam Barone</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/194_Max-Barry.html"> Max Barry</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/180_Larry-Baxter.html"> Larry Baxter</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/155_Stephen-Baxter.html"> Stephen Baxter</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/161_Elizabeth-Bear.html"> Elizabeth Bear</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/13_Alfred-Bester.html"> Alfred Bester</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/47_John-Birmingham.html"> John Birmingham</a>   (9)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/3_Michael-Bishop.html"> Michael Bishop</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/159_K.J.-Bishop.html"> K.J. Bishop</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/7_Steven-R.-Boyett.html"> Steven R. Boyett</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/158_Ray-Bradbury.html"> Ray Bradbury</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/129_Rebecca-Bradley.html"> Rebecca Bradley</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/211_David-Brin.html"> David Brin</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/238_Gareth-Brown.html"> Gareth Brown</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/185_John-Brunner.html"> John Brunner</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/176_Lois-McMaster-Bujold.html"> Lois McMaster Bujold</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/41_Octavia-Butler.html"> Octavia Butler</a>   (2)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> C </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/2_Peter-Cawdron.html"> Peter Cawdron</a>   (5)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/171_Mike-Chen.html"> Mike Chen</a>   (5)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/224_CJ-Cherryh.html"> CJ Cherryh</a>   (13)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/192_Tom-Clancy.html"> Tom Clancy</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/72_Ernest-Clein.html"> Ernest Clein</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/26_Peter-Clines.html"> Peter Clines</a>   (5)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/141_James-S.A.-Corey.html"> James S.A. Corey</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/58_Alison-Croggon.html"> Alison Croggon</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/17_Justin-Cronin.html"> Justin Cronin</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/84_Blake-Crouch.html"> Blake Crouch</a>   (5)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/126_John-Crowley.html"> John Crowley</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/39_Julie-E.-Czerneda.html"> Julie E. Czerneda</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> D </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/98_Laurence-Dahners.html"> Laurence Dahners</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/102_Jenny-Davidson.html"> Jenny Davidson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/110_Bradley-Denton.html"> Bradley Denton</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/59_Philip-K.-Dick.html"> Philip K. Dick</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/121_Seth-Dickinson.html"> Seth Dickinson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/40_Thomas-M.-Disch.html"> Thomas M. Disch</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/11_Cory-Doctorow.html"> Cory Doctorow</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/34_Chris-Dolley.html"> Chris Dolley</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/133_Gene-Doucette.html"> Gene Doucette</a>   (5)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/92_David-Anthony-Durham.html"> David Anthony Durham</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> E </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/127_G.-C.-Edmondson.html"> G. C. Edmondson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/217_Fred-Hoyle,-John-Elliot.html"> Fred Hoyle, John Elliot</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/227_Kate-Elliott.html"> Kate Elliott</a>   (9)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/62_Lindsay-Ellis.html"> Lindsay Ellis</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/186_Warren-Ellis.html"> Warren Ellis</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/120_Edited-by-Harlan-Ellison.html"> Edited by Harlan Ellison</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/25_Sylvia-Engdahl.html"> Sylvia Engdahl</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/20_Terry-W.-Ervin.html"> Terry W. Ervin</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> F </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/153_Warren-Fahy.html"> Warren Fahy</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/77_Tracy-Falbe.html"> Tracy Falbe</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/145_Brian-Falkner.html"> Brian Falkner</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/212_David-Farland.html"> David Farland</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/38_Jasper-Fforde.html"> Jasper Fforde</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/152_Catherine-Fisher.html"> Catherine Fisher</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/80_Pat-Frank.html"> Pat Frank</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/220_C.S.-Friedman.html"> C.S. Friedman</a>   (2)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> G </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/136_Neil-Gaiman.html"> Neil Gaiman</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/236_Neal-Stephenson,-Nicole-Galland.html"> Neal Stephenson, Nicole Galland</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/94_Nicole-Galland.html"> Nicole Galland</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/125_David-Gemmell.html"> David Gemmell</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/76_Bruce-Sterling-and-William-Gibson.html"> Bruce Sterling and William Gibson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/86_William-Gibson.html"> William Gibson</a>   (11)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/156_Kathleen-Ann-Goonan.html"> Kathleen Ann Goonan</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/190_Steven-Gould.html"> Steven Gould</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/209_Julia-Gray.html"> Julia Gray</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/222_Dennis-Green.html"> Dennis Green</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/95_Daryl-Gregory.html"> Daryl Gregory</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/115_Kate-Griffin.html"> Kate Griffin</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/233_Jon-Courtenay-Grimwood.html"> Jon Courtenay Grimwood</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/123_Ken-Grimwood.html"> Ken Grimwood</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/229_Ursula-K.-Le-Guin.html"> Ursula K. Le Guin</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/119_James-E.-Gunn.html"> James E. Gunn</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> H </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/9_Joe-Haldeman.html"> Joe Haldeman</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/75_Elizabeth-Hand.html"> Elizabeth Hand</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/90_Robert-Harris.html"> Robert Harris</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/19_Rob-Hart.html"> Rob Hart</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/239_Andrew-Hastie.html"> Andrew Hastie</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/103_Scott-Hawkins.html"> Scott Hawkins</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/128_John-Twelve-Hawks.html"> John Twelve Hawks</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/81_Frank-Herbert.html"> Frank Herbert</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/148_Carl-Hiaasen.html"> Carl Hiaasen</a>   (6)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/93_Tom-Holt.html"> Tom Holt</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/29_Jason-M.-Hough.html"> Jason M. Hough</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/157_Jonathan-L.-Howard.html"> Jonathan L. Howard</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/170_Hugh-Howey.html"> Hugh Howey</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/35_Fred-Hoyle.html"> Fred Hoyle</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/165_Fred-Hoyle,-Geoffrey-Hoyle.html"> Fred Hoyle, Geoffrey Hoyle</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/42_Fred-Hoyle,-Geoffery-Hoyle.html"> Fred Hoyle, Geoffery Hoyle</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/201_Tanya-Huff.html"> Tanya Huff</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/63_Kim-Hunter.html"> Kim Hunter</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> J </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/104_Nick-Jones.html"> Nick Jones</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/187_Paul-Antony-Jones.html"> Paul Antony Jones</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> K </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/101_Alexander-C.-Kane.html"> Alexander C. Kane</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/31_Kirsten-Imani-Kasai.html"> Kirsten Imani Kasai</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/130_Guy-Gavriel-Kay.html"> Guy Gavriel Kay</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/97_John-Kessel.html"> John Kessel</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/23_Stephen-King.html"> Stephen King</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/87_Damion-Knight.html"> Damion Knight</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/182_Dani-Kollin-and-Ethan-Kollin.html"> Dani Kollin and Ethan Kollin</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/150_Ted-Kosmatka.html"> Ted Kosmatka</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/14_Nancy-Kress.html"> Nancy Kress</a>   (4)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> L </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/113_Mur-Lafferty.html"> Mur Lafferty</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/83_David-J.-Lake.html"> David J. Lake</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/163_Hugh-Laurie.html"> Hugh Laurie</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/214_Mark-Lawrence.html"> Mark Lawrence</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/117_Tanith-Lee.html"> Tanith Lee</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/67_Stanislaw-Lem.html"> Stanislaw Lem</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/73_P.K.-Lentz.html"> P.K. Lentz</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/27_Ken-Mac-Leod.html"> Ken Mac Leod</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/202_Rebecca-Levene.html"> Rebecca Levene</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/197_Richard-Levesque.html"> Richard Levesque</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/33_Charles-de-Lint.html"> Charles de Lint</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/131_Malinda-Lo.html"> Malinda Lo</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/134_Barry-B.-Longyear.html"> Barry B. Longyear</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/243_Claudia-Lux.html"> Claudia Lux</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/160_Elizabeth-A.-Lynn.html"> Elizabeth A. Lynn</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> M </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/168_R.A.-MacAvoy.html"> R.A. MacAvoy</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/196_Alistair-MacLean.html"> Alistair MacLean</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/118_Ian-R.-MacLeod.html"> Ian R. MacLeod</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/50_Ken-MacLeod.html"> Ken MacLeod</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/96_Violette-Malan.html"> Violette Malan</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/1_George-R.-R.-Martin.html"> George R. R. Martin</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/169_Arkady-Martine.html"> Arkady Martine</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/143_Elan-Mastai.html"> Elan Mastai</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/226_A.H.-McAuley.html"> A.H. McAuley</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/122_Claire-McCague.html"> Claire McCague</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/22_Jack-McDevit.html"> Jack McDevit</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/64_Will-McIntosh.html"> Will McIntosh</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/235_Graham-McNeill.html"> Graham McNeill</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/162_Shirley-Meier.html"> Shirley Meier</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/173_Paul-Melko.html"> Paul Melko</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/225_Kristyn-Merbeth.html"> Kristyn Merbeth</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/174_Jerry-Merritt.html"> Jerry Merritt</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/139_Scott-Meyer.html"> Scott Meyer</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/107_Walter-M.-Miller.html"> Walter M. Miller</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/5_Martin-Miller.html"> Martin Miller</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/69_David-Mitchell.html"> David Mitchell</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/79_Ken-Mitchell.html"> Ken Mitchell</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/206_Steven-R.-Boyett-and-Ken-Mitchroney.html"> Steven R. Boyett and Ken Mitchroney</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/43_L.-E.-Modesitt.html"> L. E. Modesitt</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/203_A.O.-Monk.html"> A.O. Monk</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/91_Elizabeth-Moon.html"> Elizabeth Moon</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/112_Christopher-Moore.html"> Christopher Moore</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/88_Ward-Moore.html"> Ward Moore</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/116_Richard-K.-Morgan.html"> Richard K. Morgan</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/111_Kate-Mosse.html"> Kate Mosse</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> N </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/99_Linda-Nagata.html"> Linda Nagata</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/124_Vera-Nazarian.html"> Vera Nazarian</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/55_Sylvain-Neuvel.html"> Sylvain Neuvel</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/181_Sam-Nicholson.html"> Sam Nicholson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/71_Claire-North.html"> Claire North</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> O </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/82_Megan-E.-O%27Keefe.html"> Megan E. O&#39;Keefe</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/193_Rebecca-Ore.html"> Rebecca Ore</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> P </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/106_Felix-J.-Palma.html"> Felix J. Palma</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/175_Tristan-Palmgren.html"> Tristan Palmgren</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/54_K.-J.-Parker.html"> K. J. Parker</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/183_Daniel-Pinkwater.html"> Daniel Pinkwater</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/66_Tim-Powers.html"> Tim Powers</a>   (5)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/231_Tim-Pratt.html"> Tim Pratt</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/172_Daniel-Price.html"> Daniel Price</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/45_Cherie-Priest.html"> Cherie Priest</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/205_Christopher-Priest.html"> Christopher Priest</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/60_Sarah-Prineas.html"> Sarah Prineas</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> R </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/74_Ayn-Rand.html"> Ayn Rand</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/178_Lexi-Revellian.html"> Lexi Revellian</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/18_Alastair-Reynolds.html"> Alastair Reynolds</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/210_A.G.-Riddle.html"> A.G. Riddle</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/213_Chris-Roberson.html"> Chris Roberson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/61_Adam-Roberts.html"> Adam Roberts</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/48_Kim-Stanley-Robinson.html"> Kim Stanley Robinson</a>   (6)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/223_Justina-Robson.html"> Justina Robson</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/52_Michael-Scott-Rohan.html"> Michael Scott Rohan</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/218_Joanna-Russ.html"> Joanna Russ</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> S </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/85_Fred-Saberhagen.html"> Fred Saberhagen</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/6_Ian-W.-Sainsbury.html"> Ian W. Sainsbury</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/46_Brandon-Sanderson.html"> Brandon Sanderson</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/200_Patrice-Sarath.html"> Patrice Sarath</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/36_John-Scalzi.html"> John Scalzi</a>   (7)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/16_Courtney-Schafer.html"> Courtney Schafer</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/149_Karl-Schroeder.html"> Karl Schroeder</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/24_V.E.-Schwab.html"> V.E. Schwab</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/12_David-J.-Schwartz.html"> David J. Schwartz</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/195_Jasper-T.-Scott.html"> Jasper T. Scott</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/138_N.-C.-Scrimgeour.html"> N. C. Scrimgeour</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/49_Edward-Shanks.html"> Edward Shanks</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/15_Clifford-D.-Simak.html"> Clifford D. Simak</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/57_Dan-Simmons.html"> Dan Simmons</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/137_Stan-C.-Smith.html"> Stan C. Smith</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/89_A.-Sparrow.html"> A. Sparrow</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/228_Neal-Stephenson.html"> Neal Stephenson</a>   (5)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/142_Bruce-Sterling.html"> Bruce Sterling</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/147_S.M.-Sterling.html"> S.M. Sterling</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/56_Shirley-Meier-and-S.M.-Sterling.html"> Shirley Meier and S.M. Sterling</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/207_George-R.-Stewart.html"> George R. Stewart</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/28_Kyla-Stone.html"> Kyla Stone</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/230_Charles-Stross.html"> Charles Stross</a>   (7)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/108_Daniel-Suarez.html"> Daniel Suarez</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/188_Tricia-Sullivan.html"> Tricia Sullivan</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/37_S.-Andrew-Swan.html"> S. Andrew Swan</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/135_S.A.-Swiniarski-%28S.-Andrew-Swan%29.html"> S.A. Swiniarski (S. Andrew Swan)</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/10_Michael-Swanwick.html"> Michael Swanwick</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/70_Tom-Sweterlitsch.html"> Tom Sweterlitsch</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> T </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/32_Adrian-Tchaikovsky.html"> Adrian Tchaikovsky</a>   (6)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/179_Sheri-S.-Tepper.html"> Sheri S. Tepper</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/105_Walter-Tevis.html"> Walter Tevis</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/51_Megan-Whalen-Turner.html"> Megan Whalen Turner</a>   (2)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> V </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/100_Jack-Vance.html"> Jack Vance</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/234_Carrie-Vaughn.html"> Carrie Vaughn</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/68_Joan-D.-Vinge.html"> Joan D. Vinge</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/215_Vernor-Vinge.html"> Vernor Vinge</a>   (6)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/221_Paula-Volsky.html"> Paula Volsky</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> W </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/114_Rysa-Walker.html"> Rysa Walker</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/8_Kali-Wallace.html"> Kali Wallace</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/65_Jo-Walton.html"> Jo Walton</a>   (3)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/237_Andy-Weir.html"> Andy Weir</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/242_Martha-Wells.html"> Martha Wells</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/232_H.-G.-Wells.html"> H. G. Wells</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/140_Jennifer-Foehner-Wells.html"> Jennifer Foehner Wells</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/132_Scott-Westerfeld.html"> Scott Westerfeld</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/244_Django-Wexler.html"> Django Wexler</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/198_Walter-Jon-Williams.html"> Walter Jon Williams</a>   (4)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/44_Tad-Williams.html"> Tad Williams</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/167_Liz-Williams.html"> Liz Williams</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/184_Connie-Willis.html"> Connie Willis</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/189_F.-Paul-Wilson.html"> F. Paul Wilson</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/177_Robert-Charles-Wilson.html"> Robert Charles Wilson</a>   (12)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/164_Jon-C.-Wright.html"> Jon C. Wright</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> Z </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/4_Carlos-Ruiz-Zafon.html"> Carlos Ruiz Zafon</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+<br/>
+	
+    <h1> t </h1>
+        
+
+	
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/78_Sioned-Davies-translator.html"> Sioned Davies translator</a>   (1)
+       </div>
+   </li>
+   
+   
+
+   </ol>
+   
+   
+
+</div>
+   
+</div> 
+
+ </body>
+ </html>
