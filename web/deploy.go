@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -68,16 +67,7 @@ func (ws *WebServer) buildStatic() (string, error) {
 		return "", fmt.Errorf("failed to build static site: %v\n%s", err, output)
 	}
 
-	// Copy cover images to output
-	sourceDir := "saved_cover_images"
-	destDir := filepath.Join("output/public", "saved_cover_images")
-
-	if _, err := os.Stat(sourceDir); err == nil {
-		if err := copyDir(sourceDir, destDir); err != nil {
-			return "", fmt.Errorf("failed to copy images: %v", err)
-		}
-	}
-
+	// Note: ./sfwr -build already copies cover images to output/public/images/cover_images
 	return "Static site built successfully in output/public", nil
 }
 

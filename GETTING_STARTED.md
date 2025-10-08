@@ -109,7 +109,6 @@ Edit `.github/workflows/deploy.yml` to preserve your CNAME:
       - name: Generate static site
         run: |
           ./sfwr -build
-          cp -r saved_cover_images output/public/
           # Preserve CNAME for custom domain
           if [ -f CNAME ]; then
             cp CNAME output/public/

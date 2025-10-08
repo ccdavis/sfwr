@@ -38,9 +38,7 @@ jobs:
         run: go build -o sfwr
 
       - name: Generate static site
-        run: |
-          ./sfwr -build
-          cp -r saved_cover_images output/public/
+        run: ./sfwr -build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
