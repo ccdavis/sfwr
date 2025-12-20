@@ -22,6 +22,7 @@ import (
 const Missing int64 = -999998
 const ImageDir string = "images/cover_images"
 const Verbose bool = false
+const reviewPreviewWordLimit = 100
 
 type BooksByAuthor map[string][]Book
 
@@ -198,8 +199,12 @@ func (b Book) SiteFileName() string {
 }
 
 func (b Book) BookPageLink(args ...string) template.HTML {
+	return template.HTML(fmt.Sprint("<a class=\"buttonlink\" href=\"", b.BookPageURL(args...), "\"> More </a>"))
+}
+
+func (b Book) BookPageURL(args ...string) string {
 	prefix := b.imageDirPrefix(args)
-	return template.HTML(fmt.Sprint("<a class=\"buttonlink\" href=\"", prefix, "/books/", b.SiteFileName(), "\"> More </a>"))
+	return fmt.Sprint(prefix, "/books/", b.SiteFileName())
 }
 
 func (b Book) FormatTitle() string {
@@ -225,6 +230,112 @@ func (b Book) FormatPubDate() string {
 	} else {
 		return fmt.Sprint(b.PubDate)
 	}
+}
+
+func (b Book) ReviewHTML() template.HTML {
+	return template.HTML(formatReviewMarkdown(b.Review))
+}
+
+func (b Book) ReviewPreviewHTML() template.HTML {
+	preview, _ := truncateReviewWords(b.Review, reviewPreviewWordLimit)
+	return template.HTML(formatReviewMarkdown(preview))
+}
+
+func (b Book) ReviewPreviewIsTruncated() bool {
+	_, truncated := truncateReviewWords(b.Review, reviewPreviewWordLimit)
+	return truncated
+}
+
+func formatReviewMarkdown(review string) string {
+	paragraphs := splitReviewParagraphs(review)
+	if len(paragraphs) == 0 {
+		return ""
+	}
+
+	var builder strings.Builder
+	for i, paragraph := range paragraphs {
+		if i > 0 {
+			builder.WriteByte('\n')
+		}
+		cleaned := strings.Join(strings.Fields(paragraph), " ")
+		if cleaned == "" {
+			continue
+		}
+		builder.WriteString("<p>")
+		builder.WriteString(template.HTMLEscapeString(cleaned))
+		builder.WriteString("</p>")
+	}
+	return builder.String()
+}
+
+func splitReviewParagraphs(review string) []string {
+	normalized := normalizeReview(review)
+	if normalized == "" {
+		return nil
+	}
+
+	lines := strings.Split(normalized, "\n")
+	var paragraphs []string
+	var current []string
+	for _, line := range lines {
+		if strings.TrimSpace(line) == "" {
+			if len(current) > 0 {
+				paragraphs = append(paragraphs, strings.Join(current, "\n"))
+				current = nil
+			}
+			continue
+		}
+		current = append(current, line)
+	}
+	if len(current) > 0 {
+		paragraphs = append(paragraphs, strings.Join(current, "\n"))
+	}
+	return paragraphs
+}
+
+func truncateReviewWords(review string, maxWords int) (string, bool) {
+	if maxWords <= 0 {
+		return "", strings.TrimSpace(review) != ""
+	}
+
+	paragraphs := splitReviewParagraphs(review)
+	if len(paragraphs) == 0 {
+		return "", false
+	}
+
+	totalWords := 0
+	for _, paragraph := range paragraphs {
+		totalWords += len(strings.Fields(paragraph))
+	}
+	if totalWords <= maxWords {
+		return strings.Join(paragraphs, "\n\n"), false
+	}
+
+	remaining := maxWords
+	var preview []string
+	for _, paragraph := range paragraphs {
+		words := strings.Fields(paragraph)
+		if len(words) == 0 {
+			continue
+		}
+		if len(words) <= remaining {
+			preview = append(preview, paragraph)
+			remaining -= len(words)
+		} else {
+			preview = append(preview, strings.Join(words[:remaining], " "))
+			remaining = 0
+		}
+		if remaining == 0 {
+			break
+		}
+	}
+	return strings.Join(preview, "\n\n"), true
+}
+
+func normalizeReview(review string) string {
+	normalized := strings.ReplaceAll(review, "\r\n", "\n")
+	normalized = strings.ReplaceAll(normalized, "\r", "\n")
+	return strings.TrimSpace(normalized)
 }
 
 // Some databases like Open Library aren't consistent with their author initials, for instance
@@ -342,20 +453,27 @@ func (b Book) makeOpenLibraryUrl() string {
 
 // This might need to get more sophisticated
 func ExtractSurname(fullName string) string {
-	names := strings.Split(fullName, " ")
-	if len(names) < 2 {
-		fmt.Fprintln(os.Stderr, "WARNING: Can't determine author's surname for full name: ", fullName)
-		return names[0]
-	} else {
-		s := names[len(names)-1]
-		return s
+	trimmed := strings.TrimSpace(fullName)
+	if trimmed == "" {
+		fmt.Fprintln(os.Stderr, "WARNING: Missing author name; using UNKNOWN for surname.")
+		return "UNKNOWN"
 	}
+	names := strings.Split(trimmed, " ")
+	if len(names) < 2 {
+		fmt.Fprintln(os.Stderr, "WARNING: Can't determine author's surname for full name: ", trimmed)
+		return names[0]
+	}
+	return names[len(names)-1]
 }
 
 func fromRawAuthor(authorFullName string) Author {
-	surname := ExtractSurname(authorFullName)
+	fullName := strings.TrimSpace(authorFullName)
+	if fullName == "" {
+		fullName = "UNKNOWN"
+	}
+	surname := ExtractSurname(fullName)
 	newAuthor := Author{
-		FullName: authorFullName,
+		FullName: fullName,
 		Surname:  surname,
 	}
 	return newAuthor
@@ -378,7 +496,11 @@ func fromRawBook(book load.RawBook) Book {
 		year_published = Missing
 	}
 	dateAdded := time.Now()
-	surname := ExtractSurname(book.Author)
+	authorName := strings.TrimSpace(book.Author)
+	if authorName == "" {
+		authorName = "UNKNOWN"
+	}
+	surname := ExtractSurname(authorName)
 	rating, err := StringToRating(book.Rating)
 	exitOnError("Error extracting author's surname.", err)
 
@@ -415,7 +537,7 @@ func fromRawBook(book load.RawBook) Book {
 	newBook := Book{
 		PubDate:                year_published,
 		DateAdded:              dateAdded,
-		AuthorFullName:         book.Author,
+		AuthorFullName:         authorName,
 		AuthorSurname:          surname,
 		MainTitle:              book.Title[0],
 		SubTitle:               subTitle,

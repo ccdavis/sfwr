@@ -46,7 +46,11 @@
  </div>
  {{if .Review}}
  <div class="book-review">
-  <strong>Review: </strong> {{.Review}}
+  <strong>Review:</strong>
+  {{.ReviewPreviewHTML}}
+  {{if .ReviewPreviewIsTruncated}}
+  <a href="{{.BookPageURL}}">More</a>
+  {{end}}
  </div>
  {{end}}
                  

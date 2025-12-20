@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/ccdavis/sfwr/models"
 )
@@ -60,7 +61,15 @@ func AuthorsBySurname(authors []models.Author) map[string][]models.Author {
 	})
 
 	groupedBySurname := GroupByProperty(authors, func(a models.Author) string {
-		return string(a.Surname[0])
+		surname := strings.TrimSpace(a.Surname)
+		if surname == "" {
+			return "UNKNOWN"
+		}
+		first := []rune(surname)
+		if len(first) == 0 {
+			return "UNKNOWN"
+		}
+		return strings.ToUpper(string(first[0]))
 	})
 
 	return groupedBySurname
@@ -141,7 +150,7 @@ func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) stri
 	for d, _ := range groupedBooks {
 		decades = append(decades, d)
 	}
-	
+
 	// Sort decades newest to oldest, with "Unknown" at the end
 	sort.Slice(decades, func(i, j int) bool {
 		if decades[i] == "Unknown" {

@@ -130,11 +130,11 @@ func main() {
 
 	siteCoverImagesDir := path.Join(GeneratedSiteDir, models.ImageDir)
 	savedCoverImagesDir := "saved_cover_images"
-	
+
 	if saveImagesFlag {
 		allBooks := loadAllBooks(db)
 		fmt.Println("Saving cover images...")
-		models.CaptureCoverImages(allBooks, siteCoverImagesDir)
+		models.CaptureCoverImages(db, allBooks, savedCoverImagesDir)
 	}
 
 	if generateSiteFlag {
@@ -147,7 +147,7 @@ func main() {
 			fmt.Println("Retrieved ", result.RowsAffected, " author records.")
 		}
 		generateSite(allBooks, authors, GeneratedSiteDir)
-		
+
 		// Copy all cover images from saved_cover_images to the output directory
 		err := copyAllCoverImages(savedCoverImagesDir, siteCoverImagesDir)
 		if err != nil {
@@ -171,26 +171,26 @@ func copyAllCoverImages(srcDir, destDir string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create destination directory %s: %v", destDir, err)
 	}
-	
+
 	// Read all files from source directory
 	files, err := os.ReadDir(srcDir)
 	if err != nil {
 		return fmt.Errorf("failed to read source directory %s: %v", srcDir, err)
 	}
-	
+
 	// Copy each .jpg file
 	for _, file := range files {
 		if !file.IsDir() && strings.HasSuffix(file.Name(), ".jpg") {
 			srcFile := path.Join(srcDir, file.Name())
 			destFile := path.Join(destDir, file.Name())
-			
+
 			// Open source file
 			src, err := os.Open(srcFile)
 			if err != nil {
 				log.Printf("Warning: Failed to open source image %s: %v", srcFile, err)
 				continue
 			}
-			
+
 			// Create destination file
 			dest, err := os.Create(destFile)
 			if err != nil {
@@ -198,18 +198,18 @@ func copyAllCoverImages(srcDir, destDir string) error {
 				log.Printf("Warning: Failed to create destination file %s: %v", destFile, err)
 				continue
 			}
-			
+
 			// Copy file
 			_, err = io.Copy(dest, src)
 			src.Close()
 			dest.Close()
-			
+
 			if err != nil {
 				log.Printf("Warning: Failed to copy image %s: %v", srcFile, err)
 			}
 		}
 	}
-	
+
 	fmt.Printf("Copied cover images from %s to %s\n", srcDir, destDir)
 	return nil
 }

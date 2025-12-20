@@ -328,17 +328,17 @@ func TestBookFormatting(t *testing.T) {
 }
 
 func TestExtractSurname(t *testing.T) {
-	tests := []struct {
-		fullName string
-		expected string
-	}{
-		{"John Smith", "Smith"},
-		{"Mary Jane Watson", "Watson"},
-		{"Cher", "Cher"},
-		{"", ""},
-		{"  John  Smith  ", ""},
-		{"José García López", "López"},
-	}
+		tests := []struct {
+			fullName string
+			expected string
+		}{
+			{"John Smith", "Smith"},
+			{"Mary Jane Watson", "Watson"},
+			{"Cher", "Cher"},
+			{"", "UNKNOWN"},
+			{"  John  Smith  ", "Smith"},
+			{"José García López", "López"},
+		}
 
 	for _, tt := range tests {
 		t.Run(tt.fullName, func(t *testing.T) {

@@ -5,8 +5,16 @@ echo "=== SFWR GitHub Pages Deployment ==="
 echo
 
 # Check if gh-pages worktree exists
-if [ ! -d "output/public/.git" ]; then
+if [ -e "output/public/.git" ] && git -C output/public rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Using existing gh-pages worktree."
+    echo
+else
     echo "Setting up gh-pages worktree..."
+
+    if [ -e "output/public" ]; then
+        echo "Removing existing output/public to recreate worktree..."
+        rm -rf output/public
+    fi
 
     # Create orphan gh-pages branch if it doesn't exist
     if ! git show-ref --verify --quiet refs/heads/gh-pages; then
@@ -30,7 +38,13 @@ fi
 echo "Cleaning output directory..."
 find output/public -mindepth 1 -not -path "output/public/.git*" -delete
 
-# Build the site
+# Build the binary and site
+echo "Building sfwr..."
+if ! go build -o sfwr; then
+    echo "Build failed; aborting deploy."
+    exit 1
+fi
+
 echo "Building site..."
 ./sfwr -build
 

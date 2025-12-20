@@ -26,10 +26,9 @@
                 <h4>Pub Year {{.FormatPubDate}} </h4> 
             </div>	
             <div>rating: {{.DisplayRating}}</div>
-            <p>
-                {{.Review}}
-            
-            </p>
+            {{if .Review}}
+                {{.ReviewHTML}}
+            {{end}}
                 
         </div>
     </div>
