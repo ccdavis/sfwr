@@ -3,10 +3,13 @@ package web
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ccdavis/sfwr/models"
 )
@@ -80,19 +83,46 @@ func (ws *WebServer) buildStatic() (string, error) {
 }
 
 func copyDir(src, dst string) error {
-	// Create destination directory
-	if err := os.MkdirAll(dst, 0755); err != nil {
+	return filepath.Walk(src, func(srcPath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(src, srcPath)
+		if err != nil {
+			return err
+		}
+		dstPath := filepath.Join(dst, rel)
+		if info.IsDir() {
+			return os.MkdirAll(dstPath, 0755)
+		}
+		return copyFile(srcPath, dstPath, info.Mode())
+	})
+}
+
+func copyFile(srcPath, dstPath string, mode os.FileMode) error {
+	in, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	if err := os.MkdirAll(filepath.Dir(dstPath), 0755); err != nil {
 		return err
 	}
 
-	cmd := exec.Command("cp", "-r", src+"/.", dst)
-	return cmd.Run()
+	out, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, mode)
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		out.Close()
+		return err
+	}
+	return out.Close()
 }
 
 func getTimestamp() string {
-	cmd := exec.Command("date", "+%Y-%m-%d %H:%M:%S")
-	output, _ := cmd.Output()
-	return strings.TrimSpace(string(output))
+	return time.Now().Format("2006-01-02 15:04:05")
 }
 
 func (ws *WebServer) getBookCount() int {
@@ -188,9 +218,12 @@ func (ws *WebServer) RollbackToCommit(commitHash string) error {
 		return fmt.Errorf("failed to rollback database: %v\n%s", err, output)
 	}
 
-	// Also try to checkout cover images from that commit
+	// Also try to checkout cover images from that commit. Non-fatal: the
+	// images directory may not exist in older commits.
 	cmd = exec.Command("git", "checkout", commitHash, "--", "saved_cover_images")
-	cmd.Run() // Ignore errors as images directory might not exist in that commit
+	if output, err := cmd.CombinedOutput(); err != nil {
+		fmt.Printf("Note: could not restore saved_cover_images for %s: %v\n%s", commitHash, err, output)
+	}
 
 	return nil
 }

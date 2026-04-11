@@ -94,22 +94,22 @@ func createTestTemplates(dir string) {
 
 	os.WriteFile(filepath.Join(dir, "templates/web/base.html"), []byte(baseTemplate), 0644)
 
-	// Create other necessary templates
+	// Create all page templates required by NewWebServer.
+	stub := func(title string) string {
+		return `{{template "base.html" .}}
+{{define "content"}}<h1>` + title + `</h1>{{end}}`
+	}
 	templates := map[string]string{
-		"home.html": `{{template "base.html" .}}
-{{define "content"}}<h1>{{.Title}}</h1>{{end}}`,
-		"books.html": `{{template "base.html" .}}
-{{define "content"}}<h1>Books</h1>{{range .Books}}<p>{{.MainTitle}}</p>{{end}}{{end}}`,
-		"book_new.html": `{{template "base.html" .}}
-{{define "content"}}<h1>New Book</h1>{{end}}`,
-		"book_edit.html": `{{template "base.html" .}}
-{{define "content"}}<h1>Edit Book</h1>{{end}}`,
-		"authors.html": `{{template "base.html" .}}
-{{define "content"}}<h1>Authors</h1>{{range .Authors}}<p>{{.FullName}}</p>{{end}}{{end}}`,
-		"author_new.html": `{{template "base.html" .}}
-{{define "content"}}<h1>New Author</h1>{{end}}`,
-		"backups.html": `{{template "base.html" .}}
-{{define "content"}}<h1>Backups</h1>{{end}}`,
+		"home.html":        stub("Home"),
+		"book_list.html":   stub("Books"),
+		"book_form.html":   stub("Book Form"),
+		"author_list.html": stub("Authors"),
+		"author_form.html": stub("Author Form"),
+		"author_edit.html": stub("Edit Author"),
+		"error.html":       stub("Error"),
+		"decades.html":     stub("Decades"),
+		"decade.html":      stub("Decade"),
+		"backups.html":     stub("Backups"),
 	}
 
 	for name, content := range templates {
@@ -215,7 +215,10 @@ func TestDeploymentAndRollbackIntegration(t *testing.T) {
 	tmpDir, db, cleanup := setupIntegrationTest(t)
 	defer cleanup()
 
-	ws := web.NewWebServer(db, filepath.Join(tmpDir, "saved_cover_images"))
+	ws, err := web.NewWebServer(db, filepath.Join(tmpDir, "saved_cover_images"))
+	if err != nil {
+		t.Fatalf("NewWebServer failed: %v", err)
+	}
 
 	// Stage 1: Create initial state with 3 books
 	for i := 1; i <= 3; i++ {
@@ -249,7 +252,10 @@ func TestDeploymentAndRollbackIntegration(t *testing.T) {
 
 	// Reopen database
 	db, _ = gorm.Open(sqlite.Open(expectedDBPath), &gorm.Config{})
-	ws = web.NewWebServer(db, filepath.Join(tmpDir, "saved_cover_images"))
+	ws, err = web.NewWebServer(db, filepath.Join(tmpDir, "saved_cover_images"))
+	if err != nil {
+		t.Fatalf("NewWebServer failed: %v", err)
+	}
 
 	// Stage 2: Create first deployment
 	cmd = exec.Command("git", "add", ".")

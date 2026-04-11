@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"sort"
 	"strconv"
@@ -16,9 +17,24 @@ import (
 )
 
 type WebServer struct {
-	db          *gorm.DB
-	templates   *template.Template
-	imageDir    string
+	db        *gorm.DB
+	templates map[string]*template.Template
+	imageDir  string
+}
+
+// pageTemplates lists every named template rendered via renderTemplate; each
+// is parsed once with base.html at server startup.
+var pageTemplates = []string{
+	"home",
+	"book_list",
+	"book_form",
+	"author_list",
+	"author_form",
+	"author_edit",
+	"error",
+	"decades",
+	"decade",
+	"backups",
 }
 
 type PageData struct {
@@ -35,21 +51,20 @@ type PageData struct {
 	Commits   []GitCommit
 }
 
-func NewWebServer(db *gorm.DB, imageDir string) *WebServer {
+func NewWebServer(db *gorm.DB, imageDir string) (*WebServer, error) {
 	ws := &WebServer{
-		db:       db,
-		imageDir: imageDir,
+		db:        db,
+		imageDir:  imageDir,
+		templates: make(map[string]*template.Template, len(pageTemplates)),
 	}
-	ws.loadTemplates()
-	return ws
-}
-
-func (ws *WebServer) loadTemplates() {
-	var err error
-	ws.templates, err = template.ParseGlob("templates/web/*.html")
-	if err != nil {
-		panic(fmt.Sprintf("Failed to load web templates: %v", err))
+	for _, name := range pageTemplates {
+		t, err := template.ParseFiles("templates/web/base.html", "templates/web/"+name+".html")
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse template %q: %w", name, err)
+		}
+		ws.templates[name] = t
 	}
+	return ws, nil
 }
 
 func (ws *WebServer) ServeHTTP(port string) error {
@@ -411,10 +426,11 @@ func (ws *WebServer) updateAuthorHandler(w http.ResponseWriter, r *http.Request)
 	author.Surname = models.ExtractSurname(fullName)
 
 	// Update all books with this author's name change
-	for _, book := range author.Books {
-		book.AuthorFullName = author.FullName
-		book.AuthorSurname = author.Surname
-		ws.db.Save(&book)
+	for i := range author.Books {
+		if err := ws.applyAuthorToBook(&author.Books[i], &author); err != nil {
+			ws.renderError(w, "Failed to update book author", err)
+			return
+		}
 	}
 
 	// Save the author
@@ -435,12 +451,12 @@ func (ws *WebServer) updateAuthorHandler(w http.ResponseWriter, r *http.Request)
 				ws.renderError(w, "Failed to find books", err)
 				return
 			}
-			for _, book := range books {
-				ws.db.Model(&author).Association("Books").Append(&book)
-				// Update the book's author fields
-				book.AuthorFullName = author.FullName
-				book.AuthorSurname = author.Surname
-				ws.db.Save(&book)
+			for i := range books {
+				ws.db.Model(&author).Association("Books").Append(&books[i])
+				if err := ws.applyAuthorToBook(&books[i], &author); err != nil {
+					ws.renderError(w, "Failed to update book author", err)
+					return
+				}
 			}
 		}
 
@@ -468,15 +484,13 @@ func (ws *WebServer) updateAuthorHandler(w http.ResponseWriter, r *http.Request)
 				return
 			}
 
-			for _, book := range books {
-				// Remove from current author
-				ws.db.Model(&author).Association("Books").Delete(&book)
-				// Add to new author
-				ws.db.Model(&newAuthor).Association("Books").Append(&book)
-				// Update the book's author fields
-				book.AuthorFullName = newAuthor.FullName
-				book.AuthorSurname = newAuthor.Surname
-				ws.db.Save(&book)
+			for i := range books {
+				ws.db.Model(&author).Association("Books").Delete(&books[i])
+				ws.db.Model(&newAuthor).Association("Books").Append(&books[i])
+				if err := ws.applyAuthorToBook(&books[i], &newAuthor); err != nil {
+					ws.renderError(w, "Failed to update book author", err)
+					return
+				}
 			}
 		}
 	}
@@ -484,17 +498,35 @@ func (ws *WebServer) updateAuthorHandler(w http.ResponseWriter, r *http.Request)
 	http.Redirect(w, r, fmt.Sprintf("/authors/edit/%d?message=Author updated successfully", author.ID), http.StatusSeeOther)
 }
 
+// captureCoversAsync runs image capture in the background for a single book
+// and recovers from any panic so a background fetch can't crash the server.
+func (ws *WebServer) captureCoversAsync(b models.Book) {
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("cover capture panic for '%s': %v", b.FormatTitle(), r)
+			}
+		}()
+		models.CaptureAllSizeCovers(b, ws.imageDir)
+	}()
+}
+
+// applyAuthorToBook copies the author's denormalized name fields onto a book
+// and persists the change. Used from every path that assigns or reassigns
+// an author to a book.
+func (ws *WebServer) applyAuthorToBook(book *models.Book, author *models.Author) error {
+	book.AuthorFullName = author.FullName
+	book.AuthorSurname = author.Surname
+	return ws.db.Save(book).Error
+}
+
 func (ws *WebServer) renderTemplate(w http.ResponseWriter, name string, data PageData) {
-	// Parse base template + specific page template
-	tmpl, err := template.ParseFiles("templates/web/base.html", "templates/web/"+name+".html")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Template parse error for %s: %v", name, err), http.StatusInternalServerError)
+	tmpl, ok := ws.templates[name]
+	if !ok {
+		http.Error(w, fmt.Sprintf("Unknown template %q", name), http.StatusInternalServerError)
 		return
 	}
-
-	// Execute the specific page template (which includes base)
-	err = tmpl.ExecuteTemplate(w, name+".html", data)
-	if err != nil {
+	if err := tmpl.ExecuteTemplate(w, name+".html", data); err != nil {
 		http.Error(w, fmt.Sprintf("Template error for %s: %v", name, err), http.StatusInternalServerError)
 	}
 }
@@ -637,10 +669,7 @@ func (ws *WebServer) updateFromOpenLibraryHandler(w http.ResponseWriter, r *http
 
 	// Download cover images if we have the necessary data
 	if updatedBook.HasCoverImageId() {
-		go func() {
-			// Run in background to avoid blocking the response
-			models.CaptureAllSizeCovers(updatedBook, ws.imageDir)
-		}()
+		ws.captureCoversAsync(updatedBook)
 	}
 
 	response := UpdateResponse{
@@ -728,10 +757,7 @@ func (ws *WebServer) createFromOpenLibraryHandler(w http.ResponseWriter, r *http
 
 	// Download cover images if we have the necessary data
 	if updatedBook.HasCoverImageId() {
-		go func() {
-			// Run in background to avoid blocking the response
-			models.CaptureAllSizeCovers(updatedBook, ws.imageDir)
-		}()
+		ws.captureCoversAsync(updatedBook)
 	}
 
 	response := map[string]interface{}{

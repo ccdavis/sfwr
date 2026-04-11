@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"strings"
 	"testing"
 
@@ -30,23 +29,12 @@ func setupTestDB() *gorm.DB {
 
 func setupTestServer() *WebServer {
 	db := setupTestDB()
-	
-	err := os.MkdirAll("../templates/web", 0755)
-	if err != nil && !os.IsExist(err) {
-		panic("Failed to create templates directory")
-	}
 
 	ws := &WebServer{
 		db:       db,
 		imageDir: "test_images",
 	}
 
-	return ws
-}
-
-func setupTestServerWithTemplates() *WebServer {
-	ws := setupTestServer()
-	ws.loadTemplates()
 	return ws
 }
 

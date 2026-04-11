@@ -40,11 +40,21 @@ func (r Rating) Value() (driver.Value, error) {
 }
 
 func (r *Rating) Scan(value interface{}) error {
-	rating, err := StringToRating(value.(string))
-	if err != nil {
-		*r = rating
+	var s string
+	switch v := value.(type) {
+	case string:
+		s = v
+	case []byte:
+		s = string(v)
+	default:
+		return fmt.Errorf("unsupported Rating scan type: %T", value)
 	}
-	return err
+	rating, err := StringToRating(s)
+	if err != nil {
+		return err
+	}
+	*r = rating
+	return nil
 }
 
 func (r Rating) String() string {

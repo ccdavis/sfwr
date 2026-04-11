@@ -38,13 +38,13 @@ func readBooksJson(filename string) ([]models.Book, []string) {
 	return allBooks, authors
 }
 
-func generateSite(books []models.Book, authors []models.Author, outputDir string) {
-	err := os.MkdirAll(outputDir, 0775)
-	if err != nil {
-		log.Fatal("Can't create output directory for generated site: ", outputDir)
+func mustMkdirAll(dir string) {
+	if err := os.MkdirAll(dir, 0775); err != nil {
+		log.Fatalf("Can't create output directory %q: %v", dir, err)
 	}
+}
 
-	fmt.Println("Generate static pages...")
+func writeIndexPages(books []models.Book, outputDir string) {
 	indexPage := pages.RenderBookListPage("templates/index.html", pages.BooksMostRecentlyAdded(books, 25))
 	check(os.WriteFile(path.Join(outputDir, "index.html"), []byte(indexPage), 0644))
 
@@ -53,50 +53,56 @@ func generateSite(books []models.Book, authors []models.Author, outputDir string
 
 	bookGrid := pages.RenderBookListPage("templates/book_boxes.html", pages.BooksByPublicationDate(books))
 	check(os.WriteFile(path.Join(outputDir, "book_boxes_by_pub_date.html"), []byte(bookGrid), 0644))
+}
 
+func writeAuthorPages(authors []models.Author, outputDir string) {
 	authorIndex := pages.RenderAuthorIndexPage("templates/author_index.html", authors)
 	check(os.WriteFile(path.Join(outputDir, "author_index.html"), []byte(authorIndex), 0644))
+
+	authorsDir := path.Join(outputDir, "authors")
+	mustMkdirAll(authorsDir)
 	for _, a := range authors {
 		authorPage := pages.RenderAuthorPage("templates/author.html", a)
-		err = os.MkdirAll(path.Join(outputDir, "authors"), 0775)
-		if err != nil {
-			log.Fatal("Can't create output directory for generated site: ", outputDir)
-		}
-		check(os.WriteFile(path.Join(outputDir, "authors", a.SiteName()), []byte(authorPage), 0644))
+		check(os.WriteFile(path.Join(authorsDir, a.SiteName()), []byte(authorPage), 0644))
 	}
+}
 
+func writeDecadePages(books []models.Book, outputDir string) {
 	decadesIndex := pages.RenderDecadesIndexPage("templates/decades_index.html", books)
 	check(os.WriteFile(path.Join(outputDir, "decades_index.html"), []byte(decadesIndex), 0644))
-	groupedBooks := pages.BooksByDecade(books)
-	for decade, decadeBooks := range groupedBooks {
+
+	decadesDir := path.Join(outputDir, "decades")
+	mustMkdirAll(decadesDir)
+	for decade, decadeBooks := range pages.BooksByDecade(books) {
 		decadePage := pages.RenderDecadePage("templates/decade.html", decadeBooks, decade)
-		err = os.MkdirAll(path.Join(outputDir, "decades"), 0775)
-		if err != nil {
-			log.Fatal("Can't create output directory for decades: ", outputDir)
-		}
-		check(os.WriteFile(path.Join(outputDir, "decades", decade+".html"), []byte(decadePage), 0644))
+		check(os.WriteFile(path.Join(decadesDir, decade+".html"), []byte(decadePage), 0644))
 	}
+}
 
+func writeBookPages(books []models.Book, outputDir string) {
+	booksDir := path.Join(outputDir, "books")
+	mustMkdirAll(booksDir)
 	for _, b := range books {
-		//fmt.Println("Make page for ", b.AuthorFullName, ": ", b.FormatTitle())
-		//fmt.Println("Rating ", b.Rating)
-
 		bookPage := pages.RenderBookPage("templates/book.html", b)
-		err = os.MkdirAll(path.Join(outputDir, "books"), 0775)
-		if err != nil {
-			log.Fatal("Can't create output directory for generated site: ", outputDir)
-		}
-		check(os.WriteFile(path.Join(outputDir, "books", b.SiteFileName()), []byte(bookPage), 0644))
+		check(os.WriteFile(path.Join(booksDir, b.SiteFileName()), []byte(bookPage), 0644))
 	}
+}
+
+func generateSite(books []models.Book, authors []models.Author, outputDir string) {
+	mustMkdirAll(outputDir)
+	fmt.Println("Generate static pages...")
+	writeIndexPages(books, outputDir)
+	writeAuthorPages(authors, outputDir)
+	writeDecadePages(books, outputDir)
+	writeBookPages(books, outputDir)
 }
 
 func loadAllBooks(db *gorm.DB) []models.Book {
 	allBooks, err := models.LoadAllBooks(db)
 	if err != nil {
 		log.Fatal("can't retrieve books from sfwr db: ", err)
-	} else {
-		fmt.Println("Loaded ", len(allBooks), " from database.")
 	}
+	fmt.Println("Loaded ", len(allBooks), " from database.")
 	return allBooks
 }
 
@@ -143,9 +149,8 @@ func main() {
 		result := db.Preload("Books").Find(&authors)
 		if result.Error != nil {
 			log.Fatal("can't retrieve authors from sfwr db: ", result.Error)
-		} else {
-			fmt.Println("Retrieved ", result.RowsAffected, " author records.")
 		}
+		fmt.Println("Retrieved ", result.RowsAffected, " author records.")
 		generateSite(allBooks, authors, GeneratedSiteDir)
 
 		// Copy all cover images from saved_cover_images to the output directory
@@ -156,7 +161,10 @@ func main() {
 	}
 
 	if *webPortPtr != "" {
-		server := web.NewWebServer(db, savedCoverImagesDir)
+		server, err := web.NewWebServer(db, savedCoverImagesDir)
+		if err != nil {
+			log.Fatal("can't start web server: ", err)
+		}
 		log.Fatal(server.ServeHTTP(*webPortPtr))
 	}
 

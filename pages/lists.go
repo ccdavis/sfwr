@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"os"
 	"sort"
 	"strings"
 
@@ -94,7 +93,7 @@ func BooksByDecade(books []models.Book) map[string][]models.Book {
 func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) string {
 	groupedAuthors := AuthorsBySurname(authors)
 	var letters []string
-	for l, _ := range groupedAuthors {
+	for l := range groupedAuthors {
 		letters = append(letters, l)
 	}
 	sort.Strings(letters)
@@ -108,8 +107,7 @@ func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) s
 	t, _ := template.ParseFiles("templates/base.html", authorTemplateFile)
 	err := t.Execute(&doc, authorChunks)
 	if err != nil {
-		log.Fatal("Error parsing author index template: %w", err)
-		os.Exit(1)
+		log.Fatalf("Error parsing author index template: %v", err)
 	}
 	return doc.String()
 }
@@ -119,8 +117,7 @@ func RenderAuthorPage(authorTemplateFile string, author models.Author) string {
 	t, _ := template.ParseFiles("templates/child_dir_base.html", authorTemplateFile)
 	err := t.Execute(&doc, author)
 	if err != nil {
-		log.Fatal("Error parsing author page template: %w", err)
-		os.Exit(1)
+		log.Fatalf("Error parsing author page template: %v", err)
 	}
 	return doc.String()
 }
@@ -129,12 +126,11 @@ func RenderBookPage(bookTemplateFile string, book models.Book) string {
 	var doc bytes.Buffer
 	t, parseErr := template.ParseFiles("templates/child_dir_base.html", bookTemplateFile)
 	if parseErr != nil {
-		log.Fatal("Error parsing book page template: %w", parseErr)
+		log.Fatalf("Error parsing book page template: %v", parseErr)
 	}
 	err := t.Execute(&doc, book)
 	if err != nil {
-		log.Fatal("Error  rendering book page template: %w", err)
-		os.Exit(1)
+		log.Fatalf("Error rendering book page template: %v", err)
 	}
 	return doc.String()
 }
@@ -144,14 +140,15 @@ type DecadeInfo struct {
 	Books  []models.Book
 }
 
-func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) string {
+// GroupBooksByDecade groups books by their publication decade, newest first,
+// with "Unknown" sorted to the end.
+func GroupBooksByDecade(books []models.Book) []DecadeInfo {
 	groupedBooks := BooksByDecade(books)
-	var decades []string
-	for d, _ := range groupedBooks {
+	decades := make([]string, 0, len(groupedBooks))
+	for d := range groupedBooks {
 		decades = append(decades, d)
 	}
 
-	// Sort decades newest to oldest, with "Unknown" at the end
 	sort.Slice(decades, func(i, j int) bool {
 		if decades[i] == "Unknown" {
 			return false
@@ -159,23 +156,27 @@ func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) stri
 		if decades[j] == "Unknown" {
 			return true
 		}
-		return decades[i] > decades[j] // Reverse alphabetical for newest first
+		return decades[i] > decades[j]
 	})
 
-	var decadeInfos []DecadeInfo
+	decadeInfos := make([]DecadeInfo, 0, len(decades))
 	for _, d := range decades {
 		decadeInfos = append(decadeInfos, DecadeInfo{
 			Decade: d,
 			Books:  groupedBooks[d],
 		})
 	}
+	return decadeInfos
+}
+
+func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) string {
+	decadeInfos := GroupBooksByDecade(books)
 
 	var doc bytes.Buffer
 	t, _ := template.ParseFiles("templates/base.html", decadeTemplateFile)
 	err := t.Execute(&doc, decadeInfos)
 	if err != nil {
-		log.Fatal("Error parsing decades index template: %w", err)
-		os.Exit(1)
+		log.Fatalf("Error parsing decades index template: %v", err)
 	}
 	return doc.String()
 }
@@ -197,8 +198,7 @@ func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade str
 	t, _ := template.ParseFiles("templates/child_dir_base.html", decadeTemplateFile)
 	err := t.Execute(&doc, decadeInfo)
 	if err != nil {
-		log.Fatal("Error parsing decade page template: %w", err)
-		os.Exit(1)
+		log.Fatalf("Error parsing decade page template: %v", err)
 	}
 	return doc.String()
 }
@@ -207,44 +207,14 @@ func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
 	var doc bytes.Buffer
 	t, parseErr := template.ParseFiles("templates/base.html", pageTemplateFile)
 	if parseErr != nil {
-		log.Fatal("Error parsing book list page template: %w", parseErr)
+		log.Fatalf("Error parsing book list page template: %v", parseErr)
 	}
 
 	err := t.Execute(&doc, books)
 	if err != nil {
-		log.Fatal("Error parsing book list template: %w", err)
-		os.Exit(1)
+		log.Fatalf("Error parsing book list template: %v", err)
 	}
 	return doc.String()
-}
-
-// GroupBooksByDecade groups books by their publication decade
-func GroupBooksByDecade(books []models.Book) []DecadeInfo {
-	groupedBooks := BooksByDecade(books)
-	var decades []string
-	for d := range groupedBooks {
-		decades = append(decades, d)
-	}
-
-	// Sort decades newest to oldest, with "Unknown" at the end
-	sort.Slice(decades, func(i, j int) bool {
-		if decades[i] == "Unknown" {
-			return false
-		}
-		if decades[j] == "Unknown" {
-			return true
-		}
-		return decades[i] > decades[j]
-	})
-
-	var decadeInfos []DecadeInfo
-	for _, d := range decades {
-		decadeInfos = append(decadeInfos, DecadeInfo{
-			Decade: d,
-			Books:  groupedBooks[d],
-		})
-	}
-	return decadeInfos
 }
 
 // SortByAuthorSurname sorts books by author surname alphabetically

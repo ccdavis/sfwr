@@ -158,15 +158,6 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author, siteCoverImagesDir 
 	var err error
 	fmt.Println("\nAdd New Book by ", author.FullName, "--------------------")
 	fmt.Println()
-	/*
-		db.Model(&author).Association("Books")
-		dbError := db.Model(&author).Association("Books").Error
-		if dbError != nil {
-			return dbError
-		}
-	*/
-	//var authorBooks []models.Book
-	//db.Model(&author).Association("Books").Find(&authorBooks)
 	if len(author.Books) == 0 {
 		fmt.Println("Currently this database contains no books by this author.")
 	} else {

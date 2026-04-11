@@ -279,9 +279,7 @@ func captureCoverImage(b Book, outputDir string, size string) {
 	url := b.MakeCoverImageUrl(size)
 	err := saveCoverImage(imageFile, url)
 	if err != nil {
-		log.Print("ERROR retrieving or saving image with id ", b.OlCoverId)
-		log.Print("for book: ", b.FormatTitle())
-		log.Print("The error was ", err)
+		log.Printf("ERROR saving cover image id=%d for %q: %v", b.OlCoverId, b.FormatTitle(), err)
 		if copyErr := copyPlaceholderImage(imageFile, outputDir, size); copyErr != nil {
 			log.Printf("Warning: Failed to copy placeholder image for %s: %v", imageFile, copyErr)
 		} else {
