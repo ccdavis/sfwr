@@ -13,71 +13,56 @@ SFWR is a book recommendation web application written in Go that functions as a 
 - **Create database**: `./sfwr -createdb sfwr_database.db`
 - **Download cover images**: `./sfwr -getimages`
 - **Generate static site**: `./sfwr -build` (outputs to `output/public/`)
-- **Add new book interactively**: `./sfwr -new`
-- **Load custom book data**: `./sfwr -load-books custom_file.json`
-- **Start web UI server**: `./sfwr -web=8080` (launches web interface on port 8080)
+- **Add new book (TUI)**: `./sfwr -new`
+- **Start web UI server**: `./sfwr -web=8080`
+
+### Testing
+- **Run all tests**: `go test ./...`
+- **Run single package tests**: `go test ./models` or `go test ./web`
+- **Run specific test**: `go test ./models -run TestBookCreate`
+- **Verbose output**: `go test -v ./...`
+
+Tests use in-memory SQLite databases (`:memory:`) - see `setupTestDB()` helper functions in test files.
 
 ### Development
 - **Run without building**: `go run main.go [flags]`
 - **Install dependencies**: `go mod tidy`
-- **Update dependencies**: `go get -u ./...`
 
 ## Architecture
 
 ### Core Components
-- **Models** (`/models/`): Data structures and database operations using GORM
-  - `book.go`: Core Book/Author models with complex rating system
-  - `open_library.go`: Open Library API integration for cover images
-- **Pages** (`/pages/`): HTML generation logic for different page types
-- **Templates** (`/templates/`): HTML templates with embedded CSS
-  - `/templates/web/`: Web UI templates for CRUD operations
-- **TUI** (`/tui/`): Text interface for adding books interactively
-- **Web** (`/web/`): Web UI for book and author management (CRUD operations)
+- **models/**: Data structures and database operations using GORM
+  - `book.go`: Book/Author models, Rating enum, Open Library data sync
+  - `open_library.go`: API client for searching books and fetching cover images
+- **pages/**: Static HTML page generation logic
+- **templates/**: HTML templates for static site generation
+  - `templates/web/`: Templates for the web admin UI
+- **web/**: HTTP handlers for CRUD operations and deployment
+- **tui/**: Terminal interface for adding books (alternative to web UI)
 
 ### Data Flow
-1. Books stored in `book_database.json` are imported to SQLite database
-2. Cover images downloaded from Open Library API using ISBN/OLID
-3. Templates populated with database content to generate static HTML
-4. Complete static site generated in `output/public/` for deployment
+1. Books can be added via TUI (`-new`), web UI (`-web`), or imported from JSON (`-createdb`)
+2. Open Library API provides cover images and metadata (searched by title/author)
+3. Cover images stored in `saved_cover_images/`, copied to output on build
+4. `./sfwr -build` generates static HTML in `output/public/`
+5. Deployment: push database to GitHub → GitHub Actions builds and deploys to Pages
 
-### Database Schema
-- **Books**: Main entity with metadata, ratings, Open Library integration
-- **Authors**: Many-to-many relationship with books
-- **OpenLibraryBookAuthor/ISBN**: External API data storage
+### Database
+SQLite database (`sfwr_database.db`) with GORM. Key tables:
+- **books**: Core entity with rating, review, Open Library IDs
+- **authors**: Many-to-many with books via `book_authors` join table
+- **open_library_book_isbns**, **open_library_book_authors**: External API data
 
-## Key Files
-- `main.go`: CLI entry point with flag handling
-- `sfwr_database.db`: SQLite database file
-- `book_database.json`: Source data for book imports
-- `output/public/`: Generated static site directory
+### Rating System
+String enum stored in database: `Excellent`, `Very-Good`, `Kindle`, `Interesting`, `Not-Good`, `Not Rated`
 
-## Rating System
-Uses custom enum: Unknown, VeryGood, Excellent, Kindle, Interesting, NotGood
+## Deployment
 
-## Web UI
-The web interface provides a browser-based CRUD application for managing books and authors:
+GitHub Actions workflow (`.github/workflows/deploy.yml`) triggers on pushes to `sfwr_database.db` or `saved_cover_images/`. The workflow builds the Go executable, runs `./sfwr -build`, and deploys `output/public/` to GitHub Pages.
 
-### Features
-- **Home dashboard** with quick actions and overview
-- **Book management**: Create, read, update, delete books
-- **Author management**: Create and view authors
-- **Form validation** with proper error handling
-- **Responsive design** consistent with existing site styling
-
-### Endpoints
-- `/` - Home dashboard
-- `/books` - List all books
-- `/books/new` - Add new book form
-- `/books/edit/{id}` - Edit existing book
-- `/authors` - List all authors
-- `/authors/new` - Add new author form
-
-### Testing
-- Unit tests with in-memory SQLite database
-- Full CRUD operation testing
-- Error handling validation
+The web UI provides a "Deploy" button that commits the database and pushes to trigger the workflow.
 
 ## Open Library Integration
-- Fetches cover images in multiple sizes (S, M, L)
-- Uses both ISBN and OLID identifiers
-- Handles missing images gracefully
+- Search by title and author, returns multiple potential matches
+- Fetches cover images in S/M/L sizes using OLID or cover ID
+- Web UI allows selecting search results to auto-populate book metadata
