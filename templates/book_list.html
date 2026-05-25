@@ -28,10 +28,10 @@
 	{{end}}
  
 	<div class="citation book-author">
-	 <h4>BY  {{.AuthorFullName}} - Pub Year {{.FormatPubDate}} </h4> 
+	 <h4>BY  {{.AuthorFullName}} - Pub Year {{.FormatPubDate}} {{.TagIcons}}</h4>
 	</div>	
 	<div style="display: flex; justify-content: space-between; align-items: center;">
-	  <span>rating: {{.DisplayRating}}</span>
+	  <span>{{.StarRating}}</span>
 	  <span>{{.BookPageLink }}</span>
 	</div>
 	 

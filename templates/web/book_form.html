@@ -283,24 +283,34 @@
                 <div class="rating-options">
                     <div class="rating-option">
                         <input type="radio" id="rating_excellent" name="rating" value="Excellent" {{if .Book}}{{if eq .Book.Rating "Excellent"}}checked{{end}}{{end}} required>
-                        <label for="rating_excellent">Excellent (5)</label>
+                        <label for="rating_excellent">Excellent (4)</label>
                     </div>
                     <div class="rating-option">
                         <input type="radio" id="rating_very_good" name="rating" value="Very-Good" {{if .Book}}{{if eq .Book.Rating "Very-Good"}}checked{{end}}{{end}}>
-                        <label for="rating_very_good">Very Good (4)</label>
+                        <label for="rating_very_good">Very Good (3)</label>
                     </div>
                     <div class="rating-option">
-                        <input type="radio" id="rating_kindle" name="rating" value="Kindle" {{if .Book}}{{if eq .Book.Rating "Kindle"}}checked{{end}}{{end}}>
-                        <label for="rating_kindle">Kindle only / Self-published (3)</label>
+                        <input type="radio" id="rating_worth_reading" name="rating" value="Worth-Reading" {{if .Book}}{{if eq .Book.Rating "Worth-Reading"}}checked{{end}}{{end}}>
+                        <label for="rating_worth_reading">Worth Reading (2)</label>
                     </div>
                     <div class="rating-option">
-                        <input type="radio" id="rating_interesting" name="rating" value="Interesting" {{if .Book}}{{if eq .Book.Rating "Interesting"}}checked{{end}}{{end}}>
-                        <label for="rating_interesting">Interesting / What was that? (2)</label>
+                        <input type="radio" id="rating_could_not_finish" name="rating" value="Could-Not-Finish" {{if .Book}}{{if eq .Book.Rating "Could-Not-Finish"}}checked{{end}}{{end}}>
+                        <label for="rating_could_not_finish">Could Not Finish (1)</label>
                     </div>
-                    <div class="rating-option">
-                        <input type="radio" id="rating_not_good" name="rating" value="Not-Good" {{if .Book}}{{if eq .Book.Rating "Not-Good"}}checked{{end}}{{end}}>
-                        <label for="rating_not_good">Not good. Had to put it down. (1)</label>
-                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Tags</label>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                        <input type="checkbox" name="indy" style="width: auto;" {{if .Book}}{{if .Book.Indy}}checked{{end}}{{end}}>
+                        Indy / Self-published
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                        <input type="checkbox" name="interesting" style="width: auto;" {{if .Book}}{{if .Book.Interesting}}checked{{end}}{{end}}>
+                        Interesting / Unusual
+                    </label>
                 </div>
             </div>
 

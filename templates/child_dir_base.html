@@ -420,9 +420,45 @@ div.book-box:hover {
  
   
  
+.tag-icon {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.tag-indy {
+    color: #e9a820;
+    font-size: 1.15em;
+}
+
+.tag-interesting {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid #b080e0;
+    border-radius: 50%;
+    color: #b080e0;
+    font-weight: 900;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+.book-tags {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.star-rating {
+    color: #e9a820;
+    letter-spacing: 1px;
+}
+
  </style>
    <meta charset="UTF-8">
-   <title>{{ template "title" . }}</title>  
+   <title>{{ template "title" . }}</title>
  </head>
  <body>
 	<div class="top-menu">

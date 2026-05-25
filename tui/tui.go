@@ -189,11 +189,10 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author, siteCoverImagesDir 
 		}
 
 		fmt.Println("Rating:")
-		fmt.Println("(5) Excellent")
-		fmt.Println("(4) Very Good")
-		fmt.Println("(3) Kindle only / Self-published")
-		fmt.Println("(2) ''Interesting' / What was that?")
-		fmt.Println("(1) Not good. Had to put it down.")
+		fmt.Println("(4) Excellent")
+		fmt.Println("(3) Very Good")
+		fmt.Println("(2) Worth Reading")
+		fmt.Println("(1) Could Not Finish")
 
 		var ratingNumber int64
 		var ratingError error
@@ -201,27 +200,28 @@ func addBookWithAuthorTui(db *gorm.DB, author models.Author, siteCoverImagesDir 
 		for rating == models.Unknown {
 			ratingNumber, ratingError = takeLabeledNumberInput("Enter rating", 0)
 			if ratingError != nil {
-				fmt.Println("Please enter a rating between 1 and 5.")
+				fmt.Println("Please enter a rating between 1 and 4.")
 				continue
 			}
-			switch ratingNumber {
-			case 1:
-				rating = models.NotGood
-			case 2:
-				rating = models.Interesting
-			case 3:
-				rating = models.Kindle
-			case 4:
-				rating = models.VeryGood
-			case 5:
-				rating = models.Excellent
-			}
+			rating = models.RatingFromNumeric(int(ratingNumber))
 			if rating == models.Unknown {
-				fmt.Println("Please enter a rating between 1 and 5.")
+				fmt.Println("Please enter a rating between 1 and 4.")
 				continue
 			}
 			newBook.Rating = rating.String()
 		}
+
+		indyResponse, err := takeLabeledInput("Indy/self-published? (y/n)", "n")
+		if err != nil {
+			return err
+		}
+		newBook.Indy = indyResponse == "y"
+
+		interestingResponse, err := takeLabeledInput("Mark as 'interesting/unusual'? (y/n)", "n")
+		if err != nil {
+			return err
+		}
+		newBook.Interesting = interestingResponse == "y"
 
 		newBook.AuthorFullName = author.FullName
 		newBook.AuthorSurname = author.Surname

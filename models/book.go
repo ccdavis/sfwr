@@ -5,7 +5,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"html/template"
+	"log"
 	"os"
 	"path"
 	"strconv"
@@ -66,28 +66,73 @@ func (r Rating) Display() string {
 }
 
 var (
-	Unknown     = Rating{"Not Rated"}
-	VeryGood    = Rating{"Very-Good"}
-	Excellent   = Rating{"Excellent"}
-	Kindle      = Rating{"Kindle"}
-	Interesting = Rating{"Interesting"}
-	NotGood     = Rating{"Not-Good"}
+	Unknown        = Rating{"Not Rated"}
+	Excellent      = Rating{"Excellent"}
+	VeryGood       = Rating{"Very-Good"}
+	WorthReading   = Rating{"Worth-Reading"}
+	CouldNotFinish = Rating{"Could-Not-Finish"}
 )
+
+func AllRatings() []Rating {
+	return []Rating{Excellent, VeryGood, WorthReading, CouldNotFinish}
+}
+
+func RatingNumericValue(r Rating) int {
+	switch r {
+	case Excellent:
+		return 4
+	case VeryGood:
+		return 3
+	case WorthReading:
+		return 2
+	case CouldNotFinish:
+		return 1
+	}
+	return 0
+}
+
+func RatingFromNumeric(n int) Rating {
+	switch n {
+	case 4:
+		return Excellent
+	case 3:
+		return VeryGood
+	case 2:
+		return WorthReading
+	case 1:
+		return CouldNotFinish
+	}
+	return Unknown
+}
 
 func StringToRating(s string) (Rating, error) {
 	switch s {
-	case VeryGood.slug:
-		return VeryGood, nil
 	case Excellent.slug:
 		return Excellent, nil
-	case Kindle.slug:
-		return Kindle, nil
-	case Interesting.slug:
-		return Interesting, nil
-	case NotGood.slug:
-		return NotGood, nil
+	case VeryGood.slug:
+		return VeryGood, nil
+	case WorthReading.slug:
+		return WorthReading, nil
+	case CouldNotFinish.slug:
+		return CouldNotFinish, nil
 	}
 	return Unknown, errors.New("unknown rating: " + s)
+}
+
+// convertLegacyRating handles old "Kindle", "Interesting", and "Not-Good"
+// ratings by converting them to the new system. Sets tag flags as needed.
+func convertLegacyRating(s string, indy *bool, interesting *bool) (Rating, error) {
+	switch s {
+	case "Kindle":
+		*indy = true
+		return VeryGood, nil
+	case "Interesting":
+		*interesting = true
+		return WorthReading, nil
+	case "Not-Good":
+		return CouldNotFinish, nil
+	}
+	return StringToRating(s)
 }
 
 type OpenLibraryBookAuthor struct {
@@ -112,6 +157,8 @@ type Book struct {
 	SubTitle               string
 	Review                 string
 	Rating                 string
+	Indy                   bool
+	Interesting            bool
 	AmazonLink             string
 	CoverImageUrl          string
 	OpenLibraryUrl         string
@@ -191,15 +238,6 @@ func (b Book) HasCoverImageId() bool {
 	return b.OlCoverId != Missing && b.OlCoverId != 0
 }
 
-func (b Book) DisplayRating() string {
-	r, err := StringToRating(b.Rating)
-	if err != nil {
-		return "Unknown rating"
-	} else {
-		return r.Display()
-	}
-}
-
 func (b Book) SiteFileName() string {
 	name, err := filenamify.Filenamify(fmt.Sprint(b.ID, "_", b.AuthorFullName, b.MainTitle), filenamify.Options{})
 	if err != nil {
@@ -208,145 +246,6 @@ func (b Book) SiteFileName() string {
 	return fmt.Sprint(strings.Replace(name, " ", "-", -1), ".html")
 }
 
-func (b Book) BookPageLink(args ...string) template.HTML {
-	return template.HTML(fmt.Sprint("<a class=\"buttonlink\" href=\"", b.BookPageURL(args...), "\"> More </a>"))
-}
-
-func (b Book) BookPageURL(args ...string) string {
-	prefix := b.imageDirPrefix(args)
-	return fmt.Sprint(prefix, "/books/", b.SiteFileName())
-}
-
-func (b Book) FormatTitle() string {
-	title := b.MainTitle
-	if len(b.SubTitle) > 0 {
-		title += ": " + b.SubTitle
-	}
-	return title
-}
-
-func (b Book) FormatRating() string {
-	rating, err := StringToRating(b.Rating)
-	if err != nil {
-		return "Unrated"
-	} else {
-		return rating.Display()
-	}
-}
-
-func (b Book) FormatPubDate() string {
-	if b.PubDate == Missing {
-		return "  ? "
-	} else {
-		return fmt.Sprint(b.PubDate)
-	}
-}
-
-func (b Book) ReviewHTML() template.HTML {
-	return template.HTML(formatReviewMarkdown(b.Review))
-}
-
-func (b Book) ReviewPreviewHTML() template.HTML {
-	preview, _ := truncateReviewWords(b.Review, reviewPreviewWordLimit)
-	return template.HTML(formatReviewMarkdown(preview))
-}
-
-func (b Book) ReviewPreviewIsTruncated() bool {
-	_, truncated := truncateReviewWords(b.Review, reviewPreviewWordLimit)
-	return truncated
-}
-
-func formatReviewMarkdown(review string) string {
-	paragraphs := splitReviewParagraphs(review)
-	if len(paragraphs) == 0 {
-		return ""
-	}
-
-	var builder strings.Builder
-	for i, paragraph := range paragraphs {
-		if i > 0 {
-			builder.WriteByte('\n')
-		}
-		cleaned := strings.Join(strings.Fields(paragraph), " ")
-		if cleaned == "" {
-			continue
-		}
-		builder.WriteString("<p>")
-		builder.WriteString(template.HTMLEscapeString(cleaned))
-		builder.WriteString("</p>")
-	}
-	return builder.String()
-}
-
-func splitReviewParagraphs(review string) []string {
-	normalized := normalizeReview(review)
-	if normalized == "" {
-		return nil
-	}
-
-	lines := strings.Split(normalized, "\n")
-	var paragraphs []string
-	var current []string
-	for _, line := range lines {
-		if strings.TrimSpace(line) == "" {
-			if len(current) > 0 {
-				paragraphs = append(paragraphs, strings.Join(current, "\n"))
-				current = nil
-			}
-			continue
-		}
-		current = append(current, line)
-	}
-	if len(current) > 0 {
-		paragraphs = append(paragraphs, strings.Join(current, "\n"))
-	}
-	return paragraphs
-}
-
-func truncateReviewWords(review string, maxWords int) (string, bool) {
-	if maxWords <= 0 {
-		return "", strings.TrimSpace(review) != ""
-	}
-
-	paragraphs := splitReviewParagraphs(review)
-	if len(paragraphs) == 0 {
-		return "", false
-	}
-
-	totalWords := 0
-	for _, paragraph := range paragraphs {
-		totalWords += len(strings.Fields(paragraph))
-	}
-	if totalWords <= maxWords {
-		return strings.Join(paragraphs, "\n\n"), false
-	}
-
-	remaining := maxWords
-	var preview []string
-	for _, paragraph := range paragraphs {
-		words := strings.Fields(paragraph)
-		if len(words) == 0 {
-			continue
-		}
-		if len(words) <= remaining {
-			preview = append(preview, paragraph)
-			remaining -= len(words)
-		} else {
-			preview = append(preview, strings.Join(words[:remaining], " "))
-			remaining = 0
-		}
-		if remaining == 0 {
-			break
-		}
-	}
-	return strings.Join(preview, "\n\n"), true
-}
-
-func normalizeReview(review string) string {
-	normalized := strings.ReplaceAll(review, "\r\n", "\n")
-	normalized = strings.ReplaceAll(normalized, "\r", "\n")
-	return strings.TrimSpace(normalized)
-}
 
 // Some databases like Open Library aren't consistent with their author initials, for instance
 // CJ Cherryh vs C.J. Cherryh or C. J. Cherryh. We need an easy way to try all three. With all the
@@ -391,35 +290,6 @@ func (b Book) AlternateAuthorFullNames() []string {
 	}
 }
 
-func (b Book) imageDirPrefix(p []string) string {
-	if len(p) > 0 {
-		return p[0]
-	} else {
-		return "."
-	}
-}
-
-func (b Book) MakeLinkedSmallCoverImageTag(args ...string) template.HTML {
-	return b.makeLinkedImageTag(SmallCover, b.imageDirPrefix(args))
-
-}
-
-func (b Book) MakeLinkedMediumCoverImageTag(args ...string) template.HTML {
-	return b.makeLinkedImageTag(MediumCover, b.imageDirPrefix(args))
-}
-
-func (b Book) MakeLinkedLargeCoverImageTag(args ...string) template.HTML {
-	return b.makeLinkedImageTag(LargeCover, b.imageDirPrefix(args))
-}
-
-func (b Book) makeLinkedImageTag(size string, relativePath string) template.HTML {
-	imageTag := b.makeImageTagForCover(size, relativePath)
-	olUrl := b.makeOpenLibraryUrl()
-	linkTag := fmt.Sprintf("<a href=\"%s\"> %s </a>", olUrl, imageTag)
-	//fmt.Println(b.MainTitle, ": rendering link tag: ", linkTag)
-	return template.HTML(linkTag)
-}
-
 func (b Book) MakeCoverImageUrl(size string) string {
 	if Missing != b.OlCoverId && b.OlCoverId != 0 {
 		url := fmt.Sprintf("http://covers.openlibrary.org/b/id/%d-%s.jpg", b.OlCoverId, size)
@@ -438,28 +308,6 @@ func (b Book) MakeCoverImageFilename(imageDir string, size string) string {
 	return path.Join(imageDir, filename)
 }
 
-func makeCoverImageUrlForIsbn(isbn string, size string) string {
-	url := fmt.Sprintf("http://covers.openlibrary.org/b/isbn/%s-%s.jpg", isbn, size)
-	return url
-}
-
-func (b Book) makeImageTagForCover(size string, relativeToImageDir string) template.HTML {
-	completePath := relativeToImageDir + "/" + ImageDir
-	link := b.MakeCoverImageFilename(completePath, size)
-	label := "Open Library"
-	tag := fmt.Sprintf("<img src=\"%s\" alt=\"%s\" />", link, label)
-	return template.HTML(tag)
-}
-
-func (b Book) makeOpenLibraryUrl() string {
-	if b.OlCoverEditionId != "" {
-		return fmt.Sprintf("http://openlibrary.org/olid/%s", b.OlCoverEditionId)
-	} else {
-		// For books without Open Library IDs (like placeholders), search by title and author
-		searchQuery := strings.ReplaceAll(b.MainTitle+" "+b.AuthorFullName, " ", "+")
-		return fmt.Sprintf("https://openlibrary.org/search?q=%s", searchQuery)
-	}
-}
 
 // This might need to get more sophisticated
 func ExtractSurname(fullName string) string {
@@ -511,8 +359,14 @@ func fromRawBook(book load.RawBook) Book {
 		authorName = "UNKNOWN"
 	}
 	surname := ExtractSurname(authorName)
-	rating, err := StringToRating(book.Rating)
-	exitOnError("Error extracting author's surname.", err)
+	var indy, interesting bool
+	rating, err := convertLegacyRating(book.Rating, &indy, &interesting)
+	if err != nil {
+		if Verbose {
+			fmt.Fprintf(os.Stderr, "WARNING: Unrecognized rating %q for '%s', defaulting to Unknown.\n", book.Rating, book.Title[0])
+		}
+		rating = Unknown
+	}
 
 	var subTitle = ""
 	if len(book.Title) > 1 {
@@ -553,6 +407,8 @@ func fromRawBook(book load.RawBook) Book {
 		SubTitle:               subTitle,
 		Review:                 book.Review,
 		Rating:                 rating.slug,
+		Indy:                   indy,
+		Interesting:            interesting,
 		AmazonLink:             book.AmazonLink,
 		CoverImageUrl:          book.CoverImage,
 		OpenLibraryUrl:         book.OpenLibrary,
@@ -619,11 +475,50 @@ func CreateBooksDatabase(databaseName string) *gorm.DB {
 	return db
 }
 
+// MigrateRatingsToTags converts legacy "Kindle" and "Interesting" ratings
+// into the Indy/Interesting boolean tags, assigns default ratings, and
+// renames "Not-Good" to "Could-Not-Finish".
+func MigrateRatingsToTags(db *gorm.DB) error {
+	err := db.AutoMigrate(&Book{})
+	if err != nil {
+		return fmt.Errorf("migration failed: %w", err)
+	}
+
+	result := db.Model(&Book{}).Where("rating = ?", "Kindle").Updates(map[string]interface{}{
+		"indy":   true,
+		"rating": VeryGood.slug,
+	})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected > 0 {
+		fmt.Printf("Migrated %d 'Kindle' books → Indy + Very-Good\n", result.RowsAffected)
+	}
+
+	result = db.Model(&Book{}).Where("rating = ?", "Interesting").Updates(map[string]interface{}{
+		"interesting": true,
+		"rating":      WorthReading.slug,
+	})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected > 0 {
+		fmt.Printf("Migrated %d 'Interesting' books → Interesting + Worth-Reading\n", result.RowsAffected)
+	}
+
+	result = db.Model(&Book{}).Where("rating = ?", "Not-Good").Update("rating", CouldNotFinish.slug)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected > 0 {
+		fmt.Printf("Migrated %d 'Not-Good' books → Could-Not-Finish\n", result.RowsAffected)
+	}
+
+	return nil
+}
+
 func exitOnError(msg string, err error) {
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "\n", msg)
-		fmt.Fprintln(os.Stderr, err, "")
-		fmt.Fprintln(os.Stderr)
-		os.Exit(1)
+		log.Fatal(msg, ": ", err)
 	}
 }

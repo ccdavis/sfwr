@@ -31,11 +31,10 @@ func TestRatingEnum(t *testing.T) {
 		displayVal  string
 	}{
 		{"Unknown", Unknown, "Not Rated", "Not Rated"},
-		{"VeryGood", VeryGood, "Very-Good", "Very Good"},
 		{"Excellent", Excellent, "Excellent", "Excellent"},
-		{"Kindle", Kindle, "Kindle", "Kindle"},
-		{"Interesting", Interesting, "Interesting", "Interesting"},
-		{"NotGood", NotGood, "Not-Good", "Not Good"},
+		{"VeryGood", VeryGood, "Very-Good", "Very Good"},
+		{"WorthReading", WorthReading, "Worth-Reading", "Worth Reading"},
+		{"CouldNotFinish", CouldNotFinish, "Could-Not-Finish", "Could Not Finish"},
 	}
 
 	for _, tt := range tests {
@@ -59,12 +58,14 @@ func TestStringToRating(t *testing.T) {
 		expected Rating
 		hasError bool
 	}{
-		{"Not Rated", Unknown, true},  // Not Rated is not recognized, returns error
-		{"Very-Good", VeryGood, false},
+		{"Not Rated", Unknown, true},
 		{"Excellent", Excellent, false},
-		{"Kindle", Kindle, false},
-		{"Interesting", Interesting, false},
-		{"Not-Good", NotGood, false},
+		{"Very-Good", VeryGood, false},
+		{"Worth-Reading", WorthReading, false},
+		{"Could-Not-Finish", CouldNotFinish, false},
+		{"Kindle", Unknown, true},
+		{"Interesting", Unknown, true},
+		{"Not-Good", Unknown, true},
 		{"Invalid", Unknown, true},
 		{"", Unknown, true},
 	}

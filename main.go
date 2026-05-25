@@ -19,7 +19,7 @@ import (
 
 func check(e error) {
 	if e != nil {
-		panic(e)
+		log.Fatal(e)
 	}
 }
 
@@ -114,10 +114,12 @@ func main() {
 		saveImagesFlag   bool
 		addBookFlag      bool
 		generateSiteFlag bool
+		migrateFlag      bool
 	)
 	flag.BoolVar(&saveImagesFlag, "getimages", false, "Save small, medium, and large cover images for all books with OLIDs.")
 	flag.BoolVar(&addBookFlag, "new", false, "Add a new book using the basic text interface.")
 	flag.BoolVar(&generateSiteFlag, "build", false, "Generate static site")
+	flag.BoolVar(&migrateFlag, "migrate", false, "Run database migrations (rating conversions, new fields)")
 	flag.Parse()
 	bookFile := *bookFilePtr
 
@@ -126,12 +128,24 @@ func main() {
 		fmt.Println("Created new database.")
 		check(models.TransferJsonBooksToDatabase(bookFile, db))
 		fmt.Println("Saved all books to database.")
+		return
+	}
+
+	needsDB := saveImagesFlag || generateSiteFlag || *webPortPtr != "" || addBookFlag || migrateFlag
+	if !needsDB {
+		return
 	}
 
 	databaseName := "sfwr_database.db"
 	db, err := gorm.Open(sqlite.Open(databaseName), &gorm.Config{})
 	if err != nil {
 		log.Fatal("can't open sfwr db. Maybe you need to make it first.")
+	}
+
+	if migrateFlag {
+		check(models.MigrateRatingsToTags(db))
+		fmt.Println("Migration complete.")
+		return
 	}
 
 	siteCoverImagesDir := path.Join(GeneratedSiteDir, models.ImageDir)

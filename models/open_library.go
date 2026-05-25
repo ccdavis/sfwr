@@ -25,8 +25,7 @@ type BookSearchResult struct {
 	Languages          []string
 	CoverEditionKey    string
 	CoverImageId       string
-	AuthorIds          []string // Can be more than one author
-	isfdb_id           string
+	AuthorIds          []string
 }
 
 func (s BookSearchResult) Print() string {
@@ -104,8 +103,6 @@ func SearchBook(title string, author string) []BookSearchResult {
 							work.CoverEditionKey = strings.ReplaceAll(strings.TrimSpace(fieldValue.String()), "\"", "")
 						case "cover_i":
 							work.CoverImageId = strings.TrimSpace(fieldValue.String())
-						case "id_isfdb":
-							work.isfdb_id = strings.TrimSpace(fieldValue.String())
 						}
 					} // each field
 					results = append(results, work)

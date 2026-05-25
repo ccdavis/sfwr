@@ -51,8 +51,15 @@ func (ws *WebServer) deployToGitHub() (string, error) {
 		}
 	}
 
-	// Push to remote
-	cmd = exec.Command("git", "push", "origin", "main")
+	// Push current branch to remote
+	cmd = exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	branchOutput, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to determine current branch: %v", err)
+	}
+	branch := strings.TrimSpace(string(branchOutput))
+
+	cmd = exec.Command("git", "push", "origin", branch)
 	if output, err := cmd.CombinedOutput(); err != nil {
 		return "", fmt.Errorf("failed to push to GitHub: %v\n%s", err, output)
 	}

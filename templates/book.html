@@ -22,10 +22,10 @@
             
             {{end}}
             <div class="citation">
-                <h4> BY <span class="book-author"> {{.AuthorFullName}}</span> </h4> 
-                <h4>Pub Year {{.FormatPubDate}} </h4> 
-            </div>	
-            <div>rating: {{.DisplayRating}}</div>
+                <h4> BY <span class="book-author"> {{.AuthorFullName}}</span> </h4>
+                <h4>Pub Year {{.FormatPubDate}} {{.TagIcons}}</h4>
+            </div>
+            <div>{{.StarRating}}</div>
             {{if .Review}}
                 {{.ReviewHTML}}
             {{end}}

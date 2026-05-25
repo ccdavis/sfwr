@@ -116,6 +116,10 @@ func createTestTemplates(dir string) {
 		os.WriteFile(filepath.Join(dir, "templates/web", name), []byte(content), 0644)
 	}
 
+	// Create standalone preview template
+	previewTemplate := `<!DOCTYPE html><html><body><h1>Preview</h1></body></html>`
+	os.WriteFile(filepath.Join(dir, "templates/web/preview.html"), []byte(previewTemplate), 0644)
+
 	// Create page templates
 	os.MkdirAll(filepath.Join(dir, "templates"), 0755)
 	pageTemplates := map[string]string{

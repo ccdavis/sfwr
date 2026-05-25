@@ -17,9 +17,10 @@ import (
 )
 
 type WebServer struct {
-	db        *gorm.DB
-	templates map[string]*template.Template
-	imageDir  string
+	db              *gorm.DB
+	templates       map[string]*template.Template
+	previewTemplate *template.Template
+	imageDir        string
 }
 
 // pageTemplates lists every named template rendered via renderTemplate; each
@@ -64,37 +65,43 @@ func NewWebServer(db *gorm.DB, imageDir string) (*WebServer, error) {
 		}
 		ws.templates[name] = t
 	}
+	previewTmpl, err := template.ParseFiles("templates/web/preview.html")
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse preview template: %w", err)
+	}
+	ws.previewTemplate = previewTmpl
 	return ws, nil
 }
 
 func (ws *WebServer) ServeHTTP(port string) error {
-	http.HandleFunc("/", ws.homeHandler)
-	http.HandleFunc("/books", ws.listBooksHandler)
-	http.HandleFunc("/books/new", ws.newBookHandler)
-	http.HandleFunc("/books/create", ws.createBookHandler)
-	http.HandleFunc("/books/edit/", ws.editBookHandler)
-	http.HandleFunc("/books/update/", ws.updateBookHandler)
-	http.HandleFunc("/books/delete/", ws.deleteBookHandler)
-	http.HandleFunc("/authors", ws.listAuthorsHandler)
-	http.HandleFunc("/authors/new", ws.newAuthorHandler)
-	http.HandleFunc("/authors/create", ws.createAuthorHandler)
-	http.HandleFunc("/authors/edit/", ws.editAuthorHandler)
-	http.HandleFunc("/authors/update/", ws.updateAuthorHandler)
-	http.HandleFunc("/decades", ws.listDecadesHandler)
-	http.HandleFunc("/decades/", ws.decadeHandler)
-	http.HandleFunc("/books/search-openlibrary", ws.searchOpenLibraryHandler)
-	http.HandleFunc("/books/update-from-openlibrary", ws.updateFromOpenLibraryHandler)
-	http.HandleFunc("/books/create-from-openlibrary", ws.createFromOpenLibraryHandler)
-	http.HandleFunc("/deploy", ws.deployHandler)
-	http.HandleFunc("/build-local", ws.buildLocalHandler)
-	http.HandleFunc("/preview", ws.previewHandler)
-	http.HandleFunc("/backups", ws.backupsHandler)
-	http.HandleFunc("/rollback", ws.rollbackHandler)
-	http.Handle("/saved_cover_images/", http.StripPrefix("/saved_cover_images/", http.FileServer(http.Dir(ws.imageDir))))
-	http.Handle("/preview-site/", http.StripPrefix("/preview-site/", http.FileServer(http.Dir("output/public"))))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", ws.homeHandler)
+	mux.HandleFunc("/books", ws.listBooksHandler)
+	mux.HandleFunc("/books/new", ws.newBookHandler)
+	mux.HandleFunc("/books/create", ws.createBookHandler)
+	mux.HandleFunc("/books/edit/", ws.editBookHandler)
+	mux.HandleFunc("/books/update/", ws.updateBookHandler)
+	mux.HandleFunc("/books/delete/", ws.deleteBookHandler)
+	mux.HandleFunc("/authors", ws.listAuthorsHandler)
+	mux.HandleFunc("/authors/new", ws.newAuthorHandler)
+	mux.HandleFunc("/authors/create", ws.createAuthorHandler)
+	mux.HandleFunc("/authors/edit/", ws.editAuthorHandler)
+	mux.HandleFunc("/authors/update/", ws.updateAuthorHandler)
+	mux.HandleFunc("/decades", ws.listDecadesHandler)
+	mux.HandleFunc("/decades/", ws.decadeHandler)
+	mux.HandleFunc("/books/search-openlibrary", ws.searchOpenLibraryHandler)
+	mux.HandleFunc("/books/update-from-openlibrary", ws.updateFromOpenLibraryHandler)
+	mux.HandleFunc("/books/create-from-openlibrary", ws.createFromOpenLibraryHandler)
+	mux.HandleFunc("/deploy", ws.deployHandler)
+	mux.HandleFunc("/build-local", ws.buildLocalHandler)
+	mux.HandleFunc("/preview", ws.previewHandler)
+	mux.HandleFunc("/backups", ws.backupsHandler)
+	mux.HandleFunc("/rollback", ws.rollbackHandler)
+	mux.Handle("/saved_cover_images/", http.StripPrefix("/saved_cover_images/", http.FileServer(http.Dir(ws.imageDir))))
+	mux.Handle("/preview-site/", http.StripPrefix("/preview-site/", http.FileServer(http.Dir("output/public"))))
 
 	fmt.Printf("Web server starting on http://localhost:%s\n", port)
-	return http.ListenAndServe(":"+port, nil)
+	return http.ListenAndServe(":"+port, mux)
 }
 
 func (ws *WebServer) homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -173,12 +180,20 @@ func (ws *WebServer) createBookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	rating := r.FormValue("rating")
+	if !validRating(rating) {
+		ws.renderError(w, "Invalid rating", fmt.Errorf("%q is not a valid rating", rating))
+		return
+	}
+
 	book := models.Book{
 		MainTitle:      r.FormValue("main_title"),
 		SubTitle:       r.FormValue("sub_title"),
 		AuthorFullName: author.FullName,
 		AuthorSurname:  author.Surname,
-		Rating:         r.FormValue("rating"),
+		Rating:         rating,
+		Indy:           r.FormValue("indy") == "on",
+		Interesting:    r.FormValue("interesting") == "on",
 		Review:         r.FormValue("review"),
 		DateAdded:      time.Now(),
 	}
@@ -262,11 +277,19 @@ func (ws *WebServer) updateBookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	rating := r.FormValue("rating")
+	if !validRating(rating) {
+		ws.renderError(w, "Invalid rating", fmt.Errorf("%q is not a valid rating", rating))
+		return
+	}
+
 	book.MainTitle = r.FormValue("main_title")
 	book.SubTitle = r.FormValue("sub_title")
 	book.AuthorFullName = author.FullName
 	book.AuthorSurname = author.Surname
-	book.Rating = r.FormValue("rating")
+	book.Rating = rating
+	book.Indy = r.FormValue("indy") == "on"
+	book.Interesting = r.FormValue("interesting") == "on"
 	book.Review = r.FormValue("review")
 
 	pubYear, err := strconv.ParseInt(r.FormValue("pub_date"), 10, 64)
@@ -518,6 +541,11 @@ func (ws *WebServer) applyAuthorToBook(book *models.Book, author *models.Author)
 	book.AuthorFullName = author.FullName
 	book.AuthorSurname = author.Surname
 	return ws.db.Save(book).Error
+}
+
+func validRating(rating string) bool {
+	_, err := models.StringToRating(rating)
+	return err == nil
 }
 
 func (ws *WebServer) renderTemplate(w http.ResponseWriter, name string, data PageData) {
@@ -900,59 +928,10 @@ func (ws *WebServer) buildLocalHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ws *WebServer) previewHandler(w http.ResponseWriter, r *http.Request) {
-	// Serve a simple HTML page with iframe and banner
-	html := `<!DOCTYPE html>
-<html>
-<head>
-    <title>Local Preview - SFWR</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Tahoma', sans-serif;
-        }
-        .preview-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            position: sticky;
-            top: 0;
-            z-index: 9999;
-        }
-        .preview-banner span {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            margin-right: 15px;
-        }
-        .preview-banner a {
-            color: white;
-            text-decoration: underline;
-            margin-left: 15px;
-        }
-        iframe {
-            width: 100%;
-            height: calc(100vh - 60px);
-            border: none;
-            display: block;
-        }
-    </style>
-</head>
-<body>
-    <div class="preview-banner">
-        <span>📋 LOCAL PREVIEW</span>
-        This is a preview of your locally built site.
-        <a href="javascript:window.close()">Close Preview</a>
-    </div>
-    <iframe src="/preview-site/index.html"></iframe>
-</body>
-</html>`
 	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte(html))
+	if err := ws.previewTemplate.Execute(w, nil); err != nil {
+		http.Error(w, "Failed to render preview page", http.StatusInternalServerError)
+	}
 }
 
 func (ws *WebServer) backupsHandler(w http.ResponseWriter, r *http.Request) {

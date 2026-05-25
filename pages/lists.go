@@ -29,13 +29,15 @@ func BooksByPublicationDate(books []models.Book) []models.Book {
 }
 
 func BooksMostRecentlyAdded(books []models.Book, listSize int) []models.Book {
-	sort.Slice(books, func(left, right int) bool {
-		return books[left].DateAdded.Unix() > books[right].DateAdded.Unix()
+	sorted := make([]models.Book, len(books))
+	copy(sorted, books)
+	sort.Slice(sorted, func(left, right int) bool {
+		return sorted[left].DateAdded.Unix() > sorted[right].DateAdded.Unix()
 	})
-	if listSize > len(books) {
-		listSize = len(books)
+	if listSize > len(sorted) {
+		listSize = len(sorted)
 	}
-	return books[:listSize]
+	return sorted[:listSize]
 }
 
 func BooksByAuthor(books []models.Book) []models.Book {
@@ -104,20 +106,26 @@ func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) s
 	}
 
 	var doc bytes.Buffer
-	t, _ := template.ParseFiles("templates/base.html", authorTemplateFile)
-	err := t.Execute(&doc, authorChunks)
+	t, err := template.ParseFiles("templates/base.html", authorTemplateFile)
 	if err != nil {
 		log.Fatalf("Error parsing author index template: %v", err)
+	}
+	err = t.Execute(&doc, authorChunks)
+	if err != nil {
+		log.Fatalf("Error executing author index template: %v", err)
 	}
 	return doc.String()
 }
 
 func RenderAuthorPage(authorTemplateFile string, author models.Author) string {
 	var doc bytes.Buffer
-	t, _ := template.ParseFiles("templates/child_dir_base.html", authorTemplateFile)
-	err := t.Execute(&doc, author)
+	t, err := template.ParseFiles("templates/child_dir_base.html", authorTemplateFile)
 	if err != nil {
 		log.Fatalf("Error parsing author page template: %v", err)
+	}
+	err = t.Execute(&doc, author)
+	if err != nil {
+		log.Fatalf("Error executing author page template: %v", err)
 	}
 	return doc.String()
 }
@@ -173,10 +181,13 @@ func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) stri
 	decadeInfos := GroupBooksByDecade(books)
 
 	var doc bytes.Buffer
-	t, _ := template.ParseFiles("templates/base.html", decadeTemplateFile)
-	err := t.Execute(&doc, decadeInfos)
+	t, err := template.ParseFiles("templates/base.html", decadeTemplateFile)
 	if err != nil {
 		log.Fatalf("Error parsing decades index template: %v", err)
+	}
+	err = t.Execute(&doc, decadeInfos)
+	if err != nil {
+		log.Fatalf("Error executing decades index template: %v", err)
 	}
 	return doc.String()
 }
@@ -195,10 +206,13 @@ func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade str
 	}
 
 	var doc bytes.Buffer
-	t, _ := template.ParseFiles("templates/child_dir_base.html", decadeTemplateFile)
-	err := t.Execute(&doc, decadeInfo)
+	t, err := template.ParseFiles("templates/child_dir_base.html", decadeTemplateFile)
 	if err != nil {
 		log.Fatalf("Error parsing decade page template: %v", err)
+	}
+	err = t.Execute(&doc, decadeInfo)
+	if err != nil {
+		log.Fatalf("Error executing decade page template: %v", err)
 	}
 	return doc.String()
 }

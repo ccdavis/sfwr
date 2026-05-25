@@ -166,7 +166,7 @@
             <div class="book-author">By {{.AuthorFullName}}</div>
             <div class="book-details">
                 <strong>Publication Year:</strong> {{.FormatPubDate}}<br>
-                <strong>Rating:</strong> {{.DisplayRating}}<br>
+                {{.StarRating}}<br>
                 {{if .Review}}
                 <strong>Review:</strong> {{.Review}}<br>
                 {{end}}

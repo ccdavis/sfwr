@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 )
 
@@ -76,7 +77,6 @@ func MarshalledBookDataFromJsonFile(bookFile string) BookMap {
 
 func check(msg string, err error) {
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "\n", msg)
-		panic(err)
+		log.Fatal(msg, ": ", err)
 	}
 }
