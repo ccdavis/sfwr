@@ -586,6 +586,8 @@ type SearchResultItem struct {
 	CoverEditionKey    string   `json:"cover_edition_key"`
 	CoverImageID       string   `json:"cover_image_id"`
 	CoverURL           string   `json:"cover_url"`
+	CoverBaseURL       string   `json:"cover_base_url,omitempty"`
+	Source             string   `json:"source"`
 	Number             int      `json:"number"`
 }
 
@@ -623,10 +625,9 @@ func (ws *WebServer) searchOpenLibraryHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// Search Open Library using the existing model function
+	// Search Open Library
 	searchResults := models.SearchBook(req.Title, req.Author)
-	
-	// Convert to response format and add cover URLs
+
 	var responseItems []SearchResultItem
 	for _, result := range searchResults {
 		item := SearchResultItem{
@@ -635,15 +636,50 @@ func (ws *WebServer) searchOpenLibraryHandler(w http.ResponseWriter, r *http.Req
 			FirstYearPublished: result.FirstYearPublished,
 			CoverEditionKey:    result.CoverEditionKey,
 			CoverImageID:       result.CoverImageId,
+			Source:             "openlibrary",
 			Number:             result.Number,
 		}
-		
-		// Generate cover URL for small images
 		if result.CoverEditionKey != "" {
 			item.CoverURL = result.GetBookCoverUrl("S")
 		}
-		
 		responseItems = append(responseItems, item)
+	}
+
+	// If Open Library returned no results, try Google Books and iTunes
+	if len(responseItems) == 0 {
+		gbResults, err := models.SearchGoogleBooks(req.Title, req.Author)
+		if err == nil {
+			for _, r := range gbResults {
+				item := SearchResultItem{
+					Title:              r.Title,
+					Authors:            r.Authors,
+					FirstYearPublished: r.PubYear,
+					Source:             "googlebooks",
+				}
+				if r.HasCover() {
+					item.CoverURL = models.GoogleBooksCoverURL(r.ThumbnailURL, models.SmallCover)
+					item.CoverBaseURL = r.ThumbnailURL
+				}
+				responseItems = append(responseItems, item)
+			}
+		}
+
+		itResults, err := models.SearchITunes(req.Title, req.Author)
+		if err == nil {
+			for _, r := range itResults {
+				item := SearchResultItem{
+					Title:              r.Title,
+					Authors:            []string{r.Author},
+					FirstYearPublished: r.PubYear,
+					Source:             "itunes",
+				}
+				if r.HasCover() {
+					item.CoverURL = models.ITunesCoverURL(r.ArtworkURL, models.SmallCover)
+					item.CoverBaseURL = r.ArtworkURL
+				}
+				responseItems = append(responseItems, item)
+			}
+		}
 	}
 
 	response := SearchResponse{
@@ -678,41 +714,53 @@ func (ws *WebServer) updateFromOpenLibraryHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	// Convert web result back to models.BookSearchResult format
-	olResult := models.BookSearchResult{
-		Number:             req.SelectedResult.Number,
-		FirstYearPublished: req.SelectedResult.FirstYearPublished,
-		Title:              req.SelectedResult.Title,
-		Authors:            req.SelectedResult.Authors,
-		CoverEditionKey:    req.SelectedResult.CoverEditionKey,
-		CoverImageId:       req.SelectedResult.CoverImageID,
-	}
+	var updatedBook models.Book
 
-	// Update the book using the existing model method
-	updatedBook, err := book.UpdateFromOpenLibrary(ws.db, olResult)
-	if err != nil {
-		ws.writeJSONError(w, fmt.Sprintf("Failed to update book: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// If OL provided a cover, mark the source
-	if updatedBook.HasCover() && updatedBook.CoverSource == "" {
-		updatedBook.CoverSource = "openlibrary"
-		ws.db.Save(&updatedBook)
-	}
-
-	// If still no cover, try Google Books and iTunes fallbacks
-	if !updatedBook.HasCover() {
-		refreshed, found, refreshErr := models.RefreshCover(ws.db, updatedBook)
-		if refreshErr != nil {
-			log.Printf("Cover fallback error for '%s': %v", updatedBook.FormatTitle(), refreshErr)
+	switch req.SelectedResult.Source {
+	case "googlebooks", "itunes":
+		book.CoverSource = req.SelectedResult.Source
+		book.CoverImageUrl = req.SelectedResult.CoverBaseURL
+		if req.SelectedResult.FirstYearPublished > 0 && book.HasMissingPubDate() {
+			book.PubDate = int64(req.SelectedResult.FirstYearPublished)
 		}
-		if found {
-			updatedBook = refreshed
+		if err := ws.db.Save(&book).Error; err != nil {
+			ws.writeJSONError(w, fmt.Sprintf("Failed to update book: %v", err), http.StatusInternalServerError)
+			return
+		}
+		updatedBook = book
+	default:
+		olResult := models.BookSearchResult{
+			Number:             req.SelectedResult.Number,
+			FirstYearPublished: req.SelectedResult.FirstYearPublished,
+			Title:              req.SelectedResult.Title,
+			Authors:            req.SelectedResult.Authors,
+			CoverEditionKey:    req.SelectedResult.CoverEditionKey,
+			CoverImageId:       req.SelectedResult.CoverImageID,
+		}
+
+		var err error
+		updatedBook, err = book.UpdateFromOpenLibrary(ws.db, olResult)
+		if err != nil {
+			ws.writeJSONError(w, fmt.Sprintf("Failed to update book: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		if updatedBook.HasCover() && updatedBook.CoverSource == "" {
+			updatedBook.CoverSource = "openlibrary"
+			ws.db.Save(&updatedBook)
+		}
+
+		if !updatedBook.HasCover() {
+			refreshed, found, refreshErr := models.RefreshCover(ws.db, updatedBook)
+			if refreshErr != nil {
+				log.Printf("Cover fallback error for '%s': %v", updatedBook.FormatTitle(), refreshErr)
+			}
+			if found {
+				updatedBook = refreshed
+			}
 		}
 	}
 
-	// Fill missing pub date from fallback sources
 	if updatedBook.HasMissingPubDate() {
 		filled, fillErr := models.FillMissingPubDate(ws.db, updatedBook)
 		if fillErr != nil {
@@ -722,7 +770,6 @@ func (ws *WebServer) updateFromOpenLibraryHandler(w http.ResponseWriter, r *http
 		}
 	}
 
-	// Download cover images if we have cover data from any source
 	if updatedBook.HasCover() {
 		ws.captureCoversAsync(updatedBook)
 	}
@@ -769,65 +816,70 @@ func (ws *WebServer) createFromOpenLibraryHandler(w http.ResponseWriter, r *http
 		DateAdded:      time.Now(),
 	}
 
-	// Set cover ID if available
-	if req.SelectedResult.CoverImageID != "" {
-		if coverId, err := strconv.ParseInt(req.SelectedResult.CoverImageID, 10, 64); err == nil {
-			book.OlCoverId = coverId
-			book.CoverSource = "openlibrary"
+	// Set cover and source based on where the result came from
+	switch req.SelectedResult.Source {
+	case "googlebooks", "itunes":
+		book.CoverSource = req.SelectedResult.Source
+		book.CoverImageUrl = req.SelectedResult.CoverBaseURL
+	default:
+		if req.SelectedResult.CoverImageID != "" {
+			if coverId, err := strconv.ParseInt(req.SelectedResult.CoverImageID, 10, 64); err == nil {
+				book.OlCoverId = coverId
+				book.CoverSource = "openlibrary"
+			}
 		}
 	}
 
-	// Set publication date if available
 	if req.SelectedResult.FirstYearPublished > 0 {
 		book.PubDate = int64(req.SelectedResult.FirstYearPublished)
 	} else {
 		book.PubDate = models.Missing
 	}
 
-	// Create the book
 	result := ws.db.Create(&book)
 	if result.Error != nil {
 		ws.writeJSONError(w, fmt.Sprintf("Failed to create book: %v", result.Error), http.StatusInternalServerError)
 		return
 	}
 
-	// Associate with author
 	ws.db.Model(&book).Association("Authors").Append(&author)
 
-	// Convert web result to models.BookSearchResult format for Open Library update
-	olResult := models.BookSearchResult{
-		Number:             req.SelectedResult.Number,
-		FirstYearPublished: req.SelectedResult.FirstYearPublished,
-		Title:              req.SelectedResult.Title,
-		Authors:            req.SelectedResult.Authors,
-		CoverEditionKey:    req.SelectedResult.CoverEditionKey,
-		CoverImageId:       req.SelectedResult.CoverImageID,
-	}
+	updatedBook := book
 
-	// Update the book with Open Library metadata
-	updatedBook, err := book.UpdateFromOpenLibrary(ws.db, olResult)
-	if err != nil {
-		log.Printf("Warning: Failed to update book with Open Library data: %v", err)
-	}
-
-	// If OL provided a cover, mark the source
-	if updatedBook.HasCover() && updatedBook.CoverSource == "" {
-		updatedBook.CoverSource = "openlibrary"
-		ws.db.Save(&updatedBook)
-	}
-
-	// If still no cover, try Google Books and iTunes fallbacks
-	if !updatedBook.HasCover() {
-		refreshed, found, refreshErr := models.RefreshCover(ws.db, updatedBook)
-		if refreshErr != nil {
-			log.Printf("Cover fallback error for '%s': %v", updatedBook.FormatTitle(), refreshErr)
+	// For Open Library results, fetch additional metadata from the OL edition
+	if req.SelectedResult.Source == "" || req.SelectedResult.Source == "openlibrary" {
+		olResult := models.BookSearchResult{
+			Number:             req.SelectedResult.Number,
+			FirstYearPublished: req.SelectedResult.FirstYearPublished,
+			Title:              req.SelectedResult.Title,
+			Authors:            req.SelectedResult.Authors,
+			CoverEditionKey:    req.SelectedResult.CoverEditionKey,
+			CoverImageId:       req.SelectedResult.CoverImageID,
 		}
-		if found {
-			updatedBook = refreshed
+
+		olUpdated, err := book.UpdateFromOpenLibrary(ws.db, olResult)
+		if err != nil {
+			log.Printf("Warning: Failed to update book with Open Library data: %v", err)
+		} else {
+			updatedBook = olUpdated
+		}
+
+		if updatedBook.HasCover() && updatedBook.CoverSource == "" {
+			updatedBook.CoverSource = "openlibrary"
+			ws.db.Save(&updatedBook)
+		}
+
+		if !updatedBook.HasCover() {
+			refreshed, found, refreshErr := models.RefreshCover(ws.db, updatedBook)
+			if refreshErr != nil {
+				log.Printf("Cover fallback error for '%s': %v", updatedBook.FormatTitle(), refreshErr)
+			}
+			if found {
+				updatedBook = refreshed
+			}
 		}
 	}
 
-	// Fill missing pub date from fallback sources
 	if updatedBook.HasMissingPubDate() {
 		filled, fillErr := models.FillMissingPubDate(ws.db, updatedBook)
 		if fillErr != nil {
@@ -837,7 +889,6 @@ func (ws *WebServer) createFromOpenLibraryHandler(w http.ResponseWriter, r *http
 		}
 	}
 
-	// Download cover images if we have cover data from any source
 	if updatedBook.HasCover() {
 		ws.captureCoversAsync(updatedBook)
 	}

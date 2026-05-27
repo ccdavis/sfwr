@@ -425,7 +425,7 @@
                         if (data.results && data.results.length > 0) {
                             displaySearchResults(data.results, bookId);
                         } else {
-                            searchResults.innerHTML = '<div style="color: #aaa; padding: 20px; text-align: center;">No editions found in Open Library for this title and author.</div>';
+                            searchResults.innerHTML = '<div style="color: #aaa; padding: 20px; text-align: center;">No results found from any source (Open Library, Google Books, iTunes).</div>';
                         }
                     })
                     .catch(error => {
@@ -436,22 +436,31 @@
                 });
             }
 
+            function sourceLabel(source) {
+                switch (source) {
+                    case 'googlebooks': return 'Google Books';
+                    case 'itunes': return 'Apple Books';
+                    default: return 'Open Library';
+                }
+            }
+
             function displaySearchResults(results, bookId) {
-                let html = '<div style="color: #ddd; margin-bottom: 15px;">Found ' + results.length + ' edition(s). Click on one to update the book:</div>';
-                
+                let html = '<div style="color: #ddd; margin-bottom: 15px;">Found ' + results.length + ' result(s). Click on one to update the book:</div>';
+
                 results.forEach(function(result, index) {
                     const coverUrl = result.cover_url || '';
                     const authors = Array.isArray(result.authors) ? result.authors.join(', ') : result.authors || '';
-                    
+                    const source = result.source || 'openlibrary';
+
                     html += '<div style="border: 1px solid #444; margin-bottom: 15px; padding: 15px; background-color: #333; cursor: pointer; display: flex; gap: 15px;" class="search-result" data-index="' + index + '">';
-                    
+
                     // Cover image
                     if (coverUrl) {
                         html += '<div style="flex-shrink: 0;"><img src="' + coverUrl + '" style="width: 60px; height: 90px; object-fit: cover; border: 1px solid #555;" onerror="this.style.display=\'none\'"></div>';
                     } else {
                         html += '<div style="flex-shrink: 0; width: 60px; height: 90px; background-color: #222; border: 1px solid #555; display: flex; align-items: center; justify-content: center; color: #666; font-size: 10px;">No Cover</div>';
                     }
-                    
+
                     // Book details
                     html += '<div style="flex: 1;">';
                     html += '<div style="color: #6Cf; font-weight: bold; margin-bottom: 5px;">' + (result.title || 'Unknown Title') + '</div>';
@@ -459,11 +468,12 @@
                     if (result.first_year_published && result.first_year_published > 0) {
                         html += '<div style="color: #ccc; margin-bottom: 5px;">Published: ' + result.first_year_published + '</div>';
                     }
+                    html += '<div style="color: #888; font-size: 12px;">Source: ' + sourceLabel(source) + '</div>';
                     if (result.cover_edition_key) {
                         html += '<div style="color: #999; font-size: 12px;">Edition ID: ' + result.cover_edition_key + '</div>';
                     }
                     html += '</div>';
-                    
+
                     html += '</div>';
                 });
                 
