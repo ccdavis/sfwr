@@ -164,9 +164,10 @@ type Book struct {
 	OpenLibraryUrl         string
 	IsfdbUrl               string
 	OpenLibraryBookIsbns   []OpenLibraryBookIsbn
-	OlCoverId              int64 // Used as the base ID for the image (add suffix -M, -S, -L for sizing.)
+	OlCoverId              int64 // Legacy Open Library cover ID, still used for OL API lookups
 	OpenLibraryBookAuthors []OpenLibraryBookAuthor
 	OlCoverEditionId       string   // Used to pull up an entry based on a cover
+	CoverSource            string   // "openlibrary", "googlebooks", "itunes", or ""
 	Authors                []Author `gorm:"many2many:book_authors;"`
 }
 
@@ -220,6 +221,9 @@ func (b Book) UpdateFromOpenLibrary(db *gorm.DB, olSearchResult BookSearchResult
 		fmt.Println("Can't convert OL Cover ID '", olSearchResult.CoverImageId, "'.")
 	} else {
 		b.OlCoverId = int64(olCoverImageId)
+		if olCoverImageId != 0 {
+			b.CoverSource = "openlibrary"
+		}
 	}
 	result := db.Save(&b)
 	return b, result.Error
@@ -234,8 +238,16 @@ func (b Book) HasOpenLibraryId() bool {
 	return len(b.OlCoverEditionId) > 0 && len(strings.TrimSpace(b.OlCoverEditionId)) > 0
 }
 
+func (b Book) HasCover() bool {
+	if b.OlCoverId != Missing && b.OlCoverId != 0 {
+		return true
+	}
+	return b.CoverSource == "googlebooks" || b.CoverSource == "itunes"
+}
+
+// Deprecated: use HasCover instead. Kept for backward compatibility.
 func (b Book) HasCoverImageId() bool {
-	return b.OlCoverId != Missing && b.OlCoverId != 0
+	return b.HasCover()
 }
 
 func (b Book) SiteFileName() string {
@@ -291,20 +303,24 @@ func (b Book) AlternateAuthorFullNames() []string {
 }
 
 func (b Book) MakeCoverImageUrl(size string) string {
-	if Missing != b.OlCoverId && b.OlCoverId != 0 {
-		url := fmt.Sprintf("http://covers.openlibrary.org/b/id/%d-%s.jpg", b.OlCoverId, size)
-		return url
-	} else {
+	switch b.CoverSource {
+	case "googlebooks":
+		return GoogleBooksCoverURL(b.CoverImageUrl, size)
+	case "itunes":
+		return ITunesCoverURL(b.CoverImageUrl, size)
+	default:
+		if b.OlCoverId != Missing && b.OlCoverId != 0 {
+			return fmt.Sprintf("http://covers.openlibrary.org/b/id/%d-%s.jpg", b.OlCoverId, size)
+		}
 		return fmt.Sprintf("placeholder-%s.jpg", size)
 	}
 }
 
 func (b Book) MakeCoverImageFilename(imageDir string, size string) string {
-	if b.OlCoverId == Missing || b.OlCoverId == 0 {
-		filename := fmt.Sprintf("placeholder-%s.jpg", size)
-		return path.Join(imageDir, filename)
+	if !b.HasCover() {
+		return path.Join(imageDir, fmt.Sprintf("placeholder-%s.jpg", size))
 	}
-	filename := fmt.Sprintf("%d-%s.jpg", b.OlCoverId, size)
+	filename := fmt.Sprintf("book_%d-%s.jpg", b.ID, size)
 	return path.Join(imageDir, filename)
 }
 

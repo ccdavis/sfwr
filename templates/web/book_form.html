@@ -228,14 +228,15 @@
         <div class="form-group" style="margin-bottom: 30px;">
             <label>Current Cover Image</label>
             <div id="current-cover" style="margin-top: 10px;">
-                {{if .Book.HasCoverImageId}}
-                <img src="/saved_cover_images/{{.Book.OlCoverId}}-M.jpg" 
+                {{if .Book.HasCover}}
+                <img src="/saved_cover_images/book_{{.Book.ID}}-M.jpg"
                      style="max-width: 200px; max-height: 300px; border: 2px solid #555;"
                      alt="Book cover for {{.Book.FormatTitle}}"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <div style="display: none; padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
                     No cover image available
                 </div>
+                {{if .Book.CoverSourceDisplay}}<div style="margin-top: 5px; font-size: 12px; color: #888;">Cover from: {{.Book.CoverSourceDisplay}}</div>{{end}}
                 {{else}}
                 <div style="padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
                     No cover image available

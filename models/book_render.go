@@ -220,7 +220,7 @@ func (b Book) makeLinkedImageTag(size string, relativePath string) template.HTML
 func (b Book) makeImageTagForCover(size string, relativeToImageDir string) template.HTML {
 	completePath := relativeToImageDir + "/" + ImageDir
 	link := b.MakeCoverImageFilename(completePath, size)
-	label := "Open Library"
+	label := template.HTMLEscapeString(b.FormatTitle())
 	tag := fmt.Sprintf("<img src=\"%s\" alt=\"%s\" />", link, label)
 	return template.HTML(tag)
 }

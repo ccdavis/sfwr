@@ -111,15 +111,17 @@ func main() {
 		bookFilePtr      = flag.String("load-books", "book_database.json", "A JSON file of book data")
 		databaseNamePtr  = flag.String("createdb", "", "Create new database")
 		webPortPtr       = flag.String("web", "", "Start web server on specified port (e.g., -web=8080)")
-		saveImagesFlag   bool
-		addBookFlag      bool
-		generateSiteFlag bool
-		migrateFlag      bool
+		saveImagesFlag      bool
+		addBookFlag         bool
+		generateSiteFlag    bool
+		migrateFlag         bool
+		migrateCoversFlag   bool
 	)
-	flag.BoolVar(&saveImagesFlag, "getimages", false, "Save small, medium, and large cover images for all books with OLIDs.")
+	flag.BoolVar(&saveImagesFlag, "getimages", false, "Save cover images for all books (Open Library, Google Books, iTunes fallback).")
 	flag.BoolVar(&addBookFlag, "new", false, "Add a new book using the basic text interface.")
 	flag.BoolVar(&generateSiteFlag, "build", false, "Generate static site")
 	flag.BoolVar(&migrateFlag, "migrate", false, "Run database migrations (rating conversions, new fields)")
+	flag.BoolVar(&migrateCoversFlag, "migrate-covers", false, "Migrate cover filenames from OlCoverId to Book.ID scheme")
 	flag.Parse()
 	bookFile := *bookFilePtr
 
@@ -131,7 +133,7 @@ func main() {
 		return
 	}
 
-	needsDB := saveImagesFlag || generateSiteFlag || *webPortPtr != "" || addBookFlag || migrateFlag
+	needsDB := saveImagesFlag || generateSiteFlag || *webPortPtr != "" || addBookFlag || migrateFlag || migrateCoversFlag
 	if !needsDB {
 		return
 	}
@@ -148,13 +150,22 @@ func main() {
 		return
 	}
 
+	// Auto-migrate new fields (CoverSource)
+	check(db.AutoMigrate(&models.Book{}))
+
 	siteCoverImagesDir := path.Join(GeneratedSiteDir, models.ImageDir)
 	savedCoverImagesDir := "saved_cover_images"
 
+	if migrateCoversFlag {
+		fmt.Println("Migrating cover image filenames...")
+		check(models.MigrateCovers(db, savedCoverImagesDir))
+		return
+	}
+
 	if saveImagesFlag {
 		allBooks := loadAllBooks(db)
-		fmt.Println("Saving cover images...")
-		models.CaptureCoverImages(db, allBooks, savedCoverImagesDir)
+		fmt.Println("Saving cover images (Open Library → Google Books → iTunes fallback)...")
+		models.CaptureCoverImagesWithFallback(db, allBooks, savedCoverImagesDir)
 	}
 
 	if generateSiteFlag {

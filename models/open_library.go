@@ -17,6 +17,25 @@ import (
 	"gorm.io/gorm"
 )
 
+// userAgentTransport wraps http.DefaultTransport to inject a User-Agent header.
+// Uses a bot-friendly format that Open Library accepts (they block bare app names).
+// The gol library uses http.DefaultClient, so this ensures all requests get a
+// proper User-Agent including the mzstatic.com CDN which requires one.
+type userAgentTransport struct {
+	base http.RoundTripper
+}
+
+func (t *userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.Header.Get("User-Agent") == "" {
+		req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; SFWR/1.0; +mailto:colin.c.davis@gmail.com)")
+	}
+	return t.base.RoundTrip(req)
+}
+
+func init() {
+	http.DefaultTransport = &userAgentTransport{base: http.DefaultTransport}
+}
+
 type BookSearchResult struct {
 	Number             int
 	FirstYearPublished int
@@ -44,7 +63,13 @@ func GetBookByOlId(olid string) (gol.Book, error) {
 	return gol.GetEdition(olid)
 }
 
+var openLibrarySearchDisabled bool
+var olConsecutiveFailures int
+
 func SearchBook(title string, author string) []BookSearchResult {
+	if openLibrarySearchDisabled {
+		return nil
+	}
 	var results []BookSearchResult
 	// Construct the SearchUrl
 	url := gol.SearchUrl().All(title).Author(author).Construct()
@@ -52,6 +77,7 @@ func SearchBook(title string, author string) []BookSearchResult {
 	// search
 	search, err := gol.Search(url)
 	if err == nil {
+		olConsecutiveFailures = 0
 
 		for key, child := range search.ChildrenMap() {
 			if key == "docs" {
@@ -110,7 +136,13 @@ func SearchBook(title string, author string) []BookSearchResult {
 			}
 		}
 	} else {
-		fmt.Println("Could not find: ", err)
+		olConsecutiveFailures++
+		if olConsecutiveFailures >= 3 {
+			openLibrarySearchDisabled = true
+			log.Printf("Open Library returning errors — skipping OL search for the rest of this run.")
+		} else {
+			log.Printf("Open Library search error for '%s': %v", title, err)
+		}
 	}
 	return results
 }
@@ -232,10 +264,44 @@ func updateCoverFromSearchResult(db *gorm.DB, b Book, result BookSearchResult) (
 }
 
 func refreshCoverFromSearch(db *gorm.DB, b Book) (Book, bool, error) {
-	var fallback *BookSearchResult
+	if openLibrarySearchDisabled {
+		return b, false, nil
+	}
+
+	// Build list of title/author pairs to try
+	type query struct{ title, author string }
+	seen := make(map[string]bool)
+	var queries []query
+	add := func(t, a string) {
+		key := t + "|" + a
+		if !seen[key] {
+			seen[key] = true
+			queries = append(queries, query{t, a})
+		}
+	}
 	for _, authorName := range b.AlternateAuthorFullNames() {
+		add(b.FormatTitle(), authorName)
+	}
+	if b.SubTitle != "" {
+		for _, authorName := range b.AlternateAuthorFullNames() {
+			add(b.MainTitle, authorName)
+		}
+	}
+	firstAuthor := extractFirstAuthor(b.AuthorFullName)
+	if firstAuthor != b.AuthorFullName {
+		add(b.FormatTitle(), firstAuthor)
+		if b.SubTitle != "" {
+			add(b.MainTitle, firstAuthor)
+		}
+	}
+
+	var fallback *BookSearchResult
+	for _, q := range queries {
+		if openLibrarySearchDisabled {
+			break
+		}
 		sleepForOpenLibrary()
-		results := SearchBook(b.FormatTitle(), authorName)
+		results := SearchBook(q.title, q.author)
 		selected, ok, hasEnglish := selectCoverSearchResult(results)
 		if !ok {
 			continue

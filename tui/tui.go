@@ -123,8 +123,8 @@ func updateBookFromOpenLibrary(db *gorm.DB, book models.Book, siteCoverImagesDir
 		if err != nil {
 			fmt.Println("Error saving updated book record: ", err)
 		} else {
-			if b.HasCoverImageId() {
-				models.CaptureAllSizeCovers(b, siteCoverImagesDir)
+			if b.HasCover() {
+				models.CaptureAllCovers(b, siteCoverImagesDir)
 			} else {
 				fmt.Println("Cover image ID still missing after Open Library update; skipping download.")
 			}
@@ -138,7 +138,7 @@ func updateBookFromOpenLibrary(db *gorm.DB, book models.Book, siteCoverImagesDir
 
 func UpdateMissingCoversAndBookData(db *gorm.DB, books []models.Book, imageDir string) {
 	for _, b := range books {
-		if !b.HasOpenLibraryId() || !b.HasCoverImageId() {
+		if !b.HasOpenLibraryId() || !b.HasCover() {
 			fmt.Println(b.FormatTitle(), " by ", b.AuthorFullName, " has no cover image ID.")
 			updateBookFromOpenLibrary(db, b, imageDir)
 		}
@@ -148,7 +148,7 @@ func UpdateMissingCoversAndBookData(db *gorm.DB, books []models.Book, imageDir s
 		fmt.Println("can't retrieve books from sfwr db: ", err)
 		return
 	}
-	if err := models.CaptureCoverImages(db, updatedBooks, imageDir); err != nil {
+	if err := models.CaptureCoverImagesWithFallback(db, updatedBooks, imageDir); err != nil {
 		fmt.Println("error downloading cover images: ", err)
 	}
 }

@@ -404,23 +404,26 @@ func TestMakeCoverImageFilename(t *testing.T) {
 	tests := []struct {
 		name     string
 		book     Book
+		bookID   uint
 		size     string
 		expected string
 	}{
 		{
-			name:     "OlCoverId with size",
-			book:     Book{OlCoverId: 12345},
+			name:     "OlCoverId with size uses book ID",
+			book:     Book{OlCoverId: 12345, CoverSource: "openlibrary"},
+			bookID:   42,
 			size:     "M",
-			expected: "/images/12345-M.jpg",
+			expected: "/images/book_42-M.jpg",
 		},
 		{
-			name:     "OlCoverId with size large",
-			book:     Book{OlCoverId: 67890},
+			name:     "Google Books cover uses book ID",
+			book:     Book{CoverSource: "googlebooks", CoverImageUrl: "http://example.com/thumb.jpg"},
+			bookID:   7,
 			size:     "L",
-			expected: "/images/67890-L.jpg",
+			expected: "/images/book_7-L.jpg",
 		},
 		{
-			name:     "No ID returns placeholder",
+			name:     "No cover returns placeholder",
 			book:     Book{OlCoverId: 0},
 			size:     "M",
 			expected: "/images/placeholder-M.jpg",
@@ -435,7 +438,11 @@ func TestMakeCoverImageFilename(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.book.MakeCoverImageFilename(imageDir, tt.size); got != tt.expected {
+			b := tt.book
+			if tt.bookID != 0 {
+				b.Model.ID = tt.bookID
+			}
+			if got := b.MakeCoverImageFilename(imageDir, tt.size); got != tt.expected {
 				t.Errorf("MakeCoverImageFilename() = %v, want %v", got, tt.expected)
 			}
 		})

@@ -530,7 +530,7 @@ func (ws *WebServer) captureCoversAsync(b models.Book) {
 				log.Printf("cover capture panic for '%s': %v", b.FormatTitle(), r)
 			}
 		}()
-		models.CaptureAllSizeCovers(b, ws.imageDir)
+		models.CaptureAllCovers(b, ws.imageDir)
 	}()
 }
 
@@ -695,8 +695,35 @@ func (ws *WebServer) updateFromOpenLibraryHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	// Download cover images if we have the necessary data
-	if updatedBook.HasCoverImageId() {
+	// If OL provided a cover, mark the source
+	if updatedBook.HasCover() && updatedBook.CoverSource == "" {
+		updatedBook.CoverSource = "openlibrary"
+		ws.db.Save(&updatedBook)
+	}
+
+	// If still no cover, try Google Books and iTunes fallbacks
+	if !updatedBook.HasCover() {
+		refreshed, found, refreshErr := models.RefreshCover(ws.db, updatedBook)
+		if refreshErr != nil {
+			log.Printf("Cover fallback error for '%s': %v", updatedBook.FormatTitle(), refreshErr)
+		}
+		if found {
+			updatedBook = refreshed
+		}
+	}
+
+	// Fill missing pub date from fallback sources
+	if updatedBook.HasMissingPubDate() {
+		filled, fillErr := models.FillMissingPubDate(ws.db, updatedBook)
+		if fillErr != nil {
+			log.Printf("Pub date fallback error for '%s': %v", updatedBook.FormatTitle(), fillErr)
+		} else {
+			updatedBook = filled
+		}
+	}
+
+	// Download cover images if we have cover data from any source
+	if updatedBook.HasCover() {
 		ws.captureCoversAsync(updatedBook)
 	}
 
@@ -746,6 +773,7 @@ func (ws *WebServer) createFromOpenLibraryHandler(w http.ResponseWriter, r *http
 	if req.SelectedResult.CoverImageID != "" {
 		if coverId, err := strconv.ParseInt(req.SelectedResult.CoverImageID, 10, 64); err == nil {
 			book.OlCoverId = coverId
+			book.CoverSource = "openlibrary"
 		}
 	}
 
@@ -779,12 +807,38 @@ func (ws *WebServer) createFromOpenLibraryHandler(w http.ResponseWriter, r *http
 	// Update the book with Open Library metadata
 	updatedBook, err := book.UpdateFromOpenLibrary(ws.db, olResult)
 	if err != nil {
-		// Log error but don't fail the creation since the book was already created
-		fmt.Printf("Warning: Failed to update book with Open Library data: %v\n", err)
+		log.Printf("Warning: Failed to update book with Open Library data: %v", err)
 	}
 
-	// Download cover images if we have the necessary data
-	if updatedBook.HasCoverImageId() {
+	// If OL provided a cover, mark the source
+	if updatedBook.HasCover() && updatedBook.CoverSource == "" {
+		updatedBook.CoverSource = "openlibrary"
+		ws.db.Save(&updatedBook)
+	}
+
+	// If still no cover, try Google Books and iTunes fallbacks
+	if !updatedBook.HasCover() {
+		refreshed, found, refreshErr := models.RefreshCover(ws.db, updatedBook)
+		if refreshErr != nil {
+			log.Printf("Cover fallback error for '%s': %v", updatedBook.FormatTitle(), refreshErr)
+		}
+		if found {
+			updatedBook = refreshed
+		}
+	}
+
+	// Fill missing pub date from fallback sources
+	if updatedBook.HasMissingPubDate() {
+		filled, fillErr := models.FillMissingPubDate(ws.db, updatedBook)
+		if fillErr != nil {
+			log.Printf("Pub date fallback error for '%s': %v", updatedBook.FormatTitle(), fillErr)
+		} else {
+			updatedBook = filled
+		}
+	}
+
+	// Download cover images if we have cover data from any source
+	if updatedBook.HasCover() {
 		ws.captureCoversAsync(updatedBook)
 	}
 
