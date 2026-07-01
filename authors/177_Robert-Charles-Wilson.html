@@ -15,26 +15,59 @@
 	margin: em;
  }
 
- .buttonlink{
-	display:block;
-	border-style:solid;
-	border-color:#bbb #888 #666 #aaa;
-	border-width:3px 4px 4px 3px;
-	min-width:3.7em;
-	height:1.5em;
-	background:#ccc;
-	color:#333;
-	line-height:1.5;
-	text-align:center;
-	text-decoration:none;
-	font-weight:900;
-	padding: 0 0.5em;
+:root {
+	 
+	--btn-fg: #2a2a2a;
+	--btn-fg-hover: #000;
+	--btn-border: rgba(20, 20, 20, 0.28);
+	--btn-accent: #0a7ea3;
+	--btn-hover-bg: rgba(10, 126, 163, 0.06);
+	--btn-active-bg: rgba(10, 126, 163, 0.12);
+}
+
+ .buttonlink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.6em 1.25em;
+	min-width: 4em;
+	font-family: 'Questrial', 'Hammersmith One', sans-serif;
+	font-size: 0.82em;
+	font-weight: 400;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--btn-fg);
+	background: transparent;
+	border: 1px solid var(--btn-border);
+	border-radius: 2px;
+	line-height: 1.4;
+	transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+	-webkit-tap-highlight-color: transparent;
 	box-sizing: border-box;
 }
-.buttonlink:hover{
-	border-color: #666 #aaa #bbb #888;
-	border-width:4px 3px 3px 4px;
-	color:#000;
+.buttonlink:hover {
+	color: var(--btn-fg-hover);
+	border-color: var(--btn-accent);
+	background: var(--btn-hover-bg);
+}
+.buttonlink:focus-visible {
+	outline: 2px solid var(--btn-accent);
+	outline-offset: 3px;
+}
+.buttonlink:active {
+	background: var(--btn-active-bg);
+}
+
+ 
+.top-menu,
+.book-grid {
+	--btn-fg: #e8e8e8;
+	--btn-fg-hover: #fff;
+	--btn-border: rgba(232, 232, 232, 0.28);
+	--btn-accent: #6cf;
+	--btn-hover-bg: rgba(102, 204, 255, 0.09);
+	--btn-active-bg: rgba(102, 204, 255, 0.16);
 }
 
 	  
@@ -301,11 +334,12 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                padding: 0 0.3em;
-                font-size: 0.9em;
+                padding: 0.5em 1em;
+                font-size: 0.78em;
+                letter-spacing: 0.1em;
             }
         }
-        
+
         @media (max-width: 375px) {
             div.top-menu {
                 padding: 0;
@@ -318,13 +352,9 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                font-size: 0.8em;
-                padding: 0 0.2em;
-                border-width: 2px 3px 3px 2px;
-            }
-            
-            .buttonlink:hover {
-                border-width: 3px 2px 2px 3px;
+                font-size: 0.72em;
+                padding: 0.45em 0.85em;
+                letter-spacing: 0.08em;
             }
             
             table {
@@ -388,9 +418,45 @@ div.book-box:hover {
  
   
  
+.tag-icon {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.tag-indy {
+    color: #e9a820;
+    font-size: 1.15em;
+}
+
+.tag-interesting {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid #b080e0;
+    border-radius: 50%;
+    color: #b080e0;
+    font-weight: 900;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+.book-tags {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.star-rating {
+    color: #e9a820;
+    letter-spacing: 1px;
+}
+
  </style>
    <meta charset="UTF-8">
-   <title> Books </title>  
+   <title> Books </title>
  </head>
  <body>
 	<div class="top-menu">
@@ -443,7 +509,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3685260M"> <img src="../images/cover_images/523940-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3685260M"> <img src="../images/cover_images/book_303-M.jpg" alt="Blind Lake" /> </a></div>
  
  </div>
 <div>	
@@ -455,7 +521,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 2003 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/303_Robert-Charles-WilsonBlind-Lake.html"> More </a> </div>
 	 
@@ -466,7 +532,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL2028332M"> <img src="../images/cover_images/240513-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL2028332M"> <img src="../images/cover_images/book_304-M.jpg" alt="The Bridge of Years" /> </a></div>
  
  </div>
 <div>	
@@ -478,7 +544,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 1991 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/304_Robert-Charles-WilsonThe-Bridge-of-Years.html"> More </a> </div>
 	 
@@ -489,7 +555,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL2210664M"> <img src="../images/cover_images/4610942-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL2210664M"> <img src="../images/cover_images/book_305-M.jpg" alt="The Divide" /> </a></div>
  
  </div>
 <div>	
@@ -501,7 +567,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 1989 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/305_Robert-Charles-WilsonThe-Divide.html"> More </a> </div>
 	 
@@ -512,7 +578,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL24336316M"> <img src="../images/cover_images/6462403-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL24336316M"> <img src="../images/cover_images/book_306-M.jpg" alt="Mysterium" /> </a></div>
  
  </div>
 <div>	
@@ -524,7 +590,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 1994 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/306_Robert-Charles-WilsonMysterium.html"> More </a> </div>
 	 
@@ -535,7 +601,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL26366929M"> <img src="../images/cover_images/8053111-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL26366929M"> <img src="../images/cover_images/book_307-M.jpg" alt="Burning Paradise" /> </a></div>
  
  </div>
 <div>	
@@ -547,7 +613,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 2013 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/307_Robert-Charles-WilsonBurning-Paradise.html"> More </a> </div>
 	 
@@ -558,7 +624,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3944626M"> <img src="../images/cover_images/183352-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3944626M"> <img src="../images/cover_images/book_308-M.jpg" alt="The Chronoliths" /> </a></div>
  
  </div>
 <div>	
@@ -570,7 +636,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 2001 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/308_Robert-Charles-WilsonThe-Chronoliths.html"> More </a> </div>
 	 
@@ -581,7 +647,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL354790M"> <img src="../images/cover_images/8128329-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL354790M"> <img src="../images/cover_images/book_309-M.jpg" alt="Darwinia" /> </a></div>
  
  </div>
 <div>	
@@ -593,7 +659,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 1998 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/309_Robert-Charles-WilsonDarwinia.html"> More </a> </div>
 	 
@@ -604,7 +670,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL2042019M"> <img src="../images/cover_images/7930268-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL2042019M"> <img src="../images/cover_images/book_310-M.jpg" alt="Gypsies" /> </a></div>
  
  </div>
 <div>	
@@ -616,7 +682,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 1989 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/310_Robert-Charles-WilsonGypsies.html"> More </a> </div>
 	 
@@ -627,7 +693,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3568331M"> <img src="../images/cover_images/523939-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3568331M"> <img src="../images/cover_images/book_311-M.jpg" alt="A Hidden Place" /> </a></div>
  
  </div>
 <div>	
@@ -639,7 +705,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 1986 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/311_Robert-Charles-WilsonA-Hidden-Place.html"> More </a> </div>
 	 
@@ -650,7 +716,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL26791706M"> <img src="../images/cover_images/8445182-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL26791706M"> <img src="../images/cover_images/book_312-M.jpg" alt="Last Year" /> </a></div>
  
  </div>
 <div>	
@@ -662,7 +728,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 2016 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/312_Robert-Charles-WilsonLast-Year.html"> More </a> </div>
 	 
@@ -673,7 +739,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL24083333M"> <img src="../images/cover_images/6297650-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL24083333M"> <img src="../images/cover_images/book_313-M.jpg" alt="Julian Comstock" /> </a></div>
  
  </div>
 <div>	
@@ -685,7 +751,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 2009 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/313_Robert-Charles-WilsonJulian-Comstock.html"> More </a> </div>
 	 
@@ -696,7 +762,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3309864M"> <img src="../images/cover_images/6632328-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3309864M"> <img src="../images/cover_images/book_314-M.jpg" alt="Spin" /> </a></div>
  
  </div>
 <div>	
@@ -708,7 +774,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Robert Charles Wilson - Pub Year 2005 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/314_Robert-Charles-WilsonSpin.html"> More </a> </div>
 	 

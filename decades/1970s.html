@@ -15,26 +15,59 @@
 	margin: em;
  }
 
- .buttonlink{
-	display:block;
-	border-style:solid;
-	border-color:#bbb #888 #666 #aaa;
-	border-width:3px 4px 4px 3px;
-	min-width:3.7em;
-	height:1.5em;
-	background:#ccc;
-	color:#333;
-	line-height:1.5;
-	text-align:center;
-	text-decoration:none;
-	font-weight:900;
-	padding: 0 0.5em;
+:root {
+	 
+	--btn-fg: #2a2a2a;
+	--btn-fg-hover: #000;
+	--btn-border: rgba(20, 20, 20, 0.28);
+	--btn-accent: #0a7ea3;
+	--btn-hover-bg: rgba(10, 126, 163, 0.06);
+	--btn-active-bg: rgba(10, 126, 163, 0.12);
+}
+
+ .buttonlink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.6em 1.25em;
+	min-width: 4em;
+	font-family: 'Questrial', 'Hammersmith One', sans-serif;
+	font-size: 0.82em;
+	font-weight: 400;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--btn-fg);
+	background: transparent;
+	border: 1px solid var(--btn-border);
+	border-radius: 2px;
+	line-height: 1.4;
+	transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+	-webkit-tap-highlight-color: transparent;
 	box-sizing: border-box;
 }
-.buttonlink:hover{
-	border-color: #666 #aaa #bbb #888;
-	border-width:4px 3px 3px 4px;
-	color:#000;
+.buttonlink:hover {
+	color: var(--btn-fg-hover);
+	border-color: var(--btn-accent);
+	background: var(--btn-hover-bg);
+}
+.buttonlink:focus-visible {
+	outline: 2px solid var(--btn-accent);
+	outline-offset: 3px;
+}
+.buttonlink:active {
+	background: var(--btn-active-bg);
+}
+
+ 
+.top-menu,
+.book-grid {
+	--btn-fg: #e8e8e8;
+	--btn-fg-hover: #fff;
+	--btn-border: rgba(232, 232, 232, 0.28);
+	--btn-accent: #6cf;
+	--btn-hover-bg: rgba(102, 204, 255, 0.09);
+	--btn-active-bg: rgba(102, 204, 255, 0.16);
 }
 
 	  
@@ -301,11 +334,12 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                padding: 0 0.3em;
-                font-size: 0.9em;
+                padding: 0.5em 1em;
+                font-size: 0.78em;
+                letter-spacing: 0.1em;
             }
         }
-        
+
         @media (max-width: 375px) {
             div.top-menu {
                 padding: 0;
@@ -318,13 +352,9 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                font-size: 0.8em;
-                padding: 0 0.2em;
-                border-width: 2px 3px 3px 2px;
-            }
-            
-            .buttonlink:hover {
-                border-width: 3px 2px 2px 3px;
+                font-size: 0.72em;
+                padding: 0.45em 0.85em;
+                letter-spacing: 0.08em;
             }
             
             table {
@@ -388,9 +418,45 @@ div.book-box:hover {
  
   
  
+.tag-icon {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.tag-indy {
+    color: #e9a820;
+    font-size: 1.15em;
+}
+
+.tag-interesting {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid #b080e0;
+    border-radius: 50%;
+    color: #b080e0;
+    font-weight: 900;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+.book-tags {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.star-rating {
+    color: #e9a820;
+    letter-spacing: 1px;
+}
+
  </style>
    <meta charset="UTF-8">
-   <title> Books from 1970s </title>  
+   <title> Books from 1970s </title>
  </head>
  <body>
 	<div class="top-menu">
@@ -444,7 +510,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL5447277M"> <img src="../images/cover_images/9248239-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL5447277M"> <img src="../images/cover_images/book_285-M.jpg" alt="Seven Steps to the Sun" /> </a></div>
  
  </div>
 <div>	
@@ -456,7 +522,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Fred Hoyle, Geoffrey Hoyle - Pub Year 1971 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/285_Fred-Hoyle,-Geoffrey-HoyleSeven-Steps-to-the-Sun.html"> More </a> </div>
 	 
@@ -468,7 +534,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3684800M"> <img src="../images/cover_images/26458-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3684800M"> <img src="../images/cover_images/book_420-M.jpg" alt="The Lathe of Heaven" /> </a></div>
  
  </div>
 <div>	
@@ -480,7 +546,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Ursula K. Le Guin - Pub Year 1971 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/420_Ursula-K.-Le-GuinThe-Lathe-of-Heaven.html"> More </a> </div>
 	 
@@ -492,7 +558,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3577710M"> <img src="../images/cover_images/958487-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3577710M"> <img src="../images/cover_images/book_324-M.jpg" alt="The Sheep Look Up" /> </a></div>
  
  </div>
 <div>	
@@ -504,7 +570,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  John Brunner - Pub Year 1972 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/324_John-BrunnerThe-Sheep-Look-Up.html"> More </a> </div>
 	 
@@ -516,7 +582,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL17510522M"> <img src="../images/cover_images/6452508-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL17510522M"> <img src="../images/cover_images/book_38-M.jpg" alt="Heritage of the Star" /> </a></div>
  
  </div>
 <div>	
@@ -528,7 +594,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Sylvia Engdahl - Pub Year 1973 </h4> 
 	</div>	
-	<div>rating: Interesting</div>
+	<div><span class="star-rating" title="Worth Reading">&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/38_Sylvia-EngdahlHeritage-of-the-Star.html"> More </a> </div>
 	 
@@ -540,7 +606,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3684801M"> <img src="../images/cover_images/26459-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3684801M"> <img src="../images/cover_images/book_419-M.jpg" alt="The Dispossessed" /> </a></div>
  
  </div>
 <div>	
@@ -552,7 +618,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Ursula K. Le Guin - Pub Year 1974 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/419_Ursula-K.-Le-GuinThe-Dispossessed.html"> More </a> </div>
 	 
@@ -564,7 +630,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL12367772M"> <img src="../images/cover_images/2950338-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL12367772M"> <img src="../images/cover_images/book_359-M.jpg" alt="The Inverted World" /> </a></div>
  
  </div>
 <div>	
@@ -576,7 +642,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Christopher Priest - Pub Year 1974 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/359_Christopher-PriestThe-Inverted-World.html"> More </a> </div>
 	 
@@ -588,7 +654,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL24373154M"> <img src="../images/cover_images/8437911-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL24373154M"> <img src="../images/cover_images/book_212-M.jpg" alt="Birthgrave:  (followed by   Vasgar, Son of Vasgar , and  Quest for the White Witch )" /> </a></div>
  
  </div>
 <div>	
@@ -605,7 +671,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Tanith Lee - Pub Year 1975 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/212_Tanith-LeeBirthgrave.html"> More </a> </div>
 	 
@@ -617,7 +683,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL9374599M"> <img src="../images/cover_images/211303-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL9374599M"> <img src="../images/cover_images/book_325-M.jpg" alt="Shockwave Rider" /> </a></div>
  
  </div>
 <div>	
@@ -629,7 +695,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  John Brunner - Pub Year 1975 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/325_John-BrunnerShockwave-Rider.html"> More </a> </div>
 	 
@@ -641,7 +707,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3685805M"> <img src="../images/cover_images/26336-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3685805M"> <img src="../images/cover_images/book_13-M.jpg" alt="The Forever War" /> </a></div>
  
  </div>
 <div>	
@@ -653,7 +719,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Joe Haldeman - Pub Year 1975 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/13_Joe-HaldemanThe-Forever-War.html"> More </a> </div>
 	 
@@ -665,7 +731,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8195695M"> <img src="../images/cover_images/13952557-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8195695M"> <img src="../images/cover_images/book_396-M.jpg" alt="Brothers of Earth" /> </a></div>
  
  </div>
 <div>	
@@ -677,7 +743,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1976 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/396_CJ-CherryhBrothers-of-Earth.html"> More </a> </div>
 	 
@@ -689,7 +755,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL3180006M"> <img src="../images/cover_images/116019-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL3180006M"> <img src="../images/cover_images/book_126-M.jpg" alt="Chain of Chance" /> </a></div>
  
  </div>
 <div>	
@@ -701,7 +767,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Stanislaw Lem - Pub Year 1976 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/126_Stanislaw-LemChain-of-Chance.html"> More </a> </div>
 	 
@@ -713,7 +779,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL48018M"> <img src="../images/cover_images/3699320-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL48018M"> <img src="../images/cover_images/book_393-M.jpg" alt="Gate of Ivrel" /> </a></div>
  
  </div>
 <div>	
@@ -725,7 +791,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1976 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/393_CJ-CherryhGate-of-Ivrel.html"> More </a> </div>
 	 
@@ -737,7 +803,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL7521419M"> <img src="../images/cover_images/282275-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL7521419M"> <img src="../images/cover_images/book_321-M.jpg" alt="Lizard Music" /> </a></div>
  
  </div>
 <div>	
@@ -749,7 +815,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Daniel Pinkwater - Pub Year 1976 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/321_Daniel-PinkwaterLizard-Music.html"> More </a> </div>
 	 
@@ -761,7 +827,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL1566176M"> <img src="../images/cover_images/420287-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL1566176M"> <img src="../images/cover_images/book_110-M.jpg" alt="A Scanner Darkly" /> </a></div>
  
  </div>
 <div>	
@@ -773,7 +839,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Philip K. Dick - Pub Year 1977 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/110_Philip-K.-DickA-Scanner-Darkly.html"> More </a> </div>
 	 
@@ -785,7 +851,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL29306461M"> <img src="../images/cover_images/10385063-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL29306461M"> <img src="../images/cover_images/book_397-M.jpg" alt="Hunter of Worlds" /> </a></div>
  
  </div>
 <div>	
@@ -797,7 +863,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1977 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/397_CJ-CherryhHunter-of-Worlds.html"> More </a> </div>
 	 
@@ -809,7 +875,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8132320M"> <img src="../images/cover_images/8038984-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8132320M"> <img src="../images/cover_images/book_147-M.jpg" alt="The Gods of Xuma" /> </a></div>
  
  </div>
 <div>	
@@ -821,7 +887,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  David J. Lake - Pub Year 1978 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/147_David-J.-LakeThe-Gods-of-Xuma.html"> More </a> </div>
 	 
@@ -833,7 +899,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL20402389M"> <img src="../images/cover_images/9255989-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL20402389M"> <img src="../images/cover_images/book_33-M.jpg" alt="The Stand" /> </a></div>
  
  </div>
 <div>	
@@ -845,7 +911,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Stephen King - Pub Year 1978 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/33_Stephen-KingThe-Stand.html"> More </a> </div>
 	 
@@ -857,7 +923,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8132449M"> <img src="../images/cover_images/12190417-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8132449M"> <img src="../images/cover_images/book_401-M.jpg" alt="Well of Shiuan" /> </a></div>
  
  </div>
 <div>	
@@ -869,7 +935,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1978 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/401_CJ-CherryhWell-of-Shiuan.html"> More </a> </div>
 	 
@@ -881,7 +947,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8195722M"> <img src="../images/cover_images/683207-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8195722M"> <img src="../images/cover_images/book_402-M.jpg" alt="Fires of Azeroth" /> </a></div>
  
  </div>
 <div>	
@@ -893,7 +959,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1979 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/402_CJ-CherryhFires-of-Azeroth.html"> More </a> </div>
 	 
@@ -905,7 +971,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL60408M"> <img src="../images/cover_images/209598-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL60408M"> <img src="../images/cover_images/book_198-M.jpg" alt="Mockingbird" /> </a></div>
  
  </div>
 <div>	
@@ -917,7 +983,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Walter Tevis - Pub Year 1979 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/198_Walter-TevisMockingbird.html"> More </a> </div>
 	 
@@ -929,7 +995,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL118211M"> <img src="../images/cover_images/283782-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL118211M"> <img src="../images/cover_images/book_278-M.jpg" alt="Watchtower" /> </a></div>
  
  </div>
 <div>	
@@ -941,7 +1007,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Elizabeth A. Lynn - Pub Year 1979 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/278_Elizabeth-A.-LynnWatchtower.html"> More </a> </div>
 	 

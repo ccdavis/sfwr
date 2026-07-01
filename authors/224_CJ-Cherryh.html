@@ -15,26 +15,59 @@
 	margin: em;
  }
 
- .buttonlink{
-	display:block;
-	border-style:solid;
-	border-color:#bbb #888 #666 #aaa;
-	border-width:3px 4px 4px 3px;
-	min-width:3.7em;
-	height:1.5em;
-	background:#ccc;
-	color:#333;
-	line-height:1.5;
-	text-align:center;
-	text-decoration:none;
-	font-weight:900;
-	padding: 0 0.5em;
+:root {
+	 
+	--btn-fg: #2a2a2a;
+	--btn-fg-hover: #000;
+	--btn-border: rgba(20, 20, 20, 0.28);
+	--btn-accent: #0a7ea3;
+	--btn-hover-bg: rgba(10, 126, 163, 0.06);
+	--btn-active-bg: rgba(10, 126, 163, 0.12);
+}
+
+ .buttonlink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.6em 1.25em;
+	min-width: 4em;
+	font-family: 'Questrial', 'Hammersmith One', sans-serif;
+	font-size: 0.82em;
+	font-weight: 400;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--btn-fg);
+	background: transparent;
+	border: 1px solid var(--btn-border);
+	border-radius: 2px;
+	line-height: 1.4;
+	transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+	-webkit-tap-highlight-color: transparent;
 	box-sizing: border-box;
 }
-.buttonlink:hover{
-	border-color: #666 #aaa #bbb #888;
-	border-width:4px 3px 3px 4px;
-	color:#000;
+.buttonlink:hover {
+	color: var(--btn-fg-hover);
+	border-color: var(--btn-accent);
+	background: var(--btn-hover-bg);
+}
+.buttonlink:focus-visible {
+	outline: 2px solid var(--btn-accent);
+	outline-offset: 3px;
+}
+.buttonlink:active {
+	background: var(--btn-active-bg);
+}
+
+ 
+.top-menu,
+.book-grid {
+	--btn-fg: #e8e8e8;
+	--btn-fg-hover: #fff;
+	--btn-border: rgba(232, 232, 232, 0.28);
+	--btn-accent: #6cf;
+	--btn-hover-bg: rgba(102, 204, 255, 0.09);
+	--btn-active-bg: rgba(102, 204, 255, 0.16);
 }
 
 	  
@@ -301,11 +334,12 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                padding: 0 0.3em;
-                font-size: 0.9em;
+                padding: 0.5em 1em;
+                font-size: 0.78em;
+                letter-spacing: 0.1em;
             }
         }
-        
+
         @media (max-width: 375px) {
             div.top-menu {
                 padding: 0;
@@ -318,13 +352,9 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                font-size: 0.8em;
-                padding: 0 0.2em;
-                border-width: 2px 3px 3px 2px;
-            }
-            
-            .buttonlink:hover {
-                border-width: 3px 2px 2px 3px;
+                font-size: 0.72em;
+                padding: 0.45em 0.85em;
+                letter-spacing: 0.08em;
             }
             
             table {
@@ -388,9 +418,45 @@ div.book-box:hover {
  
   
  
+.tag-icon {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.tag-indy {
+    color: #e9a820;
+    font-size: 1.15em;
+}
+
+.tag-interesting {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid #b080e0;
+    border-radius: 50%;
+    color: #b080e0;
+    font-weight: 900;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+.book-tags {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.star-rating {
+    color: #e9a820;
+    letter-spacing: 1px;
+}
+
  </style>
    <meta charset="UTF-8">
-   <title> Books </title>  
+   <title> Books </title>
  </head>
  <body>
 	<div class="top-menu">
@@ -443,7 +509,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8196030M"> <img src="../images/cover_images/683401-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8196030M"> <img src="../images/cover_images/book_391-M.jpg" alt="The Dreaming Tree" /> </a></div>
  
  </div>
 <div>	
@@ -455,7 +521,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1997 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/391_CJ-CherryhThe-Dreaming-Tree.html"> More </a> </div>
 	 
@@ -466,7 +532,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL2188487M"> <img src="../images/cover_images/6461059-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL2188487M"> <img src="../images/cover_images/book_392-M.jpg" alt="Rusalka" /> </a></div>
  
  </div>
 <div>	
@@ -478,7 +544,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1989 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/392_CJ-CherryhRusalka.html"> More </a> </div>
 	 
@@ -489,7 +555,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL48018M"> <img src="../images/cover_images/3699320-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL48018M"> <img src="../images/cover_images/book_393-M.jpg" alt="Gate of Ivrel" /> </a></div>
  
  </div>
 <div>	
@@ -501,7 +567,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1976 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/393_CJ-CherryhGate-of-Ivrel.html"> More </a> </div>
 	 
@@ -512,7 +578,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL6788727M"> <img src="../images/cover_images/44013-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL6788727M"> <img src="../images/cover_images/book_394-M.jpg" alt="Hammerfall" /> </a></div>
  
  </div>
 <div>	
@@ -524,7 +590,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 2001 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/394_CJ-CherryhHammerfall.html"> More </a> </div>
 	 
@@ -535,7 +601,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL25126077M"> <img src="../images/cover_images/6980725-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL25126077M"> <img src="../images/cover_images/book_395-M.jpg" alt="Serpent&#39;s Reach" /> </a></div>
  
  </div>
 <div>	
@@ -547,7 +613,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1980 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/395_CJ-CherryhSerpent's-Reach.html"> More </a> </div>
 	 
@@ -558,7 +624,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8195695M"> <img src="../images/cover_images/13952557-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8195695M"> <img src="../images/cover_images/book_396-M.jpg" alt="Brothers of Earth" /> </a></div>
  
  </div>
 <div>	
@@ -570,7 +636,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1976 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/396_CJ-CherryhBrothers-of-Earth.html"> More </a> </div>
 	 
@@ -581,7 +647,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL29306461M"> <img src="../images/cover_images/10385063-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL29306461M"> <img src="../images/cover_images/book_397-M.jpg" alt="Hunter of Worlds" /> </a></div>
  
  </div>
 <div>	
@@ -593,7 +659,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1977 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/397_CJ-CherryhHunter-of-Worlds.html"> More </a> </div>
 	 
@@ -604,7 +670,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL2399901M"> <img src="../images/cover_images/4125331-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL2399901M"> <img src="../images/cover_images/book_398-M.jpg" alt="Cyteen" /> </a></div>
  
  </div>
 <div>	
@@ -616,7 +682,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1988 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/398_CJ-CherryhCyteen.html"> More </a> </div>
 	 
@@ -627,7 +693,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8195787M"> <img src="../images/cover_images/683236-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8195787M"> <img src="../images/cover_images/book_399-M.jpg" alt="Downbelow Station" /> </a></div>
  
  </div>
 <div>	
@@ -639,7 +705,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1981 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/399_CJ-CherryhDownbelow-Station.html"> More </a> </div>
 	 
@@ -650,7 +716,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL27779996M"> <img src="../images/cover_images/9185648-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL27779996M"> <img src="../images/cover_images/book_400-M.jpg" alt="The Faded Sun Trilogy" /> </a></div>
  
  </div>
 <div>	
@@ -662,7 +728,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 2018 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/400_CJ-CherryhThe-Faded-Sun-Trilogy.html"> More </a> </div>
 	 
@@ -673,7 +739,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8132449M"> <img src="../images/cover_images/12190417-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8132449M"> <img src="../images/cover_images/book_401-M.jpg" alt="Well of Shiuan" /> </a></div>
  
  </div>
 <div>	
@@ -685,7 +751,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1978 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/401_CJ-CherryhWell-of-Shiuan.html"> More </a> </div>
 	 
@@ -696,7 +762,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL8195722M"> <img src="../images/cover_images/683207-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL8195722M"> <img src="../images/cover_images/book_402-M.jpg" alt="Fires of Azeroth" /> </a></div>
  
  </div>
 <div>	
@@ -708,7 +774,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1979 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/402_CJ-CherryhFires-of-Azeroth.html"> More </a> </div>
 	 
@@ -719,7 +785,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL7661193M"> <img src="../images/cover_images/407072-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL7661193M"> <img src="../images/cover_images/book_447-M.jpg" alt="The Paladin" /> </a></div>
  
  </div>
 <div>	
@@ -731,7 +797,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  CJ Cherryh - Pub Year 1988 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/447_CJ-CherryhThe-Paladin.html"> More </a> </div>
 	 

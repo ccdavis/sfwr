@@ -15,26 +15,59 @@
 	margin: em;
  }
 
- .buttonlink{
-	display:block;
-	border-style:solid;
-	border-color:#bbb #888 #666 #aaa;
-	border-width:3px 4px 4px 3px;
-	min-width:3.7em;
-	height:1.5em;
-	background:#ccc;
-	color:#333;
-	line-height:1.5;
-	text-align:center;
-	text-decoration:none;
-	font-weight:900;
-	padding: 0 0.5em;
+:root {
+	 
+	--btn-fg: #2a2a2a;
+	--btn-fg-hover: #000;
+	--btn-border: rgba(20, 20, 20, 0.28);
+	--btn-accent: #0a7ea3;
+	--btn-hover-bg: rgba(10, 126, 163, 0.06);
+	--btn-active-bg: rgba(10, 126, 163, 0.12);
+}
+
+ .buttonlink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.6em 1.25em;
+	min-width: 4em;
+	font-family: 'Questrial', 'Hammersmith One', sans-serif;
+	font-size: 0.82em;
+	font-weight: 400;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--btn-fg);
+	background: transparent;
+	border: 1px solid var(--btn-border);
+	border-radius: 2px;
+	line-height: 1.4;
+	transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+	-webkit-tap-highlight-color: transparent;
 	box-sizing: border-box;
 }
-.buttonlink:hover{
-	border-color: #666 #aaa #bbb #888;
-	border-width:4px 3px 3px 4px;
-	color:#000;
+.buttonlink:hover {
+	color: var(--btn-fg-hover);
+	border-color: var(--btn-accent);
+	background: var(--btn-hover-bg);
+}
+.buttonlink:focus-visible {
+	outline: 2px solid var(--btn-accent);
+	outline-offset: 3px;
+}
+.buttonlink:active {
+	background: var(--btn-active-bg);
+}
+
+ 
+.top-menu,
+.book-grid {
+	--btn-fg: #e8e8e8;
+	--btn-fg-hover: #fff;
+	--btn-border: rgba(232, 232, 232, 0.28);
+	--btn-accent: #6cf;
+	--btn-hover-bg: rgba(102, 204, 255, 0.09);
+	--btn-active-bg: rgba(102, 204, 255, 0.16);
 }
 
 	  
@@ -301,11 +334,12 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                padding: 0 0.3em;
-                font-size: 0.9em;
+                padding: 0.5em 1em;
+                font-size: 0.78em;
+                letter-spacing: 0.1em;
             }
         }
-        
+
         @media (max-width: 375px) {
             div.top-menu {
                 padding: 0;
@@ -318,13 +352,9 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                font-size: 0.8em;
-                padding: 0 0.2em;
-                border-width: 2px 3px 3px 2px;
-            }
-            
-            .buttonlink:hover {
-                border-width: 3px 2px 2px 3px;
+                font-size: 0.72em;
+                padding: 0.45em 0.85em;
+                letter-spacing: 0.08em;
             }
             
             table {
@@ -388,9 +418,45 @@ div.book-box:hover {
  
   
  
+.tag-icon {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.tag-indy {
+    color: #e9a820;
+    font-size: 1.15em;
+}
+
+.tag-interesting {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid #b080e0;
+    border-radius: 50%;
+    color: #b080e0;
+    font-weight: 900;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+.book-tags {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.star-rating {
+    color: #e9a820;
+    letter-spacing: 1px;
+}
+
  </style>
    <meta charset="UTF-8">
-   <title> Books from 2020s </title>  
+   <title> Books from 2020s </title>
  </head>
  <body>
 	<div class="top-menu">
@@ -444,7 +510,31 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=Agency+William+Gibson"> <img src="../images/cover_images/13090570-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=A+Beginning+After+the+End+Mike+Chen"> <img src="../images/cover_images/book_293-M.jpg" alt="A Beginning After the End" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>A Beginning After the End </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Mike Chen - Pub Year 2020 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/293_Mike-ChenA-Beginning-After-the-End.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Agency+William+Gibson"> <img src="../images/cover_images/book_439-M.jpg" alt="Agency" /> </a></div>
  
  </div>
 <div>	
@@ -456,7 +546,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  William Gibson - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/439_William-GibsonAgency.html"> More </a> </div>
 	 
@@ -468,7 +558,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL28333339M"> <img src="../images/cover_images/10282255-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL28333339M"> <img src="../images/cover_images/book_114-M.jpg" alt="Axiom&#39;s End" /> </a></div>
  
  </div>
 <div>	
@@ -480,7 +570,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Lindsay Ellis - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/114_Lindsay-EllisAxiom's-End.html"> More </a> </div>
 	 
@@ -492,7 +582,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=Chaos+Vector+Megan+E.+O'Keefe"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Chaos+Vector+Megan+E.+O'Keefe"> <img src="../images/cover_images/book_145-M.jpg" alt="Chaos Vector: book 2 in the Protectorate series" /> </a></div>
  
  </div>
 <div>	
@@ -509,7 +599,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Megan E. O&#39;Keefe - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/145_Megan-E.-O'KeefeChaos-Vector.html"> More </a> </div>
 	 
@@ -521,7 +611,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL28233768M"> <img src="../images/cover_images/10165214-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL28233768M"> <img src="../images/cover_images/book_429-M.jpg" alt="Invisible Sun" /> </a></div>
  
  </div>
 <div>	
@@ -533,7 +623,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Charles Stross - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/429_Charles-StrossInvisible-Sun.html"> More </a> </div>
 	 
@@ -545,7 +635,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL32753087M"> <img src="../images/cover_images/11379336-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL32753087M"> <img src="../images/cover_images/book_209-M.jpg" alt="Now, Then and Everywhen" /> </a></div>
  
  </div>
 <div>	
@@ -557,7 +647,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Rysa Walker - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/209_Rysa-WalkerNow,-Then-and-Everywhen.html"> More </a> </div>
 	 
@@ -569,7 +659,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL27947245M"> <img src="../images/cover_images/9335219-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL27947245M"> <img src="../images/cover_images/book_338-M.jpg" alt="Providence" /> </a></div>
  
  </div>
 <div>	
@@ -581,7 +671,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Max Barry - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/338_Max-BarryProvidence.html"> More </a> </div>
 	 
@@ -593,7 +683,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL35689432M"> <img src="../images/cover_images/12389372-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL35689432M"> <img src="../images/cover_images/book_42-M.jpg" alt="Terminus" /> </a></div>
  
  </div>
 <div>	
@@ -605,7 +695,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Peter Clines - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/42_Peter-ClinesTerminus.html"> More </a> </div>
 	 
@@ -617,7 +707,31 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL28151758M"> <img src="../images/cover_images/10092261-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=The+Imortal+James+E.+Gunn"> <img src="../images/cover_images/book_214-M.jpg" alt="The Imortal" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Imortal </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  James E. Gunn - Pub Year 2020 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/214_James-E.-GunnThe-Imortal.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL28151758M"> <img src="../images/cover_images/book_37-M.jpg" alt="The Invisible Life of Addie LaRue" /> </a></div>
  
  </div>
 <div>	
@@ -629,7 +743,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  V.E. Schwab - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/37_V.E.-SchwabThe-Invisible-Life-of-Addie-LaRue.html"> More </a> </div>
 	 
@@ -641,7 +755,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL28097037M"> <img src="../images/cover_images/13290403-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL28097037M"> <img src="../images/cover_images/book_388-M.jpg" alt="Traitor: (The Traveler Chronicles Book Three)" /> </a></div>
  
  </div>
 <div>	
@@ -658,7 +772,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Dennis Green - Pub Year 2020 </h4> 
 	</div>	
-	<div>rating: Kindle</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/388_Dennis-GreenTraitor.html"> More </a> </div>
 	 
@@ -670,7 +784,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL29891324M"> <img src="../images/cover_images/10643647-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL29891324M"> <img src="../images/cover_images/book_103-M.jpg" alt="A History of What Comes Next" /> </a></div>
  
  </div>
 <div>	
@@ -682,7 +796,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Sylvain Neuvel - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/103_Sylvain-NeuvelA-History-of-What-Comes-Next.html"> More </a> </div>
 	 
@@ -694,7 +808,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL32339298M"> <img src="../images/cover_images/10960871-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL32339298M"> <img src="../images/cover_images/book_194-M.jpg" alt="And Then She Vanished" /> </a></div>
  
  </div>
 <div>	
@@ -706,7 +820,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Nick Jones - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/194_Nick-JonesAnd-Then-She-Vanished.html"> More </a> </div>
 	 
@@ -718,7 +832,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=Beyond+the+Hallowed+Sky+Ken+Mac+Leod"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Beyond+the+Hallowed+Sky+Ken+Mac+Leod"> <img src="../images/cover_images/book_454-M.jpg" alt="Beyond the Hallowed Sky" /> </a></div>
  
  </div>
 <div>	
@@ -730,7 +844,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Ken Mac Leod - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/454_Ken-Mac-LeodBeyond-the-Hallowed-Sky.html"> More </a> </div>
 	 
@@ -742,7 +856,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL31487880M"> <img src="../images/cover_images/10524370-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL31487880M"> <img src="../images/cover_images/book_12-M.jpg" alt="Dead Space" /> </a></div>
  
  </div>
 <div>	
@@ -754,7 +868,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Kali Wallace - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/12_Kali-WallaceDead-Space.html"> More </a> </div>
 	 
@@ -766,7 +880,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL32892681M"> <img src="../images/cover_images/11523438-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL32892681M"> <img src="../images/cover_images/book_54-M.jpg" alt="Elder Race" /> </a></div>
  
  </div>
 <div>	
@@ -778,7 +892,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Adrian Tchaikovsky - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/54_Adrian-TchaikovskyElder-Race.html"> More </a> </div>
 	 
@@ -790,7 +904,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL49341680M"> <img src="../images/cover_images/14411939-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL49341680M"> <img src="../images/cover_images/book_84-M.jpg" alt="Fail State" /> </a></div>
  
  </div>
 <div>	
@@ -802,7 +916,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  John Birmingham - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/84_John-BirminghamFail-State.html"> More </a> </div>
 	 
@@ -814,7 +928,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL32259482M"> <img src="../images/cover_images/10888768-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL32259482M"> <img src="../images/cover_images/book_177-M.jpg" alt="Master of the Revels" /> </a></div>
  
  </div>
 <div>	
@@ -826,7 +940,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Nicole Galland - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/177_Nicole-GallandMaster-of-the-Revels.html"> More </a> </div>
 	 
@@ -838,7 +952,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL32553390M"> <img src="../images/cover_images/11200092-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL32553390M"> <img src="../images/cover_images/book_442-M.jpg" alt="Project Hail Mary" /> </a></div>
  
  </div>
 <div>	
@@ -850,7 +964,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Andy Weir - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/442_Andy-WeirProject-Hail-Mary.html"> More </a> </div>
 	 
@@ -862,7 +976,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL32752739M"> <img src="../images/cover_images/11379008-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL32752739M"> <img src="../images/cover_images/book_339-M.jpg" alt="The 22 Murders of Madison May" /> </a></div>
  
  </div>
 <div>	
@@ -874,7 +988,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Max Barry - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/339_Max-BarryThe-22-Murders-of-Madison-May.html"> More </a> </div>
 	 
@@ -886,7 +1000,31 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL32814400M"> <img src="../images/cover_images/11446939-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=The+Apocolipse+Seven+Gene+Doucette"> <img src="../images/cover_images/book_234-M.jpg" alt="The Apocolipse Seven" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Apocolipse Seven </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Gene Doucette - Pub Year 2021 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/234_Gene-DoucetteThe-Apocolipse-Seven.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL32814400M"> <img src="../images/cover_images/book_195-M.jpg" alt="The Shadows of London" /> </a></div>
  
  </div>
 <div>	
@@ -898,7 +1036,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Nick Jones - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/195_Nick-JonesThe-Shadows-of-London.html"> More </a> </div>
 	 
@@ -910,7 +1048,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL29893797M"> <img src="../images/cover_images/10635258-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL29893797M"> <img src="../images/cover_images/book_292-M.jpg" alt="We Could Be Heros" /> </a></div>
  
  </div>
 <div>	
@@ -922,7 +1060,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Mike Chen - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/292_Mike-ChenWe-Could-Be-Heros.html"> More </a> </div>
 	 
@@ -934,7 +1072,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL42472344M"> <img src="../images/cover_images/14822494-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL42472344M"> <img src="../images/cover_images/book_6-M.jpg" alt="Wherever Seeds May Fall" /> </a></div>
  
  </div>
 <div>	
@@ -946,7 +1084,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Peter Cawdron - Pub Year 2021 </h4> 
 	</div>	
-	<div>rating: Kindle</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/6_Peter-CawdronWherever-Seeds-May-Fall.html"> More </a> </div>
 	 
@@ -958,7 +1096,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL37047363M"> <img src="../images/cover_images/13905187-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL37047363M"> <img src="../images/cover_images/book_242-M.jpg" alt="Grand Theft Astro" /> </a></div>
  
  </div>
 <div>	
@@ -970,7 +1108,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Scott Meyer - Pub Year 2022 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/242_Scott-MeyerGrand-Theft-Astro.html"> More </a> </div>
 	 
@@ -982,7 +1120,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL34122277M"> <img src="../images/cover_images/12587824-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL34122277M"> <img src="../images/cover_images/book_294-M.jpg" alt="Light Years From Home" /> </a></div>
  
  </div>
 <div>	
@@ -994,7 +1132,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Mike Chen - Pub Year 2022 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/294_Mike-ChenLight-Years-From-Home.html"> More </a> </div>
 	 
@@ -1006,7 +1144,31 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL37628948M"> <img src="../images/cover_images/12992610-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Marked+S.+Andrew+Swan"> <img src="../images/cover_images/book_65-M.jpg" alt="Marked" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Marked </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  S. Andrew Swan - Pub Year 2022 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/65_S.-Andrew-SwanMarked.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL37628948M"> <img src="../images/cover_images/book_451-M.jpg" alt="Sign Here" /> </a></div>
  
  </div>
 <div>	
@@ -1018,7 +1180,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Claudia Lux - Pub Year 2022 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/451_Claudia-LuxSign-Here.html"> More </a> </div>
 	 
@@ -1030,7 +1192,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL37495428M"> <img src="../images/cover_images/13467927-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL37495428M"> <img src="../images/cover_images/book_208-M.jpg" alt="Station Eternity" /> </a></div>
  
  </div>
 <div>	
@@ -1042,7 +1204,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Mur Lafferty - Pub Year 2022 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/208_Mur-LaffertyStation-Eternity.html"> More </a> </div>
 	 
@@ -1054,7 +1216,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL36097383M"> <img src="../images/cover_images/14565776-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL36097383M"> <img src="../images/cover_images/book_43-M.jpg" alt="The Broken Room" /> </a></div>
  
  </div>
 <div>	
@@ -1066,7 +1228,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Peter Clines - Pub Year 2022 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/43_Peter-ClinesThe-Broken-Room.html"> More </a> </div>
 	 
@@ -1078,7 +1240,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=The+Quantum+Chain+Nick+Jones"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=The+Quantum+Chain+Nick+Jones"> <img src="../images/cover_images/book_197-M.jpg" alt="The Quantum Chain" /> </a></div>
  
  </div>
 <div>	
@@ -1090,7 +1252,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Nick Jones - Pub Year 2022 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/197_Nick-JonesThe-Quantum-Chain.html"> More </a> </div>
 	 
@@ -1102,7 +1264,31 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL36526564M"> <img src="../images/cover_images/12860041-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=The+Shattered+Skies+John+Birmingham"> <img src="../images/cover_images/book_86-M.jpg" alt="The Shattered Skies" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Shattered Skies </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  John Birmingham - Pub Year 2022 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/86_John-BirminghamThe-Shattered-Skies.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL36526564M"> <img src="../images/cover_images/book_152-M.jpg" alt="Upgrade: A Novel" /> </a></div>
  
  </div>
 <div>	
@@ -1119,7 +1305,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Blake Crouch - Pub Year 2022 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/152_Blake-CrouchUpgrade.html"> More </a> </div>
 	 
@@ -1131,7 +1317,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL47332021M"> <img src="../images/cover_images/13918571-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL47332021M"> <img src="../images/cover_images/book_243-M.jpg" alt="Brute Force" /> </a></div>
  
  </div>
 <div>	
@@ -1143,7 +1329,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Scott Meyer - Pub Year 2023 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/243_Scott-MeyerBrute-Force.html"> More </a> </div>
 	 
@@ -1155,7 +1341,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=Dragon+Heist+Alexander+C.+Kane"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Dragon+Heist+Alexander+C.+Kane"> <img src="../images/cover_images/book_446-M.jpg" alt="Dragon Heist" /> </a></div>
  
  </div>
 <div>	
@@ -1167,7 +1353,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Alexander C. Kane - Pub Year 2023 </h4> 
 	</div>	
-	<div>rating: Kindle</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/446_Alexander-C.-KaneDragon-Heist.html"> More </a> </div>
 	 
@@ -1179,7 +1365,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL46153101M"> <img src="../images/cover_images/13297923-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL46153101M"> <img src="../images/cover_images/book_217-M.jpg" alt="Exordia" /> </a></div>
  
  </div>
 <div>	
@@ -1191,7 +1377,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Seth Dickinson - Pub Year 2023 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/217_Seth-DickinsonExordia.html"> More </a> </div>
 	 
@@ -1203,7 +1389,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL39660951M"> <img src="../images/cover_images/13472546-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL39660951M"> <img src="../images/cover_images/book_64-M.jpg" alt="Starter Villain" /> </a></div>
  
  </div>
 <div>	
@@ -1215,7 +1401,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  John Scalzi - Pub Year 2023 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/64_John-ScalziStarter-Villain.html"> More </a> </div>
 	 
@@ -1227,7 +1413,55 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL38333725M"> <img src="../images/cover_images/14791810-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Stories+for+Men+John+Kessel"> <img src="../images/cover_images/book_182-M.jpg" alt="Stories for Men" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Stories for Men </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  John Kessel - Pub Year 2023 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/182_John-KesselStories-for-Men.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=The+Blighted+Stars+Megan+E.+O'Keefe"> <img src="../images/cover_images/book_146-M.jpg" alt="The Blighted Stars" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>The Blighted Stars </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Megan E. O&#39;Keefe - Pub Year 2023 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/146_Megan-E.-O'KeefeThe-Blighted-Stars.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL38333725M"> <img src="../images/cover_images/book_444-M.jpg" alt="The Book That Wouldn&#39;t Burn" /> </a></div>
  
  </div>
 <div>	
@@ -1239,7 +1473,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Mark Lawrence - Pub Year 2023 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/444_Mark-LawrenceThe-Book-That-Wouldn't-Burn.html"> More </a> </div>
 	 
@@ -1251,7 +1485,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL39817229M"> <img src="../images/cover_images/13893396-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL39817229M"> <img src="../images/cover_images/book_196-M.jpg" alt="The Observer Effect" /> </a></div>
  
  </div>
 <div>	
@@ -1263,7 +1497,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Nick Jones - Pub Year 2023 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/196_Nick-JonesThe-Observer-Effect.html"> More </a> </div>
 	 
@@ -1275,7 +1509,94 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=Quantum+Love+Story+Mike+Chen"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Those+Left+Behind+N.+C.+Scrimgeour"> <img src="../images/cover_images/book_241-M.jpg" alt="Those Left Behind: Waystations, Book One" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Those Left Behind </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4>Waystations, Book One</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  N. C. Scrimgeour - Pub Year 2023 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/241_N.-C.-ScrimgeourThose-Left-Behind.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Again,+Dangerous+Visions+Edited+by+Harlan+Ellison"> <img src="../images/cover_images/book_216-M.jpg" alt="Again, Dangerous Visions:  (anthology)" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Again, Dangerous Visions </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4> (anthology)</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Edited by Harlan Ellison - Pub Year 2024 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/216_Edited-by-Harlan-EllisonAgain,-Dangerous-Visions.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Dangerous+Visions+Edited+by+Harlan+Ellison"> <img src="../images/cover_images/book_215-M.jpg" alt="Dangerous Visions:  (anthology)" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Dangerous Visions </h3>
+	</div>
+	
+		<div class="citation book-subtitle">
+			<h4> (anthology)</h4>
+		</div>
+	
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Edited by Harlan Ellison - Pub Year 2024 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/215_Edited-by-Harlan-EllisonDangerous-Visions.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Quantum+Love+Story+Mike+Chen"> <img src="../images/cover_images/book_296-M.jpg" alt="Quantum Love Story" /> </a></div>
  
  </div>
 <div>	
@@ -1287,7 +1608,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Mike Chen - Pub Year 2024 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/296_Mike-ChenQuantum-Love-Story.html"> More </a> </div>
 	 
@@ -1299,7 +1620,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=Saturation+Point+Adrian+Tchaikovsky"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Saturation+Point+Adrian+Tchaikovsky"> <img src="../images/cover_images/book_455-M.jpg" alt="Saturation Point" /> </a></div>
  
  </div>
 <div>	
@@ -1311,7 +1632,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Adrian Tchaikovsky - Pub Year 2024 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/455_Adrian-TchaikovskySaturation-Point.html"> More </a> </div>
 	 
@@ -1323,7 +1644,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=That's+Not+Right+Scott+Meyer"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=That's+Not+Right+Scott+Meyer"> <img src="../images/cover_images/book_453-M.jpg" alt="That&#39;s Not Right" /> </a></div>
  
  </div>
 <div>	
@@ -1335,7 +1656,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Scott Meyer - Pub Year 2024 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/453_Scott-MeyerThat's-Not-Right.html"> More </a> </div>
 	 
@@ -1347,7 +1668,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL56973008M"> <img src="../images/cover_images/14826055-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL56973008M"> <img src="../images/cover_images/book_443-M.jpg" alt="The Book of Doors" /> </a></div>
  
  </div>
 <div>	
@@ -1359,7 +1680,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Gareth Brown - Pub Year 2024 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/443_Gareth-BrownThe-Book-of-Doors.html"> More </a> </div>
 	 
@@ -1371,7 +1692,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL50707940M"> <img src="../images/cover_images/14649358-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL50707940M"> <img src="../images/cover_images/book_441-M.jpg" alt="The Mercy of Gods: Captive&#39;s War, Book One" /> </a></div>
  
  </div>
 <div>	
@@ -1388,7 +1709,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  James S.A. Corey - Pub Year 2024 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/441_James-S.A.-CoreyThe-Mercy-of-Gods.html"> More </a> </div>
 	 
@@ -1400,7 +1721,55 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL60529604M"> <img src="../images/cover_images/15135954-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=Time+Travel+for+Love+and+Profit+Jeff+Abugov"> <img src="../images/cover_images/book_49-M.jpg" alt="Time Travel for Love and Profit" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Time Travel for Love and Profit </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Jeff Abugov - Pub Year 2024 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/49_Jeff-AbugovTime-Travel-for-Love-and-Profit.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q="Simultaneous"+Eric+Heisserer"> <img src="../images/cover_images/book_462-M.jpg" alt="&#34;Simultaneous&#34;" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>&#34;Simultaneous&#34; </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Eric Heisserer - Pub Year 2025 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/462_Eric-Heisserer!Simultaneous.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="http://openlibrary.org/olid/OL60529604M"> <img src="../images/cover_images/book_459-M.jpg" alt="All That We See or Seem" /> </a></div>
  
  </div>
 <div>	
@@ -1412,7 +1781,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Ken Liu - Pub Year 2025 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/459_Ken-LiuAll-That-We-See-or-Seem.html"> More </a> </div>
 	 
@@ -1424,7 +1793,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL57553587M"> <img src="../images/cover_images/14854199-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL57553587M"> <img src="../images/cover_images/book_460-M.jpg" alt="Future&#39;s Edge" /> </a></div>
  
  </div>
 <div>	
@@ -1436,7 +1805,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Gareth L. Powell - Pub Year 2025 </h4> 
 	</div>	
-	<div>rating: Very Good</div>
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/460_Gareth-L.-PowellFuture's-Edge.html"> More </a> </div>
 	 
@@ -1448,7 +1817,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL57583150M"> <img src="../images/cover_images/15111915-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL57583150M"> <img src="../images/cover_images/book_456-M.jpg" alt="The Society of Unknowable Objects" /> </a></div>
  
  </div>
 <div>	
@@ -1460,7 +1829,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Gareth Brown - Pub Year 2025 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/456_Gareth-BrownThe-Society-of-Unknowable-Objects.html"> More </a> </div>
 	 
@@ -1472,7 +1841,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="https://openlibrary.org/search?q=When+We+Were+Real+Daryl+Gregory"> <img src="../images/cover_images/placeholder-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="https://openlibrary.org/search?q=When+We+Were+Real+Daryl+Gregory"> <img src="../images/cover_images/book_457-M.jpg" alt="When We Were Real" /> </a></div>
  
  </div>
 <div>	
@@ -1484,7 +1853,7 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  Daryl Gregory - Pub Year 2025 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/457_Daryl-GregoryWhen-We-Were-Real.html"> More </a> </div>
 	 
@@ -1496,7 +1865,7 @@ div.book-box:hover {
  <div class="book-item">
  
  <div class="medium-cover-image">
- <div><a href="http://openlibrary.org/olid/OL57569345M"> <img src="../images/cover_images/14854793-M.jpg" alt="Open Library" /> </a></div>
+ <div><a href="http://openlibrary.org/olid/OL57569345M"> <img src="../images/cover_images/book_448-M.jpg" alt="When the Moon Hits Your Eye" /> </a></div>
  
  </div>
 <div>	
@@ -1508,9 +1877,81 @@ div.book-box:hover {
 	<div class="citation book-author">
 	 <h4>BY  John Scalzi - Pub Year 2025 </h4> 
 	</div>	
-	<div>rating: Excellent</div>
+	<div><span class="star-rating" title="Excellent">&#9733;&#9733;&#9733;&#9733;</span></div>
 	<hr>
 	<div><a class="buttonlink" href="../books/448_John-ScalziWhen-the-Moon-Hits-Your-Eye.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=After+the+Fall+Edward+Ashton"> <img src="../images/cover_images/book_461-M.jpg" alt="After the Fall" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>After the Fall </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Edward Ashton - Pub Year 2026 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/461_Edward-AshtonAfter-the-Fall.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Leviathon+Wakes+James+S.A.+Corey"> <img src="../images/cover_images/book_245-M.jpg" alt="Leviathon Wakes" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Leviathon Wakes </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  James S.A. Corey - Pub Year 2026 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/245_James-S.A.-CoreyLeviathon-Wakes.html"> More </a> </div>
+	 
+</div>
+	
+ </div> 
+ 
+ <hr>
+ <div class="book-item">
+ 
+ <div class="medium-cover-image">
+ <div><a href="https://openlibrary.org/search?q=Lonely+Werewolf+Girl+Martin+Miller"> <img src="../images/cover_images/book_9-M.jpg" alt="Lonely Werewolf Girl" /> </a></div>
+ 
+ </div>
+<div>	
+	<div class="citation book-title">
+ 	<h3>Lonely Werewolf Girl </h3>
+	</div>
+	
+ 
+	<div class="citation book-author">
+	 <h4>BY  Martin Miller - Pub Year 2026 </h4> 
+	</div>	
+	<div><span class="star-rating" title="Very Good">&#9733;&#9733;&#9733;</span></div>
+	<hr>
+	<div><a class="buttonlink" href="../books/9_Martin-MillerLonely-Werewolf-Girl.html"> More </a> </div>
 	 
 </div>
 	

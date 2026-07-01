@@ -30,26 +30,59 @@ html, body {
 
 
 
- .buttonlink{
-	display:block;
-	border-style:solid;
-	border-color:#bbb #888 #666 #aaa;
-	border-width:3px 4px 4px 3px;
-	min-width:3.7em;
-	height:1.5em;
-	background:#ccc;
-	color:#333;
-	line-height:1.5;
-	text-align:center;
-	text-decoration:none;
-	font-weight:900;
-	padding: 0 0.5em;
+:root {
+	 
+	--btn-fg: #2a2a2a;
+	--btn-fg-hover: #000;
+	--btn-border: rgba(20, 20, 20, 0.28);
+	--btn-accent: #0a7ea3;
+	--btn-hover-bg: rgba(10, 126, 163, 0.06);
+	--btn-active-bg: rgba(10, 126, 163, 0.12);
+}
+
+ .buttonlink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.6em 1.25em;
+	min-width: 4em;
+	font-family: 'Questrial', 'Hammersmith One', sans-serif;
+	font-size: 0.82em;
+	font-weight: 400;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--btn-fg);
+	background: transparent;
+	border: 1px solid var(--btn-border);
+	border-radius: 2px;
+	line-height: 1.4;
+	transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+	-webkit-tap-highlight-color: transparent;
 	box-sizing: border-box;
 }
-.buttonlink:hover{
-	border-color: #666 #aaa #bbb #888;
-	border-width:4px 3px 3px 4px;
-	color:#000;
+.buttonlink:hover {
+	color: var(--btn-fg-hover);
+	border-color: var(--btn-accent);
+	background: var(--btn-hover-bg);
+}
+.buttonlink:focus-visible {
+	outline: 2px solid var(--btn-accent);
+	outline-offset: 3px;
+}
+.buttonlink:active {
+	background: var(--btn-active-bg);
+}
+
+ 
+.top-menu,
+.book-grid {
+	--btn-fg: #e8e8e8;
+	--btn-fg-hover: #fff;
+	--btn-border: rgba(232, 232, 232, 0.28);
+	--btn-accent: #6cf;
+	--btn-hover-bg: rgba(102, 204, 255, 0.09);
+	--btn-active-bg: rgba(102, 204, 255, 0.16);
 }
 
 	  
@@ -369,10 +402,11 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                padding: 0 0.3em;
-                font-size: 0.9em;
+                padding: 0.5em 1em;
+                font-size: 0.78em;
+                letter-spacing: 0.1em;
             }
-            
+
             .citation .main h1 {
                 font-size: 28px;
             }
@@ -402,13 +436,9 @@ div.content-container {
             
             .buttonlink {
                 min-width: auto;
-                font-size: 0.8em;
-                padding: 0 0.2em;
-                border-width: 2px 3px 3px 2px;
-            }
-            
-            .buttonlink:hover {
-                border-width: 3px 2px 2px 3px;
+                font-size: 0.72em;
+                padding: 0.45em 0.85em;
+                letter-spacing: 0.08em;
             }
             
             table {
@@ -429,6 +459,42 @@ div.content-container {
             }
         }
  
+.tag-icon {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.tag-indy {
+    color: #e9a820;
+    font-size: 1.15em;
+}
+
+.tag-interesting {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid #b080e0;
+    border-radius: 50%;
+    color: #b080e0;
+    font-weight: 900;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+.book-tags {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.star-rating {
+    color: #e9a820;
+    letter-spacing: 1px;
+}
+
 div.book-box:hover {
 	transform: translateY(-5px);
 }
@@ -612,7 +678,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/144_A.-A.-Atanasio.html"> A. A. Atanasio</a>   (1)
+			<a href="authors/248_Edward-Ashton.html"> Edward Ashton</a>   (2)
        </div>
    </li>
    
@@ -620,7 +686,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/241_Test-Author.html"> Test Author</a>   (0)
+			<a href="authors/144_A.-A.-Attanasio.html"> A. A. Attanasio</a>   (1)
        </div>
    </li>
    
@@ -629,6 +695,14 @@ div.book-box:hover {
         <li>
     <div class="citation book-author">
 			<a href="authors/240_Test-Author.html"> Test Author</a>   (0)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/241_Test-Author.html"> Test Author</a>   (0)
        </div>
    </li>
    
@@ -671,7 +745,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/208_Steven-Barnes.html"> Steven Barnes</a>   (1)
+			<a href="authors/21_John-Barnes.html"> John Barnes</a>   (2)
        </div>
    </li>
    
@@ -679,7 +753,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/21_John-Barnes.html"> John Barnes</a>   (2)
+			<a href="authors/208_Steven-Barnes.html"> Steven Barnes</a>   (1)
        </div>
    </li>
    
@@ -1190,7 +1264,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/94_Nicole-Galland.html"> Nicole Galland</a>   (1)
+			<a href="authors/236_Neal-Stephenson,-Nicole-Galland.html"> Neal Stephenson, Nicole Galland</a>   (1)
        </div>
    </li>
    
@@ -1198,7 +1272,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/236_Neal-Stephenson,-Nicole-Galland.html"> Neal Stephenson, Nicole Galland</a>   (1)
+			<a href="authors/94_Nicole-Galland.html"> Nicole Galland</a>   (1)
        </div>
    </li>
    
@@ -1214,7 +1288,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/76_Bruce-Sterling-and-William-Gibson.html"> Bruce Sterling and William Gibson</a>   (1)
+			<a href="authors/86_William-Gibson.html"> William Gibson</a>   (11)
        </div>
    </li>
    
@@ -1222,7 +1296,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/86_William-Gibson.html"> William Gibson</a>   (11)
+			<a href="authors/76_Bruce-Sterling-and-William-Gibson.html"> Bruce Sterling and William Gibson</a>   (1)
        </div>
    </li>
    
@@ -1262,7 +1336,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/95_Daryl-Gregory.html"> Daryl Gregory</a>   (3)
+			<a href="authors/95_Daryl-Gregory.html"> Daryl Gregory</a>   (4)
        </div>
    </li>
    
@@ -1278,7 +1352,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/123_Ken-Grimwood.html"> Ken Grimwood</a>   (1)
+			<a href="authors/233_Jon-Courtenay-Grimwood.html"> Jon Courtenay Grimwood</a>   (3)
        </div>
    </li>
    
@@ -1286,7 +1360,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/233_Jon-Courtenay-Grimwood.html"> Jon Courtenay Grimwood</a>   (3)
+			<a href="authors/123_Ken-Grimwood.html"> Ken Grimwood</a>   (1)
        </div>
    </li>
    
@@ -1377,6 +1451,14 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
+			<a href="authors/249_Eric-Heisserer.html"> Eric Heisserer</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
 			<a href="authors/81_Frank-Herbert.html"> Frank Herbert</a>   (1)
        </div>
    </li>
@@ -1425,7 +1507,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/42_Fred-Hoyle,-Geoffery-Hoyle.html"> Fred Hoyle, Geoffery Hoyle</a>   (1)
+			<a href="authors/165_Fred-Hoyle,-Geoffrey-Hoyle.html"> Fred Hoyle, Geoffrey Hoyle</a>   (3)
        </div>
    </li>
    
@@ -1441,7 +1523,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/165_Fred-Hoyle,-Geoffrey-Hoyle.html"> Fred Hoyle, Geoffrey Hoyle</a>   (3)
+			<a href="authors/42_Fred-Hoyle,-Geoffery-Hoyle.html"> Fred Hoyle, Geoffery Hoyle</a>   (1)
        </div>
    </li>
    
@@ -1476,7 +1558,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/104_Nick-Jones.html"> Nick Jones</a>   (4)
+			<a href="authors/187_Paul-Antony-Jones.html"> Paul Antony Jones</a>   (1)
        </div>
    </li>
    
@@ -1484,7 +1566,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/187_Paul-Antony-Jones.html"> Paul Antony Jones</a>   (1)
+			<a href="authors/104_Nick-Jones.html"> Nick Jones</a>   (4)
        </div>
    </li>
    
@@ -1877,7 +1959,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/5_Martin-Miller.html"> Martin Miller</a>   (1)
+			<a href="authors/107_Walter-M.-Miller.html"> Walter M. Miller</a>   (1)
        </div>
    </li>
    
@@ -1885,7 +1967,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/107_Walter-M.-Miller.html"> Walter M. Miller</a>   (1)
+			<a href="authors/5_Martin-Miller.html"> Martin Miller</a>   (1)
        </div>
    </li>
    
@@ -2070,6 +2152,14 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
+			<a href="authors/251_Dexter-Palmer.html"> Dexter Palmer</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
 			<a href="authors/175_Tristan-Palmgren.html"> Tristan Palmgren</a>   (1)
        </div>
    </li>
@@ -2126,14 +2216,6 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/45_Cherie-Priest.html"> Cherie Priest</a>   (1)
-       </div>
-   </li>
-   
-
-    <ol></ol>
-        <li>
-    <div class="citation book-author">
 			<a href="authors/205_Christopher-Priest.html"> Christopher Priest</a>   (4)
        </div>
    </li>
@@ -2142,7 +2224,23 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
+			<a href="authors/45_Cherie-Priest.html"> Cherie Priest</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
 			<a href="authors/60_Sarah-Prineas.html"> Sarah Prineas</a>   (1)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/250_Natasha-Pulley.html"> Natasha Pulley</a>   (1)
        </div>
    </li>
    
@@ -2388,14 +2486,6 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/56_Shirley-Meier-and-S.M.-Sterling.html"> Shirley Meier and S.M. Sterling</a>   (2)
-       </div>
-   </li>
-   
-
-    <ol></ol>
-        <li>
-    <div class="citation book-author">
 			<a href="authors/142_Bruce-Sterling.html"> Bruce Sterling</a>   (3)
        </div>
    </li>
@@ -2404,7 +2494,15 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/147_S.M.-Sterling.html"> S.M. Sterling</a>   (2)
+			<a href="authors/56_Shirley-Meier-and-S.M.-Sterling.html"> Shirley Meier and S.M. Sterling</a>   (2)
+       </div>
+   </li>
+   
+
+    <ol></ol>
+        <li>
+    <div class="citation book-author">
+			<a href="authors/147_S.M.-Stirling.html"> S.M. Stirling</a>   (2)
        </div>
    </li>
    
@@ -2629,7 +2727,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/232_H.-G.-Wells.html"> H. G. Wells</a>   (1)
+			<a href="authors/140_Jennifer-Foehner-Wells.html"> Jennifer Foehner Wells</a>   (1)
        </div>
    </li>
    
@@ -2637,7 +2735,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/140_Jennifer-Foehner-Wells.html"> Jennifer Foehner Wells</a>   (1)
+			<a href="authors/232_H.-G.-Wells.html"> H. G. Wells</a>   (1)
        </div>
    </li>
    
@@ -2669,7 +2767,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/167_Liz-Williams.html"> Liz Williams</a>   (1)
+			<a href="authors/198_Walter-Jon-Williams.html"> Walter Jon Williams</a>   (4)
        </div>
    </li>
    
@@ -2685,7 +2783,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/198_Walter-Jon-Williams.html"> Walter Jon Williams</a>   (4)
+			<a href="authors/167_Liz-Williams.html"> Liz Williams</a>   (1)
        </div>
    </li>
    
@@ -2701,7 +2799,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/177_Robert-Charles-Wilson.html"> Robert Charles Wilson</a>   (12)
+			<a href="authors/189_F.-Paul-Wilson.html"> F. Paul Wilson</a>   (1)
        </div>
    </li>
    
@@ -2709,7 +2807,7 @@ div.book-box:hover {
     <ol></ol>
         <li>
     <div class="citation book-author">
-			<a href="authors/189_F.-Paul-Wilson.html"> F. Paul Wilson</a>   (1)
+			<a href="authors/177_Robert-Charles-Wilson.html"> Robert Charles Wilson</a>   (12)
        </div>
    </li>
    
