@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/flytam/filenamify"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 
 	"github.com/ccdavis/sfwr/load"
@@ -178,6 +178,16 @@ type Author struct {
 	Books    []Book `gorm:"many2many:book_authors;"`
 }
 
+// PrimaryAuthor returns the first author linked to the book, or nil when
+// none are loaded. Templates use it to prefill the single-author picker
+// without concatenating the names (and IDs) of every linked author.
+func (b Book) PrimaryAuthor() *Author {
+	if len(b.Authors) == 0 {
+		return nil
+	}
+	return &b.Authors[0]
+}
+
 func (a Author) GetBooks() []Book {
 	return a.Books
 }
@@ -258,7 +268,6 @@ func (b Book) SiteFileName() string {
 	return fmt.Sprint(strings.Replace(name, " ", "-", -1), ".html")
 }
 
-
 // Some databases like Open Library aren't consistent with their author initials, for instance
 // CJ Cherryh vs C.J. Cherryh or C. J. Cherryh. We need an easy way to try all three. With all the
 // sorts of names people have this is far from perfect but seems to handle 80% of problem cases in English..
@@ -323,7 +332,6 @@ func (b Book) MakeCoverImageFilename(imageDir string, size string) string {
 	filename := fmt.Sprintf("book_%d-%s.jpg", b.ID, size)
 	return path.Join(imageDir, filename)
 }
-
 
 // This might need to get more sophisticated
 func ExtractSurname(fullName string) string {

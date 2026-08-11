@@ -12,7 +12,7 @@
 {{end}}
 
 <div style="margin: 20px 0;">
-    <a class="buttonlink" href="/">← Back to Home</a>
+    <a class="buttonlink" href="{{url "/"}}">← Back to Home</a>
 </div>
 
 <div style="background-color: #333; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
@@ -24,6 +24,15 @@
         <li><strong>Rollback</strong> to any previous deployment if you want to discard recent changes</li>
     </ul>
     <p style="color: #ffa500;"><strong>Note:</strong> Rollback will discard ALL changes made since the selected deployment.</p>
+    {{if not .LocalRequest}}
+    <p style="color: #ffa500;">
+        <strong>Rollback is not available here.</strong> It replaces the live database and
+        cannot be undone from the browser, so it only runs from the server console. Sign in
+        on the server and open the admin UI there, or restore the file with git directly:
+        <br>
+        <code style="color: #aaa;">git checkout &lt;commit&gt; -- sfwr_database.db</code>
+    </p>
+    {{end}}
 </div>
 
 <h2>Deployment Checkpoints</h2>
@@ -60,14 +69,17 @@
             <td style="padding: 10px; text-align: center;">
                 {{if eq $index 0}}
                     <span style="color: #666;">Current State</span>
-                {{else}}
-                    <form action="/rollback" method="post" style="display: inline;"
+                {{else if $.LocalRequest}}
+                    <form action="{{url "/rollback"}}" method="post" style="display: inline;"
                           onsubmit="return confirm('Rollback to: {{$commit.Message}}\n\nThis will restore your database to this backup. Continue?');">
+                        <input type="hidden" name="{{$.CSRFFieldName}}" value="{{$.CSRFToken}}">
                         <input type="hidden" name="commit" value="{{$commit.Hash}}">
                         <button type="submit" class="buttonlink" style="background-color: #dc3545; padding: 5px 15px; font-size: 14px;">
                             Rollback
                         </button>
                     </form>
+                {{else}}
+                    <code style="color: #888; font-size: 12px;">{{shortHash $commit.Hash}}</code>
                 {{end}}
             </td>
         </tr>

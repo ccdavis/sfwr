@@ -1,649 +1,503 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-    <meta name="author" content="Colin Davis" />
-    
-    <style>
-        html, body {
-            height: 100vh;
-            font-family: 'Tahoma', sans-serif;
-            background-color: #111;
-            color: #ddd;
-            margin: 0;
-            padding: 0;
-        }
+{{template "base.html" .}}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+{{define "content"}}
+<h1>{{.Title}}</h1>
 
-        .buttonlink {
-            display: inline-block;
-            border-style: solid;
-            border-color: #bbb #888 #666 #aaa;
-            border-width: 3px 4px 4px 3px;
-            padding: 8px 16px;
-            background: #ccc;
-            color: #333;
-            text-align: center;
-            text-decoration: none;
-            font-weight: 900;
-            margin: 2px;
-        }
+{{if .Message}}
+<div class="message">{{.Message}}</div>
+{{end}}
 
-        .buttonlink:hover {
-            border-color: #666 #aaa #bbb #888;
-            border-width: 4px 3px 3px 4px;
-            color: #000;
-        }
+{{if .Error}}
+<div class="error">{{.Error}}</div>
+{{end}}
 
-        .button-danger {
-            background: #d44;
-            color: white;
-        }
-
-        .button-danger:hover {
-            background: #f66;
-        }
-
-        h1 {
-            font-size: 36px;
-            color: #6Cf;
-            font-family: 'Hammersmith One', sans-serif;
-            text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h2 {
-            font-size: 30px;
-            color: #6Cf;
-            font-family: 'Hammersmith One', sans-serif;
-            margin-bottom: 20px;
-        }
-
-        .nav-menu {
-            background-color: #115;
-            color: #dd1;
-            padding: 15px 0;
-            margin-bottom: 30px;
-        }
-
-        .nav-menu ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .nav-menu li {
-            display: inline;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #ddd;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            border: 2px solid #555;
-            background-color: #222;
-            color: #ddd;
-            font-size: 16px;
-        }
-
-        .form-group textarea {
-            height: 100px;
-            resize: vertical;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #6Cf;
-            outline: none;
-        }
-
-        .book-item, .author-item {
-            background-color: #222;
-            border: 1px solid #444;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .book-title {
-            color: #6Cf;
-            font-size: 20px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .book-author {
-            color: #aaa;
-            text-transform: uppercase;
-            font-weight: 300;
-            margin-bottom: 10px;
-        }
-
-        .book-details {
-            color: #ccc;
-            margin-bottom: 15px;
-        }
-
-        .actions {
-            margin-top: 15px;
-        }
-
-        .message {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: #3a5;
-            color: white;
-        }
-
-        .error {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: #d44;
-            color: white;
-        }
-
-        .rating-options {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .rating-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .rating-option input[type="radio"] {
-            width: auto;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .nav-menu ul {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-        }
-    </style>
-    
-    <title>{{.Title}} - SFWR Management</title>
-</head>
-<body>
-    <div class="nav-menu">
-        <ul>
-            <li><a class="buttonlink" href="/">Home</a></li>
-            <li><a class="buttonlink" href="/books">Books</a></li>
-            <li><a class="buttonlink" href="/books/new">Add Book</a></li>
-            <li><a class="buttonlink" href="/authors">Authors</a></li>
-            <li><a class="buttonlink" href="/authors/new">Add Author</a></li>
-        </ul>
-    </div>
-    
-    <div class="container">
-        <h1>{{.Title}}</h1>
-
-        {{if .Message}}
-        <div class="message">{{.Message}}</div>
-        {{end}}
-
-        {{if .Error}}
-        <div class="error">{{.Error}}</div>
-        {{end}}
-
-        {{if .Book}}
-        <div class="form-group" style="margin-bottom: 30px;">
-            <label>Current Cover Image</label>
-            <div id="current-cover" style="margin-top: 10px;">
-                {{if .Book.HasCover}}
-                <img src="/saved_cover_images/book_{{.Book.ID}}-M.jpg"
-                     style="max-width: 200px; max-height: 300px; border: 2px solid #555;"
-                     alt="Book cover for {{.Book.FormatTitle}}"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <div style="display: none; padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
-                    No cover image available
-                </div>
-                {{if .Book.CoverSourceDisplay}}<div style="margin-top: 5px; font-size: 12px; color: #888;">Cover from: {{.Book.CoverSourceDisplay}}</div>{{end}}
-                {{else}}
-                <div style="padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
-                    No cover image available
-                </div>
-                {{end}}
-            </div>
+{{if .Book}}
+<div class="form-group" style="margin-bottom: 30px;">
+    <label>Current Cover Image</label>
+    <div id="current-cover" style="margin-top: 10px;">
+        {{if .Book.HasCover}}
+        <img src="{{url "/saved_cover_images/book_"}}{{.Book.ID}}-M.jpg"
+             style="max-width: 200px; max-height: 300px; border: 2px solid #555;"
+             alt="Book cover for {{.Book.FormatTitle}}"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div style="display: none; padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
+            No cover image available
         </div>
-        {{end}}
-
-        <form method="POST" action="{{if .Book}}/books/update/{{.Book.ID}}{{else}}/books/create{{end}}">
-            <div class="form-group">
-                <label for="main_title">Main Title *</label>
-                <input type="text" id="main_title" name="main_title" value="{{if .Book}}{{.Book.MainTitle}}{{end}}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="sub_title">Subtitle</label>
-                <input type="text" id="sub_title" name="sub_title" value="{{if .Book}}{{.Book.SubTitle}}{{end}}">
-            </div>
-
-            <div class="form-group">
-                <label for="author_id">Select Author *</label>
-                <input type="text" id="author_id" name="author_id" list="authors_list" 
-                       value="{{if .Book}}{{range .Book.Authors}}{{.FullName}}{{end}}{{end}}" 
-                       placeholder="Type to search authors..." required>
-                <datalist id="authors_list">
-                    {{range .Authors}}
-                    <option value="{{.FullName}}" data-id="{{.ID}}">{{.FullName}}</option>
-                    {{end}}
-                </datalist>
-                <input type="hidden" id="author_id_hidden" name="author_id_value" 
-                       value="{{if .Book}}{{range .Book.Authors}}{{.ID}}{{end}}{{end}}">
-                <small style="color: #aaa; display: block; margin-top: 5px;">
-                    Don't see the author? <a href="/authors/new" target="_blank">Add a new author first</a>
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="pub_date">Publication Year</label>
-                <input type="number" id="pub_date" name="pub_date" value="{{if .Book}}{{if ne .Book.PubDate -999998}}{{.Book.PubDate}}{{end}}{{end}}" min="1800" max="2030">
-            </div>
-
-            <div class="form-group">
-                <label>Rating *</label>
-                <div class="rating-options">
-                    <div class="rating-option">
-                        <input type="radio" id="rating_excellent" name="rating" value="Excellent" {{if .Book}}{{if eq .Book.Rating "Excellent"}}checked{{end}}{{end}} required>
-                        <label for="rating_excellent">Excellent (4)</label>
-                    </div>
-                    <div class="rating-option">
-                        <input type="radio" id="rating_very_good" name="rating" value="Very-Good" {{if .Book}}{{if eq .Book.Rating "Very-Good"}}checked{{end}}{{end}}>
-                        <label for="rating_very_good">Very Good (3)</label>
-                    </div>
-                    <div class="rating-option">
-                        <input type="radio" id="rating_worth_reading" name="rating" value="Worth-Reading" {{if .Book}}{{if eq .Book.Rating "Worth-Reading"}}checked{{end}}{{end}}>
-                        <label for="rating_worth_reading">Worth Reading (2)</label>
-                    </div>
-                    <div class="rating-option">
-                        <input type="radio" id="rating_could_not_finish" name="rating" value="Could-Not-Finish" {{if .Book}}{{if eq .Book.Rating "Could-Not-Finish"}}checked{{end}}{{end}}>
-                        <label for="rating_could_not_finish">Could Not Finish (1)</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Tags</label>
-                <div style="display: flex; gap: 20px; margin-top: 10px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                        <input type="checkbox" name="indy" style="width: auto;" {{if .Book}}{{if .Book.Indy}}checked{{end}}{{end}}>
-                        Indy / Self-published
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                        <input type="checkbox" name="interesting" style="width: auto;" {{if .Book}}{{if .Book.Interesting}}checked{{end}}{{end}}>
-                        Interesting / Unusual
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="review">Review</label>
-                <textarea id="review" name="review" placeholder="Optional review or notes (Markdown supported)...">{{if .Book}}{{.Book.Review}}{{end}}</textarea>
-            </div>
-
-            <div class="form-group">
-                <button type="submit" class="buttonlink" style="font-size: 16px; padding: 12px 24px;">
-                    {{if .Book}}Update Book{{else}}Create Book{{end}}
-                </button>
-                <a class="buttonlink" href="/books" style="font-size: 16px; padding: 12px 24px;">Cancel</a>
-                <button type="button" id="searchFromOL" class="buttonlink" style="font-size: 16px; padding: 12px 24px; background-color: #4a7c59;">
-                    {{if .Book}}Update from Open Library{{else}}Search Open Library{{end}}
-                </button>
-            </div>
-        </form>
-
-        {{if .Book}}
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #444;">
-            <h3 style="color: #d44;">Danger Zone</h3>
-            <form method="POST" action="/books/delete/{{.Book.ID}}" onsubmit="return confirm('Are you sure you want to delete this book? This action cannot be undone.')">
-                <button type="submit" class="buttonlink button-danger">Delete This Book</button>
-            </form>
+        {{if .Book.CoverSourceDisplay}}<div style="margin-top: 5px; font-size: 12px; color: #888;">Cover from: {{.Book.CoverSourceDisplay}}</div>{{end}}
+        {{else}}
+        <div style="padding: 20px; background-color: #333; color: #aaa; border: 2px dashed #555; text-align: center; max-width: 200px;">
+            No cover image available
         </div>
         {{end}}
     </div>
+</div>
+{{end}}
 
-    <!-- Open Library Search Modal -->
-    <div id="olModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
-        <div style="background-color: #222; margin: 5% auto; padding: 20px; border: 2px solid #555; width: 80%; max-width: 800px; max-height: 80%; overflow-y: auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: #6Cf; margin: 0;">Select Open Library Edition</h2>
-                <button id="closeModal" style="background: #d44; color: white; border: none; padding: 10px 15px; font-size: 18px; cursor: pointer;">&times;</button>
+<form id="book-form" method="POST" action="{{if .Book}}{{url "/books/update/"}}{{.Book.ID}}{{else}}{{url "/books/create"}}{{end}}">
+    <input type="hidden" name="{{.CSRFFieldName}}" value="{{.CSRFToken}}">
+    <div class="form-group">
+        <label for="main_title">Main Title *</label>
+        <input type="text" id="main_title" name="main_title" value="{{if .Book}}{{.Book.MainTitle}}{{end}}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="sub_title">Subtitle</label>
+        <input type="text" id="sub_title" name="sub_title" value="{{if .Book}}{{.Book.SubTitle}}{{end}}">
+    </div>
+
+    <div class="form-group">
+        <label for="author_name">Select Author *</label>
+        <input type="text" id="author_name" name="author_name" list="authors_list"
+               value="{{if .Book}}{{with .Book.PrimaryAuthor}}{{.FullName}}{{end}}{{end}}"
+               placeholder="Type to search authors..." autocomplete="off" required>
+        <datalist id="authors_list">
+            {{range .Authors}}
+            <option value="{{.FullName}}" data-id="{{.ID}}">{{.FullName}}</option>
+            {{end}}
+        </datalist>
+        <!-- The ID the server actually reads; kept in sync with the name box. -->
+        <input type="hidden" id="author_id" name="author_id"
+               value="{{if .Book}}{{with .Book.PrimaryAuthor}}{{.ID}}{{end}}{{end}}">
+        <small id="author_hint" style="color: #aaa; display: block; margin-top: 5px;">
+            Pick a name from the list. Don't see the author?
+            <a href="{{url "/authors/new"}}" target="_blank" rel="noopener">Add a new author first</a>.
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label for="pub_date">Publication Year</label>
+        <input type="number" id="pub_date" name="pub_date"
+               value="{{if .Book}}{{if not .Book.HasMissingPubDate}}{{.Book.PubDate}}{{end}}{{end}}"
+               min="1500" max="2100" placeholder="Leave blank if unknown">
+    </div>
+
+    <div class="form-group">
+        <label>Rating *</label>
+        <div class="rating-options">
+            <div class="rating-option">
+                <input type="radio" id="rating_excellent" name="rating" value="Excellent" {{if .Book}}{{if eq .Book.Rating "Excellent"}}checked{{end}}{{end}} required>
+                <label for="rating_excellent">Excellent (4)</label>
             </div>
-            <div id="searchStatus" style="margin-bottom: 20px; padding: 10px; background-color: #115; color: #dd1; display: none;"></div>
-            <div id="searchResults"></div>
-            <div style="margin-top: 20px; text-align: center;">
-                <button id="cancelSelection" class="buttonlink">Cancel</button>
+            <div class="rating-option">
+                <input type="radio" id="rating_very_good" name="rating" value="Very-Good" {{if .Book}}{{if eq .Book.Rating "Very-Good"}}checked{{end}}{{end}}>
+                <label for="rating_very_good">Very Good (3)</label>
+            </div>
+            <div class="rating-option">
+                <input type="radio" id="rating_worth_reading" name="rating" value="Worth-Reading" {{if .Book}}{{if eq .Book.Rating "Worth-Reading"}}checked{{end}}{{end}}>
+                <label for="rating_worth_reading">Worth Reading (2)</label>
+            </div>
+            <div class="rating-option">
+                <input type="radio" id="rating_could_not_finish" name="rating" value="Could-Not-Finish" {{if .Book}}{{if eq .Book.Rating "Could-Not-Finish"}}checked{{end}}{{end}}>
+                <label for="rating_could_not_finish">Could Not Finish (1)</label>
             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle author datalist selection
-            const authorInput = document.getElementById('author_id');
-            const authorHidden = document.getElementById('author_id_hidden');
-            const authorsList = document.getElementById('authors_list');
+    <div class="form-group">
+        <label>Tags</label>
+        <div style="display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" name="indy" style="width: auto;" {{if .Book}}{{if .Book.Indy}}checked{{end}}{{end}}>
+                Indy / Self-published
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" name="interesting" style="width: auto;" {{if .Book}}{{if .Book.Interesting}}checked{{end}}{{end}}>
+                Interesting / Unusual
+            </label>
+        </div>
+    </div>
 
-            authorInput.addEventListener('input', function() {
-                const selectedOption = Array.from(authorsList.options).find(option => option.value === this.value);
-                if (selectedOption) {
-                    authorHidden.value = selectedOption.getAttribute('data-id');
-                } else {
-                    authorHidden.value = '';
-                }
+    <div class="form-group">
+        <label for="review">Review</label>
+        <textarea id="review" name="review" placeholder="Optional review or notes. Blank lines start a new paragraph.">{{if .Book}}{{.Book.Review}}{{end}}</textarea>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="buttonlink" style="font-size: 16px; padding: 12px 24px;">
+            {{if .Book}}Update Book{{else}}Create Book{{end}}
+        </button>
+        <a class="buttonlink" href="{{url "/books"}}" style="font-size: 16px; padding: 12px 24px;">Cancel</a>
+        <button type="button" id="searchFromOL" class="buttonlink" style="font-size: 16px; padding: 12px 24px; background-color: #4a7c59; color: #fff;">
+            {{if .Book}}Find Cover &amp; Metadata{{else}}Search Book Databases{{end}}
+        </button>
+    </div>
+</form>
+
+{{if .Book}}
+<div class="danger-zone">
+    <h3>Danger Zone</h3>
+    <form method="POST" action="{{url "/books/delete/"}}{{.Book.ID}}" onsubmit="return confirm('Are you sure you want to delete this book? This action cannot be undone.')">
+        <input type="hidden" name="{{.CSRFFieldName}}" value="{{.CSRFToken}}">
+        <button type="submit" class="buttonlink button-danger">Delete This Book</button>
+    </form>
+</div>
+{{end}}
+
+<!-- Book database search modal -->
+<div id="olModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
+    <div style="background-color: #222; margin: 5% auto; padding: 20px; border: 2px solid #555; width: 80%; max-width: 800px; max-height: 80%; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #6Cf; margin: 0;">Select an Edition</h2>
+            <button id="closeModal" aria-label="Close" style="background: #d44; color: white; border: none; padding: 10px 15px; font-size: 18px; cursor: pointer;">&times;</button>
+        </div>
+        <div id="searchStatus" style="margin-bottom: 20px; padding: 10px; background-color: #115; color: #dd1; display: none;"></div>
+        <div id="searchResults"></div>
+        <div style="margin-top: 20px; text-align: center;">
+            <button id="cancelSelection" class="buttonlink">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sent with every state-changing fetch; form posts use a hidden field.
+    const CSRF_TOKEN = {{.CSRFToken}};
+    // Mount point, so fetch targets work under /admin as well as /.
+    const BASE = {{.BasePath}};
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookForm = document.getElementById('book-form');
+        const authorInput = document.getElementById('author_name');
+        const authorHidden = document.getElementById('author_id');
+        const authorHint = document.getElementById('author_hint');
+        const authorsList = document.getElementById('authors_list');
+
+        // The server needs the author's ID, but the visible field is a
+        // name box backed by a datalist. Keep the hidden ID in sync and
+        // never let an unmatched name reach the server.
+        function syncAuthorId() {
+            const match = Array.from(authorsList.options).find(function(option) {
+                return option.value.toLowerCase() === authorInput.value.trim().toLowerCase();
             });
-
-            // Set up form submission to use the hidden field value
-            document.querySelector('form').addEventListener('submit', function(e) {
-                if (authorHidden.value === '') {
-                    alert('Please select a valid author from the list');
-                    e.preventDefault();
-                    return false;
-                }
-                // Update the name attribute so the backend receives the ID
-                authorHidden.name = 'author_id';
-                authorInput.name = 'author_name_display';
-            });
-            const searchBtn = document.getElementById('searchFromOL');
-            const modal = document.getElementById('olModal');
-            const closeBtn = document.getElementById('closeModal');
-            const cancelBtn = document.getElementById('cancelSelection');
-            const searchStatus = document.getElementById('searchStatus');
-            const searchResults = document.getElementById('searchResults');
-
-            if (searchBtn) {
-                searchBtn.addEventListener('click', function() {
-                    // Show loading status
-                    searchStatus.style.display = 'block';
-                    searchStatus.innerHTML = 'Searching Open Library...';
-                    searchResults.innerHTML = '';
-                    modal.style.display = 'block';
-
-                    // Get book data
-                    const title = document.getElementById('main_title').value;
-                    const author = document.getElementById('author_id').value;
-                    const bookId = {{if .Book}}{{.Book.ID}}{{else}}0{{end}};
-
-                    // Make AJAX request to search Open Library
-                    fetch('/books/search-openlibrary', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            title: title,
-                            author: author,
-                            bookId: bookId
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        searchStatus.style.display = 'none';
-                        if (data.error) {
-                            searchResults.innerHTML = '<div style="color: #d44; padding: 20px; text-align: center;">Error: ' + data.error + '</div>';
-                            return;
-                        }
-                        if (data.results && data.results.length > 0) {
-                            displaySearchResults(data.results, bookId);
-                        } else {
-                            searchResults.innerHTML = '<div style="color: #aaa; padding: 20px; text-align: center;">No results found from any source (Open Library, Google Books, iTunes).</div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Search error:', error);
-                        searchStatus.style.display = 'none';
-                        searchResults.innerHTML = '<div style="color: #d44; padding: 20px; text-align: center;">Network error occurred while searching.</div>';
-                    });
-                });
+            authorHidden.value = match ? match.getAttribute('data-id') : '';
+            if (authorInput.value.trim() !== '' && !match) {
+                authorInput.setCustomValidity('Pick an author from the list, or add them first.');
+                authorHint.style.color = '#f88';
+            } else {
+                authorInput.setCustomValidity('');
+                authorHint.style.color = '#aaa';
             }
+            return Boolean(match);
+        }
 
-            function sourceLabel(source) {
-                switch (source) {
-                    case 'googlebooks': return 'Google Books';
-                    case 'itunes': return 'Apple Books';
-                    default: return 'Open Library';
-                }
+        authorInput.addEventListener('input', syncAuthorId);
+        authorInput.addEventListener('change', syncAuthorId);
+
+        bookForm.addEventListener('submit', function(e) {
+            if (!syncAuthorId()) {
+                e.preventDefault();
+                authorInput.reportValidity();
+                authorInput.focus();
             }
-
-            function displaySearchResults(results, bookId) {
-                let html = '<div style="color: #ddd; margin-bottom: 15px;">Found ' + results.length + ' result(s). Click on one to update the book:</div>';
-
-                results.forEach(function(result, index) {
-                    const coverUrl = result.cover_url || '';
-                    const authors = Array.isArray(result.authors) ? result.authors.join(', ') : result.authors || '';
-                    const source = result.source || 'openlibrary';
-
-                    html += '<div style="border: 1px solid #444; margin-bottom: 15px; padding: 15px; background-color: #333; cursor: pointer; display: flex; gap: 15px;" class="search-result" data-index="' + index + '">';
-
-                    // Cover image
-                    if (coverUrl) {
-                        html += '<div style="flex-shrink: 0;"><img src="' + coverUrl + '" style="width: 60px; height: 90px; object-fit: cover; border: 1px solid #555;" onerror="this.style.display=\'none\'"></div>';
-                    } else {
-                        html += '<div style="flex-shrink: 0; width: 60px; height: 90px; background-color: #222; border: 1px solid #555; display: flex; align-items: center; justify-content: center; color: #666; font-size: 10px;">No Cover</div>';
-                    }
-
-                    // Book details
-                    html += '<div style="flex: 1;">';
-                    html += '<div style="color: #6Cf; font-weight: bold; margin-bottom: 5px;">' + (result.title || 'Unknown Title') + '</div>';
-                    html += '<div style="color: #aaa; margin-bottom: 5px;">by ' + authors + '</div>';
-                    if (result.first_year_published && result.first_year_published > 0) {
-                        html += '<div style="color: #ccc; margin-bottom: 5px;">Published: ' + result.first_year_published + '</div>';
-                    }
-                    html += '<div style="color: #888; font-size: 12px;">Source: ' + sourceLabel(source) + '</div>';
-                    if (result.cover_edition_key) {
-                        html += '<div style="color: #999; font-size: 12px;">Edition ID: ' + result.cover_edition_key + '</div>';
-                    }
-                    html += '</div>';
-
-                    html += '</div>';
-                });
-                
-                searchResults.innerHTML = html;
-
-                // Add click handlers to results
-                document.querySelectorAll('.search-result').forEach(function(element) {
-                    element.addEventListener('click', function() {
-                        const index = this.getAttribute('data-index');
-                        const selectedResult = results[index];
-                        if (bookId === 0) {
-                            // New book - populate form fields
-                            populateFormFromSelection(selectedResult);
-                        } else {
-                            // Existing book - update in database
-                            updateBookFromSelection(selectedResult, bookId);
-                        }
-                    });
-                });
-            }
-
-            function populateFormFromSelection(result) {
-                // Show options: populate form or create directly
-                searchStatus.style.display = 'block';
-                searchStatus.innerHTML = `
-                    <div style="margin-bottom: 15px;">Selected: ${result.title}</div>
-                    <div style="display: flex; gap: 10px; justify-content: center;">
-                        <button id="populateForm" class="buttonlink">Fill Form Only</button>
-                        <button id="createDirectly" class="buttonlink" style="background-color: #3a5;">Create Book Now</button>
-                    </div>
-                `;
-                searchResults.innerHTML = '';
-
-                // Handle populate form option
-                document.getElementById('populateForm').addEventListener('click', function() {
-                    const titleField = document.getElementById('main_title');
-                    const pubDateField = document.getElementById('pub_date');
-                    
-                    if (titleField && result.title) {
-                        titleField.value = result.title;
-                    }
-                    
-                    if (pubDateField && result.first_year_published && result.first_year_published > 0) {
-                        pubDateField.value = result.first_year_published;
-                    }
-                    
-                    modal.style.display = 'none';
-                    
-                    // Show success message briefly
-                    searchStatus.style.display = 'block';
-                    searchStatus.innerHTML = 'Form populated with Open Library data. Review and save to create the book.';
-                    searchStatus.style.backgroundColor = '#3a5';
-                    
-                    setTimeout(() => {
-                        searchStatus.style.display = 'none';
-                    }, 3000);
-                });
-
-                // Handle create directly option
-                document.getElementById('createDirectly').addEventListener('click', function() {
-                    createBookFromSelection(result);
-                });
-            }
-
-            function createBookFromSelection(result) {
-                // Validate required fields
-                const authorHidden = document.getElementById('author_id_hidden');
-                const rating = document.querySelector('input[name="rating"]:checked');
-                const review = document.getElementById('review').value;
-
-                if (!authorHidden.value) {
-                    searchStatus.innerHTML = 'Please select an author first.';
-                    searchStatus.style.backgroundColor = '#d44';
-                    return;
-                }
-
-                if (!rating) {
-                    searchStatus.innerHTML = 'Please select a rating first.';
-                    searchStatus.style.backgroundColor = '#d44';
-                    return;
-                }
-
-                searchStatus.innerHTML = 'Creating book with Open Library data...';
-                searchStatus.style.backgroundColor = '#115';
-
-                fetch('/books/create-from-openlibrary', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        authorId: parseInt(authorHidden.value),
-                        rating: rating.value,
-                        review: review,
-                        selectedResult: result
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        searchStatus.innerHTML = 'Error: ' + data.error;
-                        searchStatus.style.backgroundColor = '#d44';
-                        return;
-                    }
-                    searchStatus.innerHTML = 'Book created successfully! Redirecting...';
-                    searchStatus.style.backgroundColor = '#3a5';
-                    
-                    setTimeout(() => {
-                        window.location.href = '/books/edit/' + data.bookId + '?message=Book created successfully with Open Library data';
-                    }, 1500);
-                })
-                .catch(error => {
-                    console.error('Create error:', error);
-                    searchStatus.innerHTML = 'Network error occurred while creating book.';
-                    searchStatus.style.backgroundColor = '#d44';
-                });
-            }
-
-            function updateBookFromSelection(result, bookId) {
-                searchStatus.style.display = 'block';
-                searchStatus.innerHTML = 'Updating book with selected Open Library data...';
-                searchResults.innerHTML = '';
-
-                fetch('/books/update-from-openlibrary', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        bookId: bookId,
-                        selectedResult: result
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        searchStatus.innerHTML = 'Error: ' + data.error;
-                        searchStatus.style.backgroundColor = '#d44';
-                        return;
-                    }
-                    searchStatus.innerHTML = 'Book updated successfully! Reloading page...';
-                    searchStatus.style.backgroundColor = '#3a5';
-                    
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                })
-                .catch(error => {
-                    console.error('Update error:', error);
-                    searchStatus.innerHTML = 'Network error occurred while updating.';
-                    searchStatus.style.backgroundColor = '#d44';
-                });
-            }
-
-            // Modal close handlers
-            closeBtn.addEventListener('click', function() {
-                modal.style.display = 'none';
-            });
-
-            cancelBtn.addEventListener('click', function() {
-                modal.style.display = 'none';
-            });
-
-            // Close modal when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
         });
-    </script>
-</body>
-</html>
+
+        const searchBtn = document.getElementById('searchFromOL');
+        const modal = document.getElementById('olModal');
+        const closeBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelSelection');
+        const searchStatus = document.getElementById('searchStatus');
+        const searchResults = document.getElementById('searchResults');
+
+        function setStatus(text, color) {
+            searchStatus.style.display = 'block';
+            searchStatus.textContent = text;
+            searchStatus.style.backgroundColor = color || '#115';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', function() {
+                const title = document.getElementById('main_title').value.trim();
+                const author = authorInput.value.trim();
+
+                // The search endpoint requires both fields; say so here
+                // instead of opening an empty modal that reports an error.
+                if (title === '' || author === '') {
+                    alert('Enter both a title and an author before searching.');
+                    return;
+                }
+
+                setStatus('Searching Open Library, Google Books and Apple Books...');
+                searchResults.innerHTML = '';
+                modal.style.display = 'block';
+
+                const bookId = {{if .Book}}{{.Book.ID}}{{else}}0{{end}};
+
+                fetch(BASE + '/books/search-openlibrary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': CSRF_TOKEN,
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        author: author,
+                        bookId: bookId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    searchStatus.style.display = 'none';
+                    if (data.error) {
+                        searchResults.innerHTML = '<div style="color: #d44; padding: 20px; text-align: center;"></div>';
+                        searchResults.firstChild.textContent = 'Error: ' + data.error;
+                        return;
+                    }
+                    if (data.results && data.results.length > 0) {
+                        displaySearchResults(data.results, bookId);
+                    } else {
+                        searchResults.innerHTML = '<div style="color: #aaa; padding: 20px; text-align: center;">No results found from any source (Open Library, Google Books, Apple Books).</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    searchStatus.style.display = 'none';
+                    searchResults.innerHTML = '<div style="color: #d44; padding: 20px; text-align: center;">Network error occurred while searching.</div>';
+                });
+            });
+        }
+
+        function sourceLabel(source) {
+            switch (source) {
+                case 'googlebooks': return 'Google Books';
+                case 'itunes': return 'Apple Books';
+                default: return 'Open Library';
+            }
+        }
+
+        // Build result rows with the DOM rather than string concatenation
+        // so titles containing quotes or angle brackets can't break the
+        // markup.
+        function buildResultRow(result, index) {
+            const row = document.createElement('div');
+            row.className = 'search-result';
+            row.setAttribute('data-index', index);
+            row.setAttribute('role', 'button');
+            row.setAttribute('tabindex', '0');
+            row.style.cssText = 'border: 1px solid #444; margin-bottom: 15px; padding: 15px; background-color: #333; cursor: pointer; display: flex; gap: 15px;';
+
+            if (result.cover_url) {
+                const img = document.createElement('img');
+                img.src = result.cover_url;
+                img.alt = '';
+                img.style.cssText = 'width: 60px; height: 90px; object-fit: cover; border: 1px solid #555; flex-shrink: 0;';
+                img.onerror = function() { this.style.display = 'none'; };
+                row.appendChild(img);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.style.cssText = 'flex-shrink: 0; width: 60px; height: 90px; background-color: #222; border: 1px solid #555; display: flex; align-items: center; justify-content: center; color: #666; font-size: 10px;';
+                placeholder.textContent = 'No Cover';
+                row.appendChild(placeholder);
+            }
+
+            const body = document.createElement('div');
+            body.style.cssText = 'flex: 1; min-width: 0;';
+
+            const title = document.createElement('div');
+            title.style.cssText = 'color: #6Cf; font-weight: bold; margin-bottom: 5px;';
+            title.textContent = result.title || 'Unknown Title';
+            body.appendChild(title);
+
+            const authors = document.createElement('div');
+            authors.style.cssText = 'color: #aaa; margin-bottom: 5px;';
+            authors.textContent = 'by ' + (Array.isArray(result.authors) ? result.authors.join(', ') : (result.authors || 'Unknown'));
+            body.appendChild(authors);
+
+            if (result.first_year_published && result.first_year_published > 0) {
+                const year = document.createElement('div');
+                year.style.cssText = 'color: #ccc; margin-bottom: 5px;';
+                // Only Open Library dates the work. Google Books and iTunes date the
+                // edition on offer, which for a reissue is nowhere near first publication.
+                const src = result.source || 'openlibrary';
+                year.textContent = (src === 'googlebooks' || src === 'itunes')
+                    ? 'This edition: ' + result.first_year_published
+                    : 'First published: ' + result.first_year_published;
+                body.appendChild(year);
+            }
+
+            const source = document.createElement('div');
+            source.style.cssText = 'color: #888; font-size: 12px;';
+            source.textContent = 'Source: ' + sourceLabel(result.source || 'openlibrary');
+            body.appendChild(source);
+
+            if (result.cover_edition_key) {
+                const edition = document.createElement('div');
+                edition.style.cssText = 'color: #999; font-size: 12px;';
+                edition.textContent = 'Edition ID: ' + result.cover_edition_key;
+                body.appendChild(edition);
+            }
+
+            row.appendChild(body);
+            return row;
+        }
+
+        function displaySearchResults(results, bookId) {
+            searchResults.innerHTML = '';
+
+            const heading = document.createElement('div');
+            heading.style.cssText = 'color: #ddd; margin-bottom: 15px;';
+            heading.textContent = 'Found ' + results.length + ' result(s). Click one to use it:';
+            searchResults.appendChild(heading);
+
+            results.forEach(function(result, index) {
+                const row = buildResultRow(result, index);
+                function choose() {
+                    if (bookId === 0) {
+                        populateFormFromSelection(result);
+                    } else {
+                        updateBookFromSelection(result, bookId);
+                    }
+                }
+                row.addEventListener('click', choose);
+                row.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        choose();
+                    }
+                });
+                searchResults.appendChild(row);
+            });
+        }
+
+        function populateFormFromSelection(result) {
+            searchStatus.style.display = 'block';
+            searchStatus.style.backgroundColor = '#115';
+            searchStatus.innerHTML = '';
+
+            const label = document.createElement('div');
+            label.style.marginBottom = '15px';
+            label.textContent = 'Selected: ' + (result.title || 'Unknown Title');
+            searchStatus.appendChild(label);
+
+            const buttons = document.createElement('div');
+            buttons.style.cssText = 'display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;';
+
+            const fillBtn = document.createElement('button');
+            fillBtn.type = 'button';
+            fillBtn.className = 'buttonlink';
+            fillBtn.textContent = 'Fill Form Only';
+            buttons.appendChild(fillBtn);
+
+            const createBtn = document.createElement('button');
+            createBtn.type = 'button';
+            createBtn.className = 'buttonlink';
+            createBtn.style.backgroundColor = '#3a5';
+            createBtn.style.color = '#fff';
+            createBtn.textContent = 'Create Book Now';
+            buttons.appendChild(createBtn);
+
+            searchStatus.appendChild(buttons);
+            searchResults.innerHTML = '';
+
+            fillBtn.addEventListener('click', function() {
+                const titleField = document.getElementById('main_title');
+                const pubDateField = document.getElementById('pub_date');
+
+                if (titleField && result.title) {
+                    titleField.value = result.title;
+                }
+                if (pubDateField && result.first_year_published && result.first_year_published > 0) {
+                    pubDateField.value = result.first_year_published;
+                }
+
+                closeModal();
+            });
+
+            createBtn.addEventListener('click', function() {
+                createBookFromSelection(result);
+            });
+        }
+
+        function createBookFromSelection(result) {
+            const rating = document.querySelector('input[name="rating"]:checked');
+            const review = document.getElementById('review').value;
+
+            if (!syncAuthorId()) {
+                setStatus('Pick a valid author before creating the book.', '#d44');
+                return;
+            }
+
+            if (!rating) {
+                setStatus('Please select a rating first.', '#d44');
+                return;
+            }
+
+            setStatus('Creating book...');
+
+            fetch(BASE + '/books/create-from-openlibrary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': CSRF_TOKEN,
+                },
+                body: JSON.stringify({
+                    authorId: parseInt(authorHidden.value, 10),
+                    rating: rating.value,
+                    review: review,
+                    selectedResult: result
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    setStatus('Error: ' + data.error, '#d44');
+                    return;
+                }
+                setStatus('Book created. Redirecting...', '#3a5');
+                window.location.href = BASE + '/books/edit/' + data.bookId + '?message=Book created successfully';
+            })
+            .catch(error => {
+                console.error('Create error:', error);
+                setStatus('Network error occurred while creating book.', '#d44');
+            });
+        }
+
+        function updateBookFromSelection(result, bookId) {
+            setStatus('Updating book with the selected edition...');
+            searchResults.innerHTML = '';
+
+            fetch(BASE + '/books/update-from-openlibrary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': CSRF_TOKEN,
+                },
+                body: JSON.stringify({
+                    bookId: bookId,
+                    selectedResult: result
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    setStatus('Error: ' + data.error, '#d44');
+                    return;
+                }
+                setStatus('Book updated. Reloading...', '#3a5');
+                window.location.href = BASE + '/books/edit/' + bookId + '?message=Book updated from book databases';
+            })
+            .catch(error => {
+                console.error('Update error:', error);
+                setStatus('Network error occurred while updating.', '#d44');
+            });
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+    });
+</script>
+{{end}}

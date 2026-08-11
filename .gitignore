@@ -4,6 +4,10 @@ output/
 # Compiled binary
 sfwr
 
+# Per-installation settings and secrets. sfwr.conf.example is committed.
+sfwr.conf
+sfwr.env
+
 # Go build artifacts
 *.test
 *.out
@@ -18,3 +22,5 @@ sfwr
 # OS files
 .DS_Store
 Thumbs.db
+backups/
+.sfwr-sync-state

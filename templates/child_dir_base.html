@@ -456,7 +456,74 @@ div.book-box:hover {
     letter-spacing: 1px;
 }
 
- </style>
+ 
+ /* ---------------------------------------------------------------
+    Cover slots.
+
+    Cover art comes from three sources at different sizes: Open Library
+    returns 180px-wide thumbnails, Google Books and Apple return
+    anywhere from 60px to 153px. Nothing sized the images, so each
+    cover column took its own intrinsic width and titles started at
+    different offsets. It looked right before only because every cover
+    happened to be 180px wide.
+
+    A fixed slot lines the titles up. max-width on the image keeps a
+    small cover from being upscaled and blurred - it just sits in the
+    slot. flex-start puts the cover level with the title instead of
+    centring it against a taller block of text.
+
+    These rules only touch the three cover containers; nothing above
+    depends on them.
+    --------------------------------------------------------------- */
+
+ div.small-cover-image {
+	flex: 0 0 80px;
+	width: 80px;
+	align-items: flex-start;
+	justify-content: center;
+ }
+ div.small-cover-image img {
+	max-width: 80px;
+	max-height: 110px;
+	height: auto;
+ }
+
+ div.medium-cover-image {
+	flex: 0 0 180px;
+	width: 180px;
+	align-items: flex-start;
+	justify-content: center;
+ }
+ div.medium-cover-image img {
+	max-width: 180px;
+	max-height: 300px;
+	height: auto;
+ }
+
+ div.large-cover-image {
+	flex: 0 0 auto;
+	align-items: flex-start;
+	justify-content: center;
+ }
+ div.large-cover-image img {
+	max-width: 340px;
+	max-height: 520px;
+	height: auto;
+ }
+
+ /* Narrow screens stack the cover above the text, so the fixed slot
+    has to give way to the full-width rules in the media queries above. */
+ @media (max-width: 768px) {
+	div.small-cover-image,
+	div.medium-cover-image,
+	div.large-cover-image {
+		flex: 0 0 auto;
+		width: 100%;
+		justify-content: center;
+	}
+ }
+
+</style>
    <meta charset="UTF-8">
    <title>{{ template "title" . }}</title>
  </head>

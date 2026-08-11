@@ -50,6 +50,10 @@ go build -o sfwr
 
 Open http://localhost:8080 and start adding books!
 
+The server listens on `127.0.0.1` only, so nothing outside this machine can reach
+it and no password is needed. To publish the admin UI on a domain instead, see
+"Publishing the admin UI" in `DEPLOYMENT.md`.
+
 ### 4. Enable GitHub Pages
 
 1. Go to your repository on GitHub

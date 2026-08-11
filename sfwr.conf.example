@@ -1,0 +1,81 @@
+# SFWR settings.
+#
+# Copy this to sfwr.conf next to the binary, or point at it with -config.
+# Relative paths are resolved against this file, so the server can be
+# started from any directory. Lines are "key = value"; # starts a comment.
+#
+# The admin password is NOT set here. It lives in the environment variable
+# SFWR_ADMIN_PASSWORD_HASH so the hash never sits in a file the web server
+# might be able to read. Generate one with:  sfwr -hash-password
+
+
+# --- Where the data lives -------------------------------------------------
+
+# The SQLite database of books and authors.
+database = sfwr_database.db
+
+# Cover art downloaded from Open Library, Google Books, and Apple Books.
+cover_images = saved_cover_images
+
+
+# --- Where the site is written --------------------------------------------
+
+# The generated static site. Point this at your web server's document root
+# and clicking "Rebuild Site" publishes immediately. On DreamHost the
+# document root for a domain is ~/<domain>, for example:
+#
+#   output = /home/exampleuser/example.com
+#
+output = output/public
+
+# Templates for the generated site. Must contain a web/ subdirectory holding
+# the admin UI templates.
+templates = templates
+
+
+# --- Version control ------------------------------------------------------
+
+# Git working tree used by Deploy (commit + push) and Rollback. It has to
+# contain the database and cover images. Leave blank to turn both off and
+# publish only by rebuilding into the output directory.
+repo = .
+
+
+# --- The other installation (for ./sync.sh) ------------------------------
+
+# Where the published copy lives, so ./sync.sh can compare and copy. The
+# host is an ssh destination; the directory is the one holding sfwr,
+# sfwr.conf, the database and the cover art on that machine.
+#
+#   remote_host = user@example.com
+#   remote_dir  = /home/user/sfwr
+#
+remote_host =
+remote_dir  =
+
+
+# --- Admin server ---------------------------------------------------------
+
+# Name shown in the admin UI.
+site_name = SFWR
+
+# Interface to listen on. Keep this at 127.0.0.1 and let a reverse proxy
+# reach it over loopback; 0.0.0.0 exposes the plaintext port directly.
+bind = 127.0.0.1
+
+# Port to listen on. Setting this means `sfwr` starts the admin server with
+# no -web flag needed.
+port = 8080
+
+# Serve the admin UI under a sub-path of a larger site. With base_path set to
+# /admin and a proxy forwarding example.com/admin here, the UI lives at
+# https://example.com/admin. Leave blank to serve from the root.
+#
+#   base_path = /admin
+#
+base_path =
+
+# Set to true when a TLS-terminating reverse proxy sits in front. Marks the
+# session cookie Secure and reads the client address from X-Forwarded-For.
+# Only enable it when a proxy really is in front.
+behind_proxy = false

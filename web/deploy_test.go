@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/ccdavis/sfwr/models"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -116,11 +116,27 @@ func createTestDeployment(t *testing.T, db *gorm.DB, bookCount int) string {
 	return strings.TrimSpace(string(output))
 }
 
+// testServer builds a WebServer pointed at the temporary git repository the
+// deploy tests create. Paths are relative because setupTestGitRepo chdirs
+// into that directory.
+func testServer(db *gorm.DB) *WebServer {
+	return &WebServer{
+		db: db,
+		config: Config{
+			RepoDir:        ".",
+			DatabasePath:   "sfwr_database.db",
+			CoverImagesDir: "saved_cover_images",
+			OutputDir:      "output/public",
+			TemplatesDir:   "templates",
+		},
+	}
+}
+
 func TestGetBookCount(t *testing.T) {
 	_, db, cleanup := setupTestGitRepo(t)
 	defer cleanup()
 
-	ws := &WebServer{db: db}
+	ws := testServer(db)
 
 	// Test empty database
 	count := ws.getBookCount()
@@ -146,7 +162,7 @@ func TestGetAuthorCount(t *testing.T) {
 	_, db, cleanup := setupTestGitRepo(t)
 	defer cleanup()
 
-	ws := &WebServer{db: db}
+	ws := testServer(db)
 
 	// Test empty database
 	count := ws.getAuthorCount()
@@ -173,7 +189,7 @@ func TestGetRecentCommits(t *testing.T) {
 	tmpDir, db, cleanup := setupTestGitRepo(t)
 	defer cleanup()
 
-	ws := &WebServer{db: db}
+	ws := testServer(db)
 
 	// Create multiple deployments
 	_ = createTestDeployment(t, db, 5)
@@ -210,7 +226,7 @@ func TestGetRecentCommits(t *testing.T) {
 	// Verify most recent deployment
 	if len(commits) > 0 {
 		if !strings.Contains(commits[0].Hash, commit3[:7]) &&
-		   !strings.Contains(commit3, commits[0].Hash[:7]) {
+			!strings.Contains(commit3, commits[0].Hash[:7]) {
 			t.Errorf("Most recent commit should be %s, got %s", commit3[:7], commits[0].Hash[:7])
 		}
 	}
@@ -220,7 +236,7 @@ func TestRollbackToCommit(t *testing.T) {
 	_, db, cleanup := setupTestGitRepo(t)
 	defer cleanup()
 
-	ws := &WebServer{db: db}
+	ws := testServer(db)
 
 	// Create first deployment with 5 books
 	commit1 := createTestDeployment(t, db, 5)
@@ -271,7 +287,7 @@ func TestRollbackWithUncommittedChanges(t *testing.T) {
 	_, db, cleanup := setupTestGitRepo(t)
 	defer cleanup()
 
-	ws := &WebServer{db: db}
+	ws := testServer(db)
 
 	// Create a deployment
 	commit1 := createTestDeployment(t, db, 5)
@@ -303,7 +319,7 @@ func TestDeployToGitHub(t *testing.T) {
 	_, db, cleanup := setupTestGitRepo(t)
 	defer cleanup()
 
-	ws := &WebServer{db: db}
+	ws := testServer(db)
 
 	// Add test data
 	author := models.Author{
@@ -351,64 +367,78 @@ func TestBuildStatic(t *testing.T) {
 	_, db, cleanup := setupTestGitRepo(t)
 	defer cleanup()
 
-	ws := &WebServer{db: db}
+	ws := testServer(db)
 
-	// Create the sfwr executable mock
-	mockScript := `#!/bin/bash
-if [ "$1" == "-build" ]; then
-    mkdir -p output/public
-    echo "Built" > output/public/index.html
-    exit 0
-fi
-exit 1`
+	author := models.Author{FullName: "Build Test Author", Surname: "Author"}
+	db.Create(&author)
+	book := models.Book{MainTitle: "Build Test Book", AuthorFullName: author.FullName, Rating: "Excellent"}
+	db.Create(&book)
+	db.Model(&book).Association("Authors").Append(&author)
 
-	err := os.WriteFile("sfwr", []byte(mockScript), 0755)
-	if err != nil {
-		t.Fatal("Failed to create mock sfwr:", err)
+	writeBuildTemplates(t, "templates")
+	if err := os.MkdirAll("saved_cover_images", 0755); err != nil {
+		t.Fatal(err)
 	}
 
-	// Test build
 	message, err := ws.buildStatic()
 	if err != nil {
 		t.Fatal("Build failed:", err)
 	}
-
-	if !strings.Contains(message, "successfully") {
-		t.Error("Build message doesn't indicate success:", message)
+	if !strings.Contains(message, "Build") && !strings.Contains(message, "Built") {
+		t.Errorf("Build message doesn't summarize the build: %s", message)
 	}
 
-	// Verify output directory was created
-	if _, err := os.Stat("output/public"); os.IsNotExist(err) {
-		t.Error("Output directory was not created")
+	// The generated pages must actually exist and contain the book.
+	index, err := os.ReadFile(filepath.Join("output/public", "index.html"))
+	if err != nil {
+		t.Fatal("index.html was not written:", err)
+	}
+	if !strings.Contains(string(index), "Build Test Book") {
+		t.Error("index.html does not list the book")
+	}
+	if _, err := os.Stat(filepath.Join("output/public", "author_index.html")); err != nil {
+		t.Error("author_index.html was not written:", err)
 	}
 }
 
-func TestCopyDir(t *testing.T) {
-	tmpDir := t.TempDir()
+// A bad template must come back as an error rather than ending the process,
+// because the admin server builds the site in-process.
+func TestBuildStaticReportsTemplateErrors(t *testing.T) {
+	_, db, cleanup := setupTestGitRepo(t)
+	defer cleanup()
 
-	// Create source directory with files
-	srcDir := filepath.Join(tmpDir, "src")
-	os.MkdirAll(srcDir, 0755)
-	os.WriteFile(filepath.Join(srcDir, "file1.txt"), []byte("test1"), 0644)
-	os.WriteFile(filepath.Join(srcDir, "file2.txt"), []byte("test2"), 0644)
-
-	// Create destination
-	dstDir := filepath.Join(tmpDir, "dst")
-
-	// Copy directory
-	err := copyDir(srcDir, dstDir)
-	if err != nil {
-		t.Fatal("Failed to copy directory:", err)
+	ws := testServer(db)
+	if err := os.MkdirAll("templates", 0755); err != nil {
+		t.Fatal(err)
 	}
 
-	// Verify files were copied
-	content1, err := os.ReadFile(filepath.Join(dstDir, "file1.txt"))
-	if err != nil || string(content1) != "test1" {
-		t.Error("File1 was not copied correctly")
+	if _, err := ws.buildStatic(); err == nil {
+		t.Error("expected an error when the templates are missing, got nil")
+	}
+}
+
+// writeBuildTemplates lays down the minimum template set the site build needs.
+func writeBuildTemplates(t *testing.T, dir string) {
+	t.Helper()
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		t.Fatal(err)
 	}
 
-	content2, err := os.ReadFile(filepath.Join(dstDir, "file2.txt"))
-	if err != nil || string(content2) != "test2" {
-		t.Error("File2 was not copied correctly")
+	files := map[string]string{
+		"base.html":           `<html><body>{{template "body" .}}</body></html>`,
+		"child_dir_base.html": `<html><body>{{template "body" .}}</body></html>`,
+		"index.html":          `{{define "body"}}{{range .}}<p>{{.MainTitle}}</p>{{end}}{{end}}`,
+		"book_list.html":      `{{define "body"}}{{range .}}<p>{{.MainTitle}}</p>{{end}}{{end}}`,
+		"book_boxes.html":     `{{define "body"}}{{range .}}<p>{{.MainTitle}}</p>{{end}}{{end}}`,
+		"author_index.html":   `{{define "body"}}{{range .}}{{range .}}<p>{{.FullName}}</p>{{end}}{{end}}{{end}}`,
+		"author.html":         `{{define "body"}}<p>{{.FullName}}</p>{{end}}`,
+		"decades_index.html":  `{{define "body"}}{{range .}}<p>{{.Decade}}</p>{{end}}{{end}}`,
+		"decade.html":         `{{define "body"}}<p>{{.Decade}}</p>{{end}}`,
+		"book.html":           `{{define "body"}}<p>{{.MainTitle}}</p>{{end}}`,
+	}
+	for name, content := range files {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0644); err != nil {
+			t.Fatal(err)
+		}
 	}
 }

@@ -292,17 +292,13 @@ func TestAuthorsFromBooks(t *testing.T) {
 }
 
 func TestRenderBookListPage(t *testing.T) {
-	// This test would require template files to exist
-	// For now, we'll just test that the function doesn't panic with empty data
-
-	t.Skip("Skipping template rendering test - requires template files")
-
 	books := createTestBooks()
 
-	// This would normally render HTML
-	html := RenderBookListPage("../templates/book_list.html", books)
+	html, err := RenderBookListPage("../templates/book_list.html", books)
+	if err != nil {
+		t.Fatalf("RenderBookListPage failed: %v", err)
+	}
 
-	// Basic checks
 	if html == "" {
 		t.Error("Expected non-empty HTML output")
 	}
@@ -312,6 +308,14 @@ func TestRenderBookListPage(t *testing.T) {
 		if !strings.Contains(html, book.MainTitle) {
 			t.Errorf("Book title %s not found in HTML", book.MainTitle)
 		}
+	}
+}
+
+// A missing template must surface as an error. The admin server renders the
+// site in-process, so this path used to end the process instead.
+func TestRenderBookListPageReportsMissingTemplate(t *testing.T) {
+	if _, err := RenderBookListPage("../templates/does_not_exist.html", createTestBooks()); err == nil {
+		t.Error("expected an error for a missing template, got nil")
 	}
 }
 
@@ -391,5 +395,78 @@ func TestBookSiteFileName(t *testing.T) {
 			// You may need to adjust based on actual implementation
 			t.Skip("SiteFileName method implementation may vary")
 		})
+	}
+}
+
+// The site lists books by publication year, then title, then author. The
+// underlying sort must also be stable: hundreds of books share a year, and
+// an unstable sort reshuffled the home page and the grid on every rebuild
+// even when no data had changed.
+func TestBooksByPublicationDateOrdersByYearThenTitleThenAuthor(t *testing.T) {
+	books := []models.Book{
+		{MainTitle: "Zebra", AuthorSurname: "Adams", AuthorFullName: "A Adams", PubDate: 1990},
+		{MainTitle: "Apple", AuthorSurname: "Young", AuthorFullName: "Y Young", PubDate: 2000},
+		{MainTitle: "Apple", AuthorSurname: "Baker", AuthorFullName: "B Baker", PubDate: 2000},
+		{MainTitle: "Banana", AuthorSurname: "Clark", AuthorFullName: "C Clark", PubDate: 2000},
+	}
+
+	sorted := BooksByPublicationDate(books)
+
+	type key struct{ title, surname string }
+	want := []key{
+		{"Apple", "Baker"},  // 2000, first title, first author
+		{"Apple", "Young"},  // 2000, same title, later author
+		{"Banana", "Clark"}, // 2000, later title
+		{"Zebra", "Adams"},  // 1990, older year last
+	}
+	for i, w := range want {
+		if sorted[i].MainTitle != w.title || sorted[i].AuthorSurname != w.surname {
+			t.Errorf("position %d: got %s / %s, want %s / %s",
+				i, sorted[i].MainTitle, sorted[i].AuthorSurname, w.title, w.surname)
+		}
+	}
+}
+
+// Sorting the same books from a different starting order must give the same
+// result, which is what makes a rebuild reproducible.
+func TestBookOrderingIsIndependentOfInputOrder(t *testing.T) {
+	build := func() []models.Book {
+		return []models.Book{
+			{MainTitle: "C", AuthorSurname: "One", PubDate: 2000},
+			{MainTitle: "A", AuthorSurname: "Two", PubDate: 2000},
+			{MainTitle: "B", AuthorSurname: "Three", PubDate: 2000},
+			{MainTitle: "D", AuthorSurname: "Four", PubDate: 2000},
+			{MainTitle: "E", AuthorSurname: "Five", PubDate: 2000},
+		}
+	}
+
+	forward := BooksByPublicationDate(build())
+	shuffled := build()
+	shuffled[0], shuffled[4] = shuffled[4], shuffled[0]
+	shuffled[1], shuffled[3] = shuffled[3], shuffled[1]
+	reordered := BooksByPublicationDate(shuffled)
+
+	for i := range forward {
+		if forward[i].MainTitle != reordered[i].MainTitle {
+			t.Fatalf("position %d differs between runs: %s vs %s",
+				i, forward[i].MainTitle, reordered[i].MainTitle)
+		}
+	}
+}
+
+func TestBooksMostRecentlyAddedBreaksTiesDeterministically(t *testing.T) {
+	same := time.Now()
+	books := []models.Book{
+		{MainTitle: "Cherry", DateAdded: same},
+		{MainTitle: "Apple", DateAdded: same},
+		{MainTitle: "Banana", DateAdded: same},
+	}
+
+	got := BooksMostRecentlyAdded(books, 3)
+	want := []string{"Apple", "Banana", "Cherry"}
+	for i, w := range want {
+		if got[i].MainTitle != w {
+			t.Errorf("position %d: got %s, want %s", i, got[i].MainTitle, w)
+		}
 	}
 }

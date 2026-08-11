@@ -11,7 +11,7 @@ import (
 
 	"github.com/ccdavis/sfwr/models"
 	"github.com/ccdavis/sfwr/web"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -110,6 +110,7 @@ func createTestTemplates(dir string) {
 		"decades.html":     stub("Decades"),
 		"decade.html":      stub("Decade"),
 		"backups.html":     stub("Backups"),
+		"login.html":       stub("Sign In"),
 	}
 
 	for name, content := range templates {
@@ -149,9 +150,9 @@ func TestCompleteBookLifecycle(t *testing.T) {
 
 	// Step 2: Create a book
 	book := models.Book{
-		MainTitle:      "Integration Test Book",
-		SubTitle:       "Testing Everything",
-		AuthorFullName: author.FullName,
+		MainTitle:        "Integration Test Book",
+		SubTitle:         "Testing Everything",
+		AuthorFullName:   author.FullName,
 		AuthorSurname:    author.Surname,
 		PubDate:          2024,
 		Rating:           "Excellent",
@@ -219,7 +220,7 @@ func TestDeploymentAndRollbackIntegration(t *testing.T) {
 	tmpDir, db, cleanup := setupIntegrationTest(t)
 	defer cleanup()
 
-	ws, err := web.NewWebServer(db, filepath.Join(tmpDir, "saved_cover_images"))
+	ws, err := web.NewWebServer(db, web.Config{BindAddr: "127.0.0.1", Port: "0", RepoDir: tmpDir, DatabasePath: filepath.Join(tmpDir, "sfwr_database.db"), CoverImagesDir: filepath.Join(tmpDir, "saved_cover_images"), OutputDir: filepath.Join(tmpDir, "output/public"), TemplatesDir: filepath.Join(tmpDir, "templates")})
 	if err != nil {
 		t.Fatalf("NewWebServer failed: %v", err)
 	}
@@ -256,7 +257,7 @@ func TestDeploymentAndRollbackIntegration(t *testing.T) {
 
 	// Reopen database
 	db, _ = gorm.Open(sqlite.Open(expectedDBPath), &gorm.Config{})
-	ws, err = web.NewWebServer(db, filepath.Join(tmpDir, "saved_cover_images"))
+	ws, err = web.NewWebServer(db, web.Config{BindAddr: "127.0.0.1", Port: "0", RepoDir: tmpDir, DatabasePath: filepath.Join(tmpDir, "sfwr_database.db"), CoverImagesDir: filepath.Join(tmpDir, "saved_cover_images"), OutputDir: filepath.Join(tmpDir, "output/public"), TemplatesDir: filepath.Join(tmpDir, "templates")})
 	if err != nil {
 		t.Fatalf("NewWebServer failed: %v", err)
 	}

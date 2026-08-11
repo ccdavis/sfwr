@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"log"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -21,9 +21,43 @@ func GroupByProperty[T any, K comparable](items []T, getProperty func(T) K) map[
 	return grouped
 }
 
+// Ordering helpers.
+//
+// Every list here ties on a single field — publication year, surname, date
+// added — and hundreds of books share each value. sort.Slice is not stable,
+// so ties came out in a different order on every build: rebuilding without
+// changing any data reshuffled the home page and the grid. These comparators
+// fall through to the title and then the record ID, which are unique, so the
+// output is fully determined by the data.
+
+// lessBook breaks a tie on the primary sort key: title first, then author,
+// then the record ID so nothing is left to chance.
+func lessBook(a, b models.Book) bool {
+	if a.MainTitle != b.MainTitle {
+		return a.MainTitle < b.MainTitle
+	}
+	if a.AuthorSurname != b.AuthorSurname {
+		return a.AuthorSurname < b.AuthorSurname
+	}
+	if a.AuthorFullName != b.AuthorFullName {
+		return a.AuthorFullName < b.AuthorFullName
+	}
+	return a.ID < b.ID
+}
+
+func lessAuthor(a, b models.Author) bool {
+	if a.FullName != b.FullName {
+		return a.FullName < b.FullName
+	}
+	return a.ID < b.ID
+}
+
 func BooksByPublicationDate(books []models.Book) []models.Book {
-	sort.Slice(books, func(left, right int) bool {
-		return books[left].PubDate > books[right].PubDate
+	sort.SliceStable(books, func(left, right int) bool {
+		if books[left].PubDate != books[right].PubDate {
+			return books[left].PubDate > books[right].PubDate
+		}
+		return lessBook(books[left], books[right])
 	})
 	return books
 }
@@ -31,8 +65,12 @@ func BooksByPublicationDate(books []models.Book) []models.Book {
 func BooksMostRecentlyAdded(books []models.Book, listSize int) []models.Book {
 	sorted := make([]models.Book, len(books))
 	copy(sorted, books)
-	sort.Slice(sorted, func(left, right int) bool {
-		return sorted[left].DateAdded.Unix() > sorted[right].DateAdded.Unix()
+	sort.SliceStable(sorted, func(left, right int) bool {
+		l, r := sorted[left].DateAdded.Unix(), sorted[right].DateAdded.Unix()
+		if l != r {
+			return l > r
+		}
+		return lessBook(sorted[left], sorted[right])
 	})
 	if listSize > len(sorted) {
 		listSize = len(sorted)
@@ -41,8 +79,11 @@ func BooksMostRecentlyAdded(books []models.Book, listSize int) []models.Book {
 }
 
 func BooksByAuthor(books []models.Book) []models.Book {
-	sort.Slice(books, func(left, right int) bool {
-		return books[left].AuthorSurname < books[right].AuthorSurname
+	sort.SliceStable(books, func(left, right int) bool {
+		if books[left].AuthorSurname != books[right].AuthorSurname {
+			return books[left].AuthorSurname < books[right].AuthorSurname
+		}
+		return lessBook(books[left], books[right])
 	})
 	return books
 }
@@ -57,8 +98,11 @@ func BooksWithRating(books []models.Book, rating models.Rating) (ret []models.Bo
 }
 
 func AuthorsBySurname(authors []models.Author) map[string][]models.Author {
-	sort.Slice(authors, func(left, right int) bool {
-		return authors[left].Surname < authors[right].Surname
+	sort.SliceStable(authors, func(left, right int) bool {
+		if authors[left].Surname != authors[right].Surname {
+			return authors[left].Surname < authors[right].Surname
+		}
+		return lessAuthor(authors[left], authors[right])
 	})
 
 	groupedBySurname := GroupByProperty(authors, func(a models.Author) string {
@@ -77,8 +121,11 @@ func AuthorsBySurname(authors []models.Author) map[string][]models.Author {
 }
 
 func BooksByDecade(books []models.Book) map[string][]models.Book {
-	sort.Slice(books, func(left, right int) bool {
-		return books[left].PubDate < books[right].PubDate
+	sort.SliceStable(books, func(left, right int) bool {
+		if books[left].PubDate != books[right].PubDate {
+			return books[left].PubDate < books[right].PubDate
+		}
+		return lessBook(books[left], books[right])
 	})
 
 	groupedByDecade := GroupByProperty(books, func(b models.Book) string {
@@ -92,7 +139,7 @@ func BooksByDecade(books []models.Book) map[string][]models.Book {
 	return groupedByDecade
 }
 
-func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) string {
+func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) (string, error) {
 	groupedAuthors := AuthorsBySurname(authors)
 	var letters []string
 	for l := range groupedAuthors {
@@ -105,42 +152,38 @@ func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) s
 		authorChunks = append(authorChunks, groupedAuthors[l])
 	}
 
-	var doc bytes.Buffer
-	t, err := template.ParseFiles("templates/base.html", authorTemplateFile)
-	if err != nil {
-		log.Fatalf("Error parsing author index template: %v", err)
-	}
-	err = t.Execute(&doc, authorChunks)
-	if err != nil {
-		log.Fatalf("Error executing author index template: %v", err)
-	}
-	return doc.String()
+	return render(authorTemplateFile, "base.html", authorChunks)
 }
 
-func RenderAuthorPage(authorTemplateFile string, author models.Author) string {
-	var doc bytes.Buffer
-	t, err := template.ParseFiles("templates/child_dir_base.html", authorTemplateFile)
-	if err != nil {
-		log.Fatalf("Error parsing author page template: %v", err)
-	}
-	err = t.Execute(&doc, author)
-	if err != nil {
-		log.Fatalf("Error executing author page template: %v", err)
-	}
-	return doc.String()
+// baseTemplate locates a shared layout next to the page template, so the
+// templates directory can live anywhere.
+func baseTemplate(pageTemplateFile, baseName string) string {
+	return filepath.Join(filepath.Dir(pageTemplateFile), baseName)
 }
 
-func RenderBookPage(bookTemplateFile string, book models.Book) string {
-	var doc bytes.Buffer
-	t, parseErr := template.ParseFiles("templates/child_dir_base.html", bookTemplateFile)
-	if parseErr != nil {
-		log.Fatalf("Error parsing book page template: %v", parseErr)
-	}
-	err := t.Execute(&doc, book)
+// render parses a layout plus a page template and executes it. Errors are
+// returned rather than fatal: the admin server builds the site in-process,
+// and a bad template must not take the server down with it.
+func render(pageTemplateFile, baseName string, data any) (string, error) {
+	base := baseTemplate(pageTemplateFile, baseName)
+	t, err := template.ParseFiles(base, pageTemplateFile)
 	if err != nil {
-		log.Fatalf("Error rendering book page template: %v", err)
+		return "", fmt.Errorf("could not parse %s with %s: %w", pageTemplateFile, base, err)
 	}
-	return doc.String()
+
+	var doc bytes.Buffer
+	if err := t.Execute(&doc, data); err != nil {
+		return "", fmt.Errorf("could not render %s: %w", pageTemplateFile, err)
+	}
+	return doc.String(), nil
+}
+
+func RenderAuthorPage(authorTemplateFile string, author models.Author) (string, error) {
+	return render(authorTemplateFile, "child_dir_base.html", author)
+}
+
+func RenderBookPage(bookTemplateFile string, book models.Book) (string, error) {
+	return render(bookTemplateFile, "child_dir_base.html", book)
 }
 
 type DecadeInfo struct {
@@ -177,27 +220,18 @@ func GroupBooksByDecade(books []models.Book) []DecadeInfo {
 	return decadeInfos
 }
 
-func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) string {
+func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) (string, error) {
 	decadeInfos := GroupBooksByDecade(books)
 
-	var doc bytes.Buffer
-	t, err := template.ParseFiles("templates/base.html", decadeTemplateFile)
-	if err != nil {
-		log.Fatalf("Error parsing decades index template: %v", err)
-	}
-	err = t.Execute(&doc, decadeInfos)
-	if err != nil {
-		log.Fatalf("Error executing decades index template: %v", err)
-	}
-	return doc.String()
+	return render(decadeTemplateFile, "base.html", decadeInfos)
 }
 
-func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade string) string {
-	sort.Slice(books, func(left, right int) bool {
+func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade string) (string, error) {
+	sort.SliceStable(books, func(left, right int) bool {
 		if books[left].PubDate != books[right].PubDate {
 			return books[left].PubDate < books[right].PubDate
 		}
-		return books[left].MainTitle < books[right].MainTitle
+		return lessBook(books[left], books[right])
 	})
 
 	decadeInfo := DecadeInfo{
@@ -205,38 +239,22 @@ func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade str
 		Books:  books,
 	}
 
-	var doc bytes.Buffer
-	t, err := template.ParseFiles("templates/child_dir_base.html", decadeTemplateFile)
-	if err != nil {
-		log.Fatalf("Error parsing decade page template: %v", err)
-	}
-	err = t.Execute(&doc, decadeInfo)
-	if err != nil {
-		log.Fatalf("Error executing decade page template: %v", err)
-	}
-	return doc.String()
+	return render(decadeTemplateFile, "child_dir_base.html", decadeInfo)
 }
 
-func RenderBookListPage(pageTemplateFile string, books []models.Book) string {
-	var doc bytes.Buffer
-	t, parseErr := template.ParseFiles("templates/base.html", pageTemplateFile)
-	if parseErr != nil {
-		log.Fatalf("Error parsing book list page template: %v", parseErr)
-	}
-
-	err := t.Execute(&doc, books)
-	if err != nil {
-		log.Fatalf("Error parsing book list template: %v", err)
-	}
-	return doc.String()
+func RenderBookListPage(pageTemplateFile string, books []models.Book) (string, error) {
+	return render(pageTemplateFile, "base.html", books)
 }
 
 // SortByAuthorSurname sorts books by author surname alphabetically
 func SortByAuthorSurname(books []models.Book) []models.Book {
 	sorted := make([]models.Book, len(books))
 	copy(sorted, books)
-	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].AuthorSurname < sorted[j].AuthorSurname
+	sort.SliceStable(sorted, func(i, j int) bool {
+		if sorted[i].AuthorSurname != sorted[j].AuthorSurname {
+			return sorted[i].AuthorSurname < sorted[j].AuthorSurname
+		}
+		return lessBook(sorted[i], sorted[j])
 	})
 	return sorted
 }
@@ -259,8 +277,11 @@ func AuthorsFromBooks(books []models.Book) []models.Author {
 	}
 
 	// Sort authors by surname for consistent output
-	sort.Slice(authors, func(i, j int) bool {
-		return authors[i].Surname < authors[j].Surname
+	sort.SliceStable(authors, func(i, j int) bool {
+		if authors[i].Surname != authors[j].Surname {
+			return authors[i].Surname < authors[j].Surname
+		}
+		return lessAuthor(authors[i], authors[j])
 	})
 
 	return authors
