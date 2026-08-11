@@ -125,7 +125,7 @@ func (ws *WebServer) deployToGitHub() (string, error) {
 // happened to contain the executable.
 func (ws *WebServer) buildStatic() (string, error) {
 	return site.Generate(ws.db, site.Options{
-		TemplatesDir:   ws.config.TemplatesDir,
+		Templates:      ws.config.Templates,
 		OutputDir:      ws.config.OutputDir,
 		CoverImagesDir: ws.config.CoverImagesDir,
 	})

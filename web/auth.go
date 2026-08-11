@@ -6,11 +6,11 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"fmt"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
-	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -59,7 +59,13 @@ type Config struct {
 	DatabasePath   string
 	CoverImagesDir string
 	OutputDir      string
-	TemplatesDir   string
+
+	// Templates is the template set: compiled into the binary, or a
+	// directory when one is configured.
+	Templates fs.FS
+
+	// TemplatesDir is only what the config named, for the startup banner.
+	TemplatesDir string
 
 	// RepoDir is the git working tree deploy and rollback operate on.
 	// Empty disables both.
@@ -92,11 +98,6 @@ func (c Config) URL(path string) string {
 // DeployEnabled reports whether git-backed deploy and rollback are available.
 func (c Config) DeployEnabled() bool {
 	return c.RepoDir != ""
-}
-
-// AdminTemplates is the directory holding the admin UI templates.
-func (c Config) AdminTemplates() string {
-	return filepath.Join(c.TemplatesDir, "web")
 }
 
 // AuthEnabled reports whether a password has been configured.

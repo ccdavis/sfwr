@@ -6,9 +6,9 @@ package site
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/ccdavis/sfwr/models"
@@ -19,7 +19,10 @@ import (
 // Options says where to read templates and cover art from and where the
 // finished site should be written.
 type Options struct {
-	TemplatesDir   string
+	// Templates is the template set: the copy compiled into the binary, or
+	// a directory when one is configured. See package templates.
+	Templates fs.FS
+
 	OutputDir      string
 	CoverImagesDir string
 }
@@ -72,10 +75,6 @@ func Render(books []models.Book, authors []models.Author, opts Options) error {
 	return writeBookPages(books, opts)
 }
 
-func (o Options) template(name string) string {
-	return filepath.Join(o.TemplatesDir, name)
-}
-
 func writeFile(dir, name, contents string) error {
 	target := path.Join(dir, name)
 	if err := os.WriteFile(target, []byte(contents), 0644); err != nil {
@@ -85,7 +84,7 @@ func writeFile(dir, name, contents string) error {
 }
 
 func writeIndexPages(books []models.Book, opts Options) error {
-	indexPage, err := pages.RenderBookListPage(opts.template("index.html"), pages.BooksMostRecentlyAdded(books, 25))
+	indexPage, err := pages.RenderBookListPage(opts.Templates, "index.html", pages.BooksMostRecentlyAdded(books, 25))
 	if err != nil {
 		return err
 	}
@@ -93,7 +92,7 @@ func writeIndexPages(books []models.Book, opts Options) error {
 		return err
 	}
 
-	byPubDate, err := pages.RenderBookListPage(opts.template("book_list.html"), pages.BooksByPublicationDate(books))
+	byPubDate, err := pages.RenderBookListPage(opts.Templates, "book_list.html", pages.BooksByPublicationDate(books))
 	if err != nil {
 		return err
 	}
@@ -101,7 +100,7 @@ func writeIndexPages(books []models.Book, opts Options) error {
 		return err
 	}
 
-	bookGrid, err := pages.RenderBookListPage(opts.template("book_boxes.html"), pages.BooksByPublicationDate(books))
+	bookGrid, err := pages.RenderBookListPage(opts.Templates, "book_boxes.html", pages.BooksByPublicationDate(books))
 	if err != nil {
 		return err
 	}
@@ -109,7 +108,7 @@ func writeIndexPages(books []models.Book, opts Options) error {
 }
 
 func writeAuthorPages(authors []models.Author, opts Options) error {
-	authorIndex, err := pages.RenderAuthorIndexPage(opts.template("author_index.html"), authors)
+	authorIndex, err := pages.RenderAuthorIndexPage(opts.Templates, "author_index.html", authors)
 	if err != nil {
 		return err
 	}
@@ -122,7 +121,7 @@ func writeAuthorPages(authors []models.Author, opts Options) error {
 		return fmt.Errorf("could not create %s: %w", authorsDir, err)
 	}
 	for _, a := range authors {
-		authorPage, err := pages.RenderAuthorPage(opts.template("author.html"), a)
+		authorPage, err := pages.RenderAuthorPage(opts.Templates, "author.html", a)
 		if err != nil {
 			return err
 		}
@@ -134,7 +133,7 @@ func writeAuthorPages(authors []models.Author, opts Options) error {
 }
 
 func writeDecadePages(books []models.Book, opts Options) error {
-	decadesIndex, err := pages.RenderDecadesIndexPage(opts.template("decades_index.html"), books)
+	decadesIndex, err := pages.RenderDecadesIndexPage(opts.Templates, "decades_index.html", books)
 	if err != nil {
 		return err
 	}
@@ -147,7 +146,7 @@ func writeDecadePages(books []models.Book, opts Options) error {
 		return fmt.Errorf("could not create %s: %w", decadesDir, err)
 	}
 	for decade, decadeBooks := range pages.BooksByDecade(books) {
-		decadePage, err := pages.RenderDecadePage(opts.template("decade.html"), decadeBooks, decade)
+		decadePage, err := pages.RenderDecadePage(opts.Templates, "decade.html", decadeBooks, decade)
 		if err != nil {
 			return err
 		}
@@ -164,7 +163,7 @@ func writeBookPages(books []models.Book, opts Options) error {
 		return fmt.Errorf("could not create %s: %w", booksDir, err)
 	}
 	for _, b := range books {
-		bookPage, err := pages.RenderBookPage(opts.template("book.html"), b)
+		bookPage, err := pages.RenderBookPage(opts.Templates, "book.html", b)
 		if err != nil {
 			return err
 		}

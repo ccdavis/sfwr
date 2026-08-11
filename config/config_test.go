@@ -168,32 +168,24 @@ func TestQuotedValuesAreUnwrapped(t *testing.T) {
 	}
 }
 
-func TestCheckRequiresAdminTemplates(t *testing.T) {
+// Templates live in the binary, so a missing directory is not an error:
+// it just means the embedded copy is used.
+func TestCheckIgnoresTheTemplatesDirectory(t *testing.T) {
 	settings := Defaults()
-	settings.Templates = filepath.Join(t.TempDir(), "missing")
+	settings.Templates = filepath.Join(t.TempDir(), "not-there")
 	settings.Output = "out"
 
-	err := settings.Check()
-	if err == nil {
-		t.Fatal("Check should fail when the admin templates are absent")
-	}
-	if !strings.Contains(err.Error(), "templates") {
-		t.Errorf("the error should mention templates, got: %v", err)
+	if err := settings.Check(); err != nil {
+		t.Errorf("a missing templates directory should be fine, got: %v", err)
 	}
 }
 
-func TestCheckPassesWithAdminTemplates(t *testing.T) {
-	dir := t.TempDir()
-	if err := os.MkdirAll(filepath.Join(dir, "web"), 0755); err != nil {
-		t.Fatal(err)
-	}
-
+func TestCheckRequiresAnOutputDirectory(t *testing.T) {
 	settings := Defaults()
-	settings.Templates = dir
-	settings.Output = filepath.Join(dir, "out")
+	settings.Output = ""
 
-	if err := settings.Check(); err != nil {
-		t.Errorf("Check failed on a valid layout: %v", err)
+	if err := settings.Check(); err == nil {
+		t.Error("Check should fail with no output directory")
 	}
 }
 

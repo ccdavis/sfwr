@@ -203,11 +203,6 @@ func resolve(base, path string) string {
 	return filepath.Clean(filepath.Join(base, path))
 }
 
-// AdminTemplates is the directory holding the admin UI templates.
-func (s Settings) AdminTemplates() string {
-	return filepath.Join(s.Templates, "web")
-}
-
 // EnvFileName is the shell file holding the admin password hash. It is kept
 // out of the config file so the secret and the settings have separate
 // permissions.
@@ -233,14 +228,11 @@ func (s Settings) DeployEnabled() bool {
 }
 
 // Check reports problems that would only surface later as confusing
-// failures, such as a templates directory that does not exist.
+// failures. Templates are not checked here: they are compiled into the
+// binary and `templates` only overrides them, so an absent directory is
+// normal rather than an error. Package templates validates whichever set
+// ends up in use.
 func (s Settings) Check() error {
-	if s.Templates == "" {
-		return fmt.Errorf("no templates directory configured")
-	}
-	if info, err := os.Stat(s.AdminTemplates()); err != nil || !info.IsDir() {
-		return fmt.Errorf("admin templates not found at %s (set 'templates' in the config file)", s.AdminTemplates())
-	}
 	if s.Output == "" {
 		return fmt.Errorf("no output directory configured")
 	}

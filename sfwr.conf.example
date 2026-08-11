@@ -28,8 +28,10 @@ cover_images = saved_cover_images
 #
 output = output/public
 
-# Templates for the generated site. Must contain a web/ subdirectory holding
-# the admin UI templates.
+# Templates. These are compiled into the binary, so this can be left blank
+# and a server needs no template directory at all. Point it at a checkout to
+# edit the markup without rebuilding; a path that does not exist falls back
+# to the embedded copy.
 templates = templates
 
 

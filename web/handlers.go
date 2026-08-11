@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -115,18 +114,16 @@ func NewWebServer(db *gorm.DB, config Config) (*WebServer, error) {
 		templates:     make(map[string]*template.Template, len(pageTemplates)),
 	}
 
-	adminTemplates := config.AdminTemplates()
-	base := filepath.Join(adminTemplates, "base.html")
 	for _, name := range pageTemplates {
 		t, err := template.New(name+".html").Funcs(ws.templateFuncs()).
-			ParseFiles(base, filepath.Join(adminTemplates, name+".html"))
+			ParseFS(config.Templates, "web/base.html", "web/"+name+".html")
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse template %q: %w", name, err)
 		}
 		ws.templates[name] = t
 	}
 	previewTmpl, err := template.New("preview.html").Funcs(ws.templateFuncs()).
-		ParseFiles(filepath.Join(adminTemplates, "preview.html"))
+		ParseFS(config.Templates, "web/preview.html")
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse preview template: %w", err)
 	}
@@ -240,6 +237,7 @@ func (ws *WebServer) logStartup() {
 		fmt.Println("Rollback is restricted to browsers running on this machine.")
 	}
 
+	fmt.Printf("Templates: %s\n", ws.config.TemplatesDir)
 	fmt.Printf("Publishing to: %s\n", ws.config.OutputDir)
 	if ws.config.DeployEnabled() {
 		fmt.Printf("Git working tree: %s\n", ws.config.RepoDir)

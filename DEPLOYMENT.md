@@ -234,12 +234,12 @@ database is never web-reachable:
 
 ```
 /home/youruser/
-├── sfwr/                       # the application: binary, database, templates, git
-│   ├── sfwr
+├── sfwr/                       # the application: binary, database, cover art
+│   ├── sfwr                    #   templates are inside the binary
 │   ├── sfwr.conf
+│   ├── sfwr.env                #   password hash, mode 0600
 │   ├── sfwr_database.db
-│   ├── saved_cover_images/
-│   └── templates/
+│   └── saved_cover_images/
 └── sfworthreading.com/         # document root — generated site only
 ```
 
@@ -260,12 +260,9 @@ the binary carries no glibc dependency and runs on any Linux x86-64 host. A cgo 
 links the *build* machine's glibc; built on Ubuntu 24.04 it will misbehave on this
 22.04 server, and the first thing to fail is the DNS lookup for the cover-art APIs.
 
-The templates are read at runtime, so copy those too (or clone the repo on the server
-for them and the git history):
-
-```bash
-scp -r templates youruser@your-vps:~/sfwr/
-```
+That is the whole deployment. Templates are compiled into the binary, so there is
+no template directory to copy and nothing that can fall out of step with the code.
+Leave `templates =` blank in the server's config.
 
 ### 3. Write the config
 

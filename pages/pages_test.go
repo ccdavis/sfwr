@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ccdavis/sfwr/models"
+	"github.com/ccdavis/sfwr/templates"
 )
 
 func createTestBooks() []models.Book {
@@ -294,7 +295,7 @@ func TestAuthorsFromBooks(t *testing.T) {
 func TestRenderBookListPage(t *testing.T) {
 	books := createTestBooks()
 
-	html, err := RenderBookListPage("../templates/book_list.html", books)
+	html, err := RenderBookListPage(templates.Embedded(), "book_list.html", books)
 	if err != nil {
 		t.Fatalf("RenderBookListPage failed: %v", err)
 	}
@@ -314,7 +315,7 @@ func TestRenderBookListPage(t *testing.T) {
 // A missing template must surface as an error. The admin server renders the
 // site in-process, so this path used to end the process instead.
 func TestRenderBookListPageReportsMissingTemplate(t *testing.T) {
-	if _, err := RenderBookListPage("../templates/does_not_exist.html", createTestBooks()); err == nil {
+	if _, err := RenderBookListPage(templates.Embedded(), "does_not_exist.html", createTestBooks()); err == nil {
 		t.Error("expected an error for a missing template, got nil")
 	}
 }

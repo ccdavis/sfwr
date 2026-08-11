@@ -11,6 +11,7 @@ import (
 	"github.com/ccdavis/sfwr/config"
 	"github.com/ccdavis/sfwr/models"
 	"github.com/ccdavis/sfwr/site"
+	"github.com/ccdavis/sfwr/templates"
 	"github.com/ccdavis/sfwr/tui"
 	"github.com/ccdavis/sfwr/web"
 	"github.com/glebarez/sqlite"
@@ -109,6 +110,13 @@ func main() {
 		return
 	}
 
+	// The template set: the copy compiled into the binary unless the config
+	// names a directory that exists.
+	templateFS := templates.FS(settings.Templates)
+	if err := templates.Check(templateFS); err != nil {
+		log.Fatalf("%v (templates: %s)", err, templates.Source(settings.Templates))
+	}
+
 	if fingerprintFlag {
 		fp, err := models.TakeFingerprint(mustOpenDatabase(settings), settings.CoverImages)
 		check(err)
@@ -148,7 +156,7 @@ func main() {
 
 	if generateSiteFlag {
 		summary, err := site.Generate(db, site.Options{
-			TemplatesDir:   settings.Templates,
+			Templates:      templateFS,
 			OutputDir:      settings.Output,
 			CoverImagesDir: settings.CoverImages,
 		})
@@ -166,7 +174,8 @@ func main() {
 			DatabasePath:   settings.Database,
 			CoverImagesDir: settings.CoverImages,
 			OutputDir:      settings.Output,
-			TemplatesDir:   settings.Templates,
+			Templates:      templateFS,
+			TemplatesDir:   templates.Source(settings.Templates),
 			RepoDir:        settings.Repo,
 			SiteName:       settings.SiteName,
 			ConfigFile:     settings.SourceFile,

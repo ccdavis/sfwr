@@ -220,7 +220,7 @@ func TestDeploymentAndRollbackIntegration(t *testing.T) {
 	tmpDir, db, cleanup := setupIntegrationTest(t)
 	defer cleanup()
 
-	ws, err := web.NewWebServer(db, web.Config{BindAddr: "127.0.0.1", Port: "0", RepoDir: tmpDir, DatabasePath: filepath.Join(tmpDir, "sfwr_database.db"), CoverImagesDir: filepath.Join(tmpDir, "saved_cover_images"), OutputDir: filepath.Join(tmpDir, "output/public"), TemplatesDir: filepath.Join(tmpDir, "templates")})
+	ws, err := web.NewWebServer(db, web.Config{BindAddr: "127.0.0.1", Port: "0", RepoDir: tmpDir, DatabasePath: filepath.Join(tmpDir, "sfwr_database.db"), CoverImagesDir: filepath.Join(tmpDir, "saved_cover_images"), OutputDir: filepath.Join(tmpDir, "output/public"), Templates: os.DirFS(filepath.Join(tmpDir, "templates"))})
 	if err != nil {
 		t.Fatalf("NewWebServer failed: %v", err)
 	}
@@ -257,7 +257,7 @@ func TestDeploymentAndRollbackIntegration(t *testing.T) {
 
 	// Reopen database
 	db, _ = gorm.Open(sqlite.Open(expectedDBPath), &gorm.Config{})
-	ws, err = web.NewWebServer(db, web.Config{BindAddr: "127.0.0.1", Port: "0", RepoDir: tmpDir, DatabasePath: filepath.Join(tmpDir, "sfwr_database.db"), CoverImagesDir: filepath.Join(tmpDir, "saved_cover_images"), OutputDir: filepath.Join(tmpDir, "output/public"), TemplatesDir: filepath.Join(tmpDir, "templates")})
+	ws, err = web.NewWebServer(db, web.Config{BindAddr: "127.0.0.1", Port: "0", RepoDir: tmpDir, DatabasePath: filepath.Join(tmpDir, "sfwr_database.db"), CoverImagesDir: filepath.Join(tmpDir, "saved_cover_images"), OutputDir: filepath.Join(tmpDir, "output/public"), Templates: os.DirFS(filepath.Join(tmpDir, "templates"))})
 	if err != nil {
 		t.Fatalf("NewWebServer failed: %v", err)
 	}

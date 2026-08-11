@@ -89,6 +89,24 @@ call `log.Fatal`. That was survivable when only the CLI built the site, but the 
 server now builds **in-process** — a bad template would take the running server down.
 Keep it that way: never add a `log.Fatal` to a code path reachable from a handler.
 
+### Templates are compiled into the binary
+
+`templates/embed.go` embeds both template sets with `go:embed`, so deploying is a
+single file copy and the markup can never be a version behind the code that renders
+it. That drift is not hypothetical: the server once ran for a day with an older
+`book_form.html` because the binary and the templates travelled separately.
+
+`templates` in the config still overrides them, which is how the site's styling gets
+worked on: a checkout renders from the directory, and any machine without one falls
+back to the embedded copy. `templates.FS(dir)` makes that choice, `templates.Source(dir)`
+describes it for the startup banner, and `templates.Check` validates whichever set is
+in use at startup rather than on the first page render.
+
+Renderers take an `fs.FS`, so one code path serves both. Template names are paths
+inside that set — `"base.html"`, `"web/home.html"` — never filesystem paths.
+`templates/embed_test.go` asserts the embedded set is complete and matches the
+working tree, so a stale build fails the tests.
+
 ### Admin UI templates
 Every page extends `templates/web/base.html`, which holds the entire stylesheet and the nav. Page templates start with `{{template "base.html" .}}` followed by `{{define "content"}}…{{end}}`. Do not add a page that carries its own `<html>` shell — several used to, and the copies drifted apart.
 

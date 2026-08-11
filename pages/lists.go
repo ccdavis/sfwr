@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"path/filepath"
+	"io/fs"
 	"sort"
 	"strings"
 
@@ -139,7 +139,7 @@ func BooksByDecade(books []models.Book) map[string][]models.Book {
 	return groupedByDecade
 }
 
-func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) (string, error) {
+func RenderAuthorIndexPage(fsys fs.FS, authorTemplateFile string, authors []models.Author) (string, error) {
 	groupedAuthors := AuthorsBySurname(authors)
 	var letters []string
 	for l := range groupedAuthors {
@@ -152,23 +152,19 @@ func RenderAuthorIndexPage(authorTemplateFile string, authors []models.Author) (
 		authorChunks = append(authorChunks, groupedAuthors[l])
 	}
 
-	return render(authorTemplateFile, "base.html", authorChunks)
+	return render(fsys, authorTemplateFile, "base.html", authorChunks)
 }
 
-// baseTemplate locates a shared layout next to the page template, so the
-// templates directory can live anywhere.
-func baseTemplate(pageTemplateFile, baseName string) string {
-	return filepath.Join(filepath.Dir(pageTemplateFile), baseName)
-}
-
-// render parses a layout plus a page template and executes it. Errors are
-// returned rather than fatal: the admin server builds the site in-process,
-// and a bad template must not take the server down with it.
-func render(pageTemplateFile, baseName string, data any) (string, error) {
-	base := baseTemplate(pageTemplateFile, baseName)
-	t, err := template.ParseFiles(base, pageTemplateFile)
+// render parses a layout plus a page template from the template set and
+// executes it. The set is an fs.FS so the same code serves both the copy
+// compiled into the binary and a directory named in the config.
+//
+// Errors are returned rather than fatal: the admin server builds the site
+// in-process, and a bad template must not take the server down with it.
+func render(fsys fs.FS, pageTemplateFile, baseName string, data any) (string, error) {
+	t, err := template.ParseFS(fsys, baseName, pageTemplateFile)
 	if err != nil {
-		return "", fmt.Errorf("could not parse %s with %s: %w", pageTemplateFile, base, err)
+		return "", fmt.Errorf("could not parse %s with %s: %w", pageTemplateFile, baseName, err)
 	}
 
 	var doc bytes.Buffer
@@ -178,12 +174,12 @@ func render(pageTemplateFile, baseName string, data any) (string, error) {
 	return doc.String(), nil
 }
 
-func RenderAuthorPage(authorTemplateFile string, author models.Author) (string, error) {
-	return render(authorTemplateFile, "child_dir_base.html", author)
+func RenderAuthorPage(fsys fs.FS, authorTemplateFile string, author models.Author) (string, error) {
+	return render(fsys, authorTemplateFile, "child_dir_base.html", author)
 }
 
-func RenderBookPage(bookTemplateFile string, book models.Book) (string, error) {
-	return render(bookTemplateFile, "child_dir_base.html", book)
+func RenderBookPage(fsys fs.FS, bookTemplateFile string, book models.Book) (string, error) {
+	return render(fsys, bookTemplateFile, "child_dir_base.html", book)
 }
 
 type DecadeInfo struct {
@@ -220,13 +216,13 @@ func GroupBooksByDecade(books []models.Book) []DecadeInfo {
 	return decadeInfos
 }
 
-func RenderDecadesIndexPage(decadeTemplateFile string, books []models.Book) (string, error) {
+func RenderDecadesIndexPage(fsys fs.FS, decadeTemplateFile string, books []models.Book) (string, error) {
 	decadeInfos := GroupBooksByDecade(books)
 
-	return render(decadeTemplateFile, "base.html", decadeInfos)
+	return render(fsys, decadeTemplateFile, "base.html", decadeInfos)
 }
 
-func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade string) (string, error) {
+func RenderDecadePage(fsys fs.FS, decadeTemplateFile string, books []models.Book, decade string) (string, error) {
 	sort.SliceStable(books, func(left, right int) bool {
 		if books[left].PubDate != books[right].PubDate {
 			return books[left].PubDate < books[right].PubDate
@@ -239,11 +235,11 @@ func RenderDecadePage(decadeTemplateFile string, books []models.Book, decade str
 		Books:  books,
 	}
 
-	return render(decadeTemplateFile, "child_dir_base.html", decadeInfo)
+	return render(fsys, decadeTemplateFile, "child_dir_base.html", decadeInfo)
 }
 
-func RenderBookListPage(pageTemplateFile string, books []models.Book) (string, error) {
-	return render(pageTemplateFile, "base.html", books)
+func RenderBookListPage(fsys fs.FS, pageTemplateFile string, books []models.Book) (string, error) {
+	return render(fsys, pageTemplateFile, "base.html", books)
 }
 
 // SortByAuthorSurname sorts books by author surname alphabetically

@@ -127,7 +127,7 @@ func testServer(db *gorm.DB) *WebServer {
 			DatabasePath:   "sfwr_database.db",
 			CoverImagesDir: "saved_cover_images",
 			OutputDir:      "output/public",
-			TemplatesDir:   "templates",
+			Templates:      os.DirFS("templates"),
 		},
 	}
 }
